@@ -8,7 +8,7 @@ import {CartContext} from "@/components/CartContext";
 
 const StyledHeader = styled.header`
   background-color: #222;
-  padding: 0;
+  padding: 16px 0;
   overflow: visible;
 `;
 const HeaderInner = styled.div`
@@ -104,7 +104,7 @@ const LogoImage = styled(Image)`
 `;
 const Wrapper = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   flex-wrap: nowrap;
   gap: 16px;
@@ -301,6 +301,9 @@ export default function Header() {
     <StyledHeader>
       <HeaderInner>
         <Wrapper>
+          <Logo href={'/'}>
+            <LogoText>Flowers Boutique MIA</LogoText>
+          </Logo>
           <NavArea>
             <StyledNav>
               <NavLink href={'/'}>Начало</NavLink>
