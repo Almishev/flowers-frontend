@@ -58,15 +58,15 @@ export default function CategoriesPage({categories}) {
   return (
     <>
       <SEO 
-        title="Категории екскурзии"
-        description={`Категории екскурзии – почивки, уикенд пътувания, city break и други.`}
-        keywords="категории екскурзии, почивки, уикенд, city break, туристическа агенция"
+        title="Категории букети и цветни аранжировки"
+        description={`Разгледайте категории с букети, кошници с цветя и тематични аранжировки за сватби, рождени дни и специални поводи.`}
+        keywords="категории букети, кошници с цветя, сватбени букети, букети за рожден ден, цветарски магазин"
         url="/categories"
         image="/logo.png"
       />
       <Header />
       <Center>
-        <Title>Категории екскурзии</Title>
+        <Title>Категории букети</Title>
         {categories.length === 0 ? (
           <div>Няма намерени категории.</div>
         ) : (
@@ -96,7 +96,7 @@ export default function CategoriesPage({categories}) {
                   {category.parent ? `Подкатегория на ${category.parent.name}` : 'Основна категория'}
                 </CategoryDescription>
                 <ProductCount>
-                  {category.productCount || 0} екскурзии
+                  {category.productCount || 0} букета
                 </ProductCount>
               </CategoryCard>
             ))}

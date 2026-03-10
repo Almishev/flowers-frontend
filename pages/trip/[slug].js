@@ -8,9 +8,10 @@ import {Category} from "@/models/Category";
 import styled from "styled-components";
 import WhiteBox from "@/components/WhiteBox";
 import ProductImages from "@/components/ProductImages";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import Button from "@/components/Button";
 import SEO from "@/components/SEO";
+import {CartContext} from "@/components/CartContext";
 
 const ColWrapper = styled.div`
   display: grid;
@@ -60,7 +61,7 @@ const StarBtn = styled.button`
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
-  color: ${props => props.active ? '#b8860b' : '#cbd5e1'};
+  color: ${props => props.active ? '#16a34a' : '#cbd5e1'};
   padding: 0;
   transition: color .15s ease;
   &:hover { color: ${props => props.active ? '#9a7209' : '#94a3b8'}; }
@@ -86,72 +87,6 @@ const SmallMuted = styled.div`
   color: #9ca3af;
 `;
 
-const CTASection = styled.div`
-  margin-top: 30px;
-  padding: 24px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-radius: 12px;
-  border: 1px solid #dee2e6;
-`;
-
-const CTATitle = styled.h3`
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin: 0 0 12px 0;
-  color: #212529;
-`;
-
-const CTAText = styled.p`
-  font-size: 0.95rem;
-  color: #495057;
-  margin: 0 0 20px 0;
-  line-height: 1.6;
-`;
-
-const CTAButtons = styled.div`
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  
-  @media screen and (min-width: 769px) {
-    display: none;
-  }
-  
-  @media screen and (max-width: 768px) {
-    flex-direction: column;
-  }
-`;
-
-const PhoneNumber = styled.div`
-  display: none;
-  
-  @media screen and (min-width: 769px) {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: #212529;
-  }
-`;
-
-const PhoneLink = styled.a`
-  color: #b8860b;
-  text-decoration: none;
-  transition: color 0.3s ease;
-  
-  &:hover {
-    color: #9a7209;
-    text-decoration: underline;
-  }
-`;
-
-const IconWrapper = styled.span`
-  display: inline-flex;
-  align-items: center;
-  margin-right: 8px;
-`;
-
 export default function TripPage({product}) {
   const [reviews,setReviews] = useState([]);
   const [rating,setRating] = useState(5);
@@ -159,6 +94,7 @@ export default function TripPage({product}) {
   const [content,setContent] = useState('');
   const [submitting,setSubmitting] = useState(false);
   const [userEmail,setUserEmail] = useState('');
+  const {addProduct} = useContext(CartContext);
   useEffect(() => {
     fetch(`/api/reviews?product=${product._id}`).then(r=>r.json()).then(setReviews);
   }, [product._id]);
@@ -187,7 +123,7 @@ export default function TripPage({product}) {
   
   const tripDescription = product.description 
     ? `${product.description.substring(0, 150)}...` 
-    : `Екскурзия "${product.title}" до ${product.destinationCountry || ''} ${product.destinationCity || ''}.`;
+    : `Букет "${product.title}" от Flowers Boutique MIA.`;
   
   // Взимаме първото изображение или fallback към логото
   // Ако изображението е от S3 или друг външен източник, използваме го директно
@@ -197,7 +133,7 @@ export default function TripPage({product}) {
   }
   const breadcrumbs = [
     { name: 'Начало', url: '/' },
-    { name: 'Всички екскурзии', url: '/trips' },
+    { name: 'Всички букети', url: '/bouquets' },
     { name: product.title, url: `/trip/${product.slug || product._id}` },
   ];
 
@@ -218,223 +154,28 @@ export default function TripPage({product}) {
           </WhiteBox>
           <div>
             <Title>{product.title}</Title>
-            <div style={{display: 'flex', gap: '20px', flexWrap: 'wrap', marginTop: '12px', fontSize: '0.95rem', color: '#666'}}>
-              {(product.destinationCountry || product.destinationCity) && (
-                <div>
-                  <strong>Дестинация:</strong>{' '}
-                  {product.destinationCountry || ''}
-                  {product.destinationCity ? `, ${product.destinationCity}` : ''}
-                </div>
-              )}
-              {product.departureCity && (
-                <div><strong>Отпътуване от:</strong> {product.departureCity}</div>
-              )}
-              {product.startDate && (
-                <div><strong>Начална дата:</strong> {new Date(product.startDate).toLocaleDateString('bg-BG')}</div>
-              )}
-              {product.endDate && (
-                <div><strong>Крайна дата:</strong> {new Date(product.endDate).toLocaleDateString('bg-BG')}</div>
-              )}
-              {product.durationDays && (
-                <div><strong>Продължителност:</strong> {product.durationDays} дни</div>
-              )}
+            <div style={{marginTop: '12px', fontSize: '1rem', color: '#444', fontWeight: 500}}>
               {typeof product.price === 'number' && (
-                <div><strong>Цена:</strong> {product.price.toFixed(2)} {product.currency || 'BGN'}</div>
+                <div><strong>Цена:</strong> {product.price.toFixed(2)} {product.currency || 'EUR'}</div>
+              )}
+              {typeof product.stock === 'number' && (
+                <div style={{marginTop: '8px', color: product.stock > 0 ? '#16a34a' : '#dc2626'}}>
+                  {product.stock > 0 ? `Наличност: ${product.stock} бр.` : 'Изчерпан продукт'}
+                </div>
               )}
             </div>
             {product.description && (
               <p style={{marginTop: '16px'}}>{product.description}</p>
             )}
-            <PriceRow>
-              <div>
-                {(product.maxSeats !== undefined || product.availableSeats !== undefined) && (
-                  <div style={{fontSize: '1.1rem', color: (product.availableSeats ?? 0) > 0 ? '#16a34a' : '#dc2626', marginTop: '16px', fontWeight: '500'}}>
-                    {(product.availableSeats ?? 0) > 0
-                      ? '✓ Има свободни места'
-                      : '✗ Няма свободни места'}
-                  </div>
-                )}
-              </div>
+            <PriceRow style={{marginTop: '24px'}}>
+              <Button 
+                primary 
+                onClick={() => addProduct(product._id)}
+                disabled={product.stock !== undefined && product.stock <= 0}
+              >
+                Добави в кошницата
+              </Button>
             </PriceRow>
-            
-            <CTASection>
-              <CTATitle>Искате да резервирате?</CTATitle>
-              <CTAText>
-                Свържете се с нас за резервация или за повече информация за тази екскурзия. Отговаряме бързо и ще помогнем с всичко необходимо!
-              </CTAText>
-              <PhoneNumber>
-                <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
-                  <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                    <IconWrapper>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{width: '24px', height: '24px', color: '#b8860b'}}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102c-.125-.501-.575-.852-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                      </svg>
-                    </IconWrapper>
-                    <PhoneLink href="tel:+359896270105">0896 270 105</PhoneLink>
-                  </div>
-                  <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                    <IconWrapper>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{width: '24px', height: '24px', color: '#b8860b'}}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102c-.125-.501-.575-.852-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                      </svg>
-                    </IconWrapper>
-                    <PhoneLink href="tel:+359896178447">0896 178 447</PhoneLink>
-                  </div>
-                </div>
-              </PhoneNumber>
-              <CTAButtons>
-                <a 
-                  href="tel:+359896270105" 
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '8px 16px',
-                    fontSize: '1rem',
-                    fontWeight: '500',
-                    borderRadius: '5px',
-                    textDecoration: 'none',
-                    backgroundColor: '#b8860b',
-                    color: '#000',
-                    border: '1px solid #b8860b',
-                    flex: '1',
-                    minWidth: '160px',
-                    transition: 'all 0.3s ease',
-                    fontFamily: 'Poppins, sans-serif'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = '#fff';
-                    e.currentTarget.style.filter = 'brightness(1.1)';
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.filter = 'none';
-                    e.currentTarget.style.transform = 'none';
-                    e.currentTarget.style.boxShadow = 'none';
-                    e.currentTarget.style.color = '#000';
-                  }}
-                >
-                  <IconWrapper>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{width: '20px', height: '20px'}}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102c-.125-.501-.575-.852-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                    </svg>
-                  </IconWrapper>
-                  Обадете се на 0896 270 105
-                </a>
-                <a 
-                  href="tel:+359896178447" 
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '8px 16px',
-                    fontSize: '1rem',
-                    fontWeight: '500',
-                    borderRadius: '5px',
-                    textDecoration: 'none',
-                    backgroundColor: '#b8860b',
-                    color: '#000',
-                    border: '1px solid #b8860b',
-                    flex: '1',
-                    minWidth: '160px',
-                    transition: 'all 0.3s ease',
-                    fontFamily: 'Poppins, sans-serif'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = '#fff';
-                    e.currentTarget.style.filter = 'brightness(1.1)';
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.filter = 'none';
-                    e.currentTarget.style.transform = 'none';
-                    e.currentTarget.style.boxShadow = 'none';
-                    e.currentTarget.style.color = '#000';
-                  }}
-                >
-                  <IconWrapper>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{width: '20px', height: '20px'}}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102c-.125-.501-.575-.852-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                    </svg>
-                  </IconWrapper>
-                  Обадете се на 0896 178 447
-                </a>
-                <a 
-                  href="viber://chat?number=%2B359896270105" 
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '8px 16px',
-                    fontSize: '1rem',
-                    fontWeight: '500',
-                    borderRadius: '5px',
-                    textDecoration: 'none',
-                    background: 'linear-gradient(135deg, #665CAC 0%, #7B6FBF 100%)',
-                    border: 'none',
-                    color: 'white',
-                    flex: '1',
-                    minWidth: '160px',
-                    transition: 'all 0.3s ease',
-                    fontFamily: 'Poppins, sans-serif',
-                    boxShadow: '0 4px 12px rgba(102, 92, 172, 0.3)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 92, 172, 0.5)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'none';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 92, 172, 0.3)';
-                  }}
-                >
-                  <IconWrapper>
-                    <svg viewBox="0 0 24 24" fill="white" style={{width: '20px', height: '20px'}}>
-                      <path d="M12.5 0C5.6 0 0 5.1 0 11.4c0 3.2 1.6 6 4 7.7V24l5.3-2.9c1.4.4 2.9.6 4.2.6 6.9 0 12.5-5.1 12.5-11.4S19.4 0 12.5 0zm6.9 15.4c-.2.6-1.1 1.1-1.5 1.2-.4.1-.9.2-2.1-.4-1.7-.8-3.9-2.7-5.4-4.3-2.1-2.1-3.5-4.6-3.9-5.4-.4-.8-.4-1.2.1-1.6.4-.3.9-.4 1.2-.4.3 0 .6 0 .9.1.3.1.7.4.9.7.2.3.4.7.6 1.1.2.4.3.7.5 1 .2.3.1.6 0 .8-.1.2-.2.4-.4.6-.2.2-.4.5-.6.7-.2.2-.4.4-.2.7.2.3.4.6.8 1 .4.4.8.8 1.2 1.1.5.4 1 .7 1.4.9.4.2.7.2.9 0 .2-.2.4-.5.7-.8.3-.3.6-.5.9-.7.3-.2.6-.1.8 0 .2.1.5.2.7.4.2.2.3.4.4.6.1.2.1.5 0 .7z"/>
-                    </svg>
-                  </IconWrapper>
-                  Пишете във Viber (0896 270 105)
-                </a>
-                <a 
-                  href="viber://chat?number=%2B359896178447" 
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '8px 16px',
-                    fontSize: '1rem',
-                    fontWeight: '500',
-                    borderRadius: '5px',
-                    textDecoration: 'none',
-                    background: 'linear-gradient(135deg, #665CAC 0%, #7B6FBF 100%)',
-                    border: 'none',
-                    color: 'white',
-                    flex: '1',
-                    minWidth: '160px',
-                    transition: 'all 0.3s ease',
-                    fontFamily: 'Poppins, sans-serif',
-                    boxShadow: '0 4px 12px rgba(102, 92, 172, 0.3)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 92, 172, 0.5)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'none';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 92, 172, 0.3)';
-                  }}
-                >
-                  <IconWrapper>
-                    <svg viewBox="0 0 24 24" fill="white" style={{width: '20px', height: '20px'}}>
-                      <path d="M12.5 0C5.6 0 0 5.1 0 11.4c0 3.2 1.6 6 4 7.7V24l5.3-2.9c1.4.4 2.9.6 4.2.6 6.9 0 12.5-5.1 12.5-11.4S19.4 0 12.5 0zm6.9 15.4c-.2.6-1.1 1.1-1.5 1.2-.4.1-.9.2-2.1-.4-1.7-.8-3.9-2.7-5.4-4.3-2.1-2.1-3.5-4.6-3.9-5.4-.4-.8-.4-1.2.1-1.6.4-.3.9-.4 1.2-.4.3 0 .6 0 .9.1.3.1.7.4.9.7.2.3.4.7.6 1.1.2.4.3.7.5 1 .2.3.1.6 0 .8-.1.2-.2.4-.4.6-.2.2-.4.5-.6.7-.2.2-.4.4-.2.7.2.3.4.6.8 1 .4.4.8.8 1.2 1.1.5.4 1 .7 1.4.9.4.2.7.2.9 0 .2-.2.4-.5.7-.8.3-.3.6-.5.9-.7.3-.2.6-.1.8 0 .2.1.5.2.7.4.2.2.3.4.4.6.1.2.1.5 0 .7z"/>
-                    </svg>
-                  </IconWrapper>
-                  Пишете във Viber (0896 178 447)
-                </a>
-              </CTAButtons>
-            </CTASection>
           </div>
         </ColWrapper>
         <ReviewsSection>
