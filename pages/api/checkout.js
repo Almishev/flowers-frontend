@@ -1,7 +1,6 @@
 import {mongooseConnect} from "@/lib/mongoose";
 import {Product} from "@/models/Product";
 import {Order} from "@/models/Order";
-const stripe = require('stripe')(process.env.STRIPE_SK);
 import {deleteS3Objects} from "@/lib/s3";
 
 export default async function handler(req,res) {
@@ -12,7 +11,7 @@ export default async function handler(req,res) {
   const {
     name,email,phone,city,
     postalCode,streetAddress,country,
-    cartProducts,shippingPrice,paymentMethod,
+    cartProducts,shippingPrice,
   } = req.body;
   
   await mongooseConnect();
@@ -92,71 +91,39 @@ export default async function handler(req,res) {
     const orderDoc = await Order.create({
       line_items,name,email,phone,city,postalCode,
       streetAddress,country,paid:false,
-      paymentMethod: paymentMethod || 'stripe',
+      paymentMethod: 'cash',
     });
 
-    // Ако е избран наложен платеж
-    if (paymentMethod === 'cash') {
-      try {
-        for (const productId of uniqueIds) {
-          const qty = productsIds.filter(id => id === productId)?.length || 0;
-          if (!qty) continue;
-          const prod = await Product.findById(productId);
-          if (!prod) continue;
-          const newStock = Math.max(0, (prod.stock || 0) - qty);
-          if (newStock === 0) {
-            const images = Array.isArray(prod?.images) ? prod.images : [];
-            await Product.deleteOne({_id: productId});
-            if (images.length > 0) {
-              try {
-                await deleteS3Objects(images);
-              } catch (s3Error) {
-                console.error(`Error deleting images from S3 for product ${productId}:`, s3Error);
-              }
+    // Актуализиране на наличностите и завършване на поръчка с наложен платеж
+    try {
+      for (const productId of uniqueIds) {
+        const qty = productsIds.filter(id => id === productId)?.length || 0;
+        if (!qty) continue;
+        const prod = await Product.findById(productId);
+        if (!prod) continue;
+        const newStock = Math.max(0, (prod.stock || 0) - qty);
+        if (newStock === 0) {
+          const images = Array.isArray(prod?.images) ? prod.images : [];
+          await Product.deleteOne({_id: productId});
+          if (images.length > 0) {
+            try {
+              await deleteS3Objects(images);
+            } catch (s3Error) {
+              console.error(`Error deleting images from S3 for product ${productId}:`, s3Error);
             }
-          } else {
-            await Product.updateOne({_id: productId}, {stock: newStock});
           }
+        } else {
+          await Product.updateOne({_id: productId}, {stock: newStock});
         }
-      } catch (invErr) {
-        console.error('Inventory update error:', invErr);
       }
-      
-      res.json({
-        success: true,
-        orderId: orderDoc._id.toString(),
-        message: 'Поръчката е създадена успешно. Ще платите при доставка.',
-      });
-      return;
+    } catch (invErr) {
+      console.error('Inventory update error:', invErr);
     }
-
-    if (paymentMethod === 'stripe' || !paymentMethod) {
-      const session = await stripe.checkout.sessions.create({
-        line_items,
-        mode: 'payment',
-        customer_email: email,
-        success_url: process.env.PUBLIC_URL + '/cart?success=1',
-        cancel_url: process.env.PUBLIC_URL + '/cart?canceled=1',
-        metadata: {
-          orderId: orderDoc._id.toString(),
-          name,
-          email,
-          phone,
-          cartProducts: JSON.stringify(cartProducts),
-        },
-      });
-
-      res.json({
-        success: true,
-        url: session.url,
-        sessionId: session.id,
-      });
-      return;
-    }
-
-    res.status(400).json({
-      success: false,
-      error: 'Моля, изберете метод на плащане',
+    
+    res.json({
+      success: true,
+      orderId: orderDoc._id.toString(),
+      message: 'Поръчката е създадена успешно. Ще платите при доставка.',
     });
   } catch (error) {
     console.error('Error creating order:', error);

@@ -10,7 +10,7 @@ const OrderSchema = new Schema({
   streetAddress:String,
   country:String,
   paid:Boolean,
-  paymentMethod:String, // 'stripe' или 'cash'
+  paymentMethod:String, // 'cash' (наложен платеж)
 }, {
   timestamps: true,
 });

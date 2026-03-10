@@ -124,7 +124,6 @@ export default function CartPage() {
   const [country,setCountry] = useState('');
   const [isSuccess,setIsSuccess] = useState(false);
   const [shippingPrice,setShippingPrice] = useState(5);
-  const [paymentMethod,setPaymentMethod] = useState('stripe');
 
   useEffect(() => {
     if (cartProducts.length > 0) {
@@ -238,7 +237,7 @@ export default function CartPage() {
       const response = await axios.post('/api/checkout', {
         name,email,phone,city,postalCode,streetAddress,country,
         cartProducts,shippingPrice: Number(shippingPrice),
-        paymentMethod,
+        paymentMethod: 'cash',
       });
       if (response.data.success) {
         if (response.data.url) {
@@ -407,44 +406,13 @@ export default function CartPage() {
               
               <PaymentMethodContainer>
                 <h3 style={{marginTop: 0, marginBottom: '15px'}}>Метод на плащане</h3>
-                
-                <PaymentMethodLabel 
-                  selected={paymentMethod === 'stripe'}
-                  onClick={() => setPaymentMethod('stripe')}
-                >
-                  <input 
-                    type="radio" 
-                    name="paymentMethod" 
-                    value="stripe"
-                    checked={paymentMethod === 'stripe'}
-                    onChange={() => setPaymentMethod('stripe')}
-                  />
-                  <div className="payment-info">
-                    <div className="payment-title">💳 Плащане с карта (Stripe)</div>
-                    <div className="payment-description">Безопасно онлайн плащане с дебитна или кредитна карта</div>
-                  </div>
-                </PaymentMethodLabel>
-                
-                <PaymentMethodLabel 
-                  selected={paymentMethod === 'cash'}
-                  onClick={() => setPaymentMethod('cash')}
-                >
-                  <input 
-                    type="radio" 
-                    name="paymentMethod" 
-                    value="cash"
-                    checked={paymentMethod === 'cash'}
-                    onChange={() => setPaymentMethod('cash')}
-                  />
-                  <div className="payment-info">
-                    <div className="payment-title">💰 Наложен платеж</div>
-                    <div className="payment-description">Плащане при получаване на поръчката</div>
-                  </div>
-                </PaymentMethodLabel>
+                <p style={{margin: 0, fontSize: '0.95rem', color: '#444'}}>
+                  💰 Наложен платеж – плащате при получаване на поръчката.
+                </p>
               </PaymentMethodContainer>
               
               <Button black block onClick={goToPayment}>
-                {paymentMethod === 'stripe' ? 'Поръчай с карта' : 'Поръчай с наложен платеж'}
+                Поръчай с наложен платеж
               </Button>
             </Box>
           )}
