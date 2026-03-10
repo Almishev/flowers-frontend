@@ -88,7 +88,7 @@ export default function CategoryPage({category, products, parentCategory}) {
       <Header />
       <Center>
         <Breadcrumb>
-          <Link href="/">Начало</Link> / <Link href="/categories">Категории екскурзии</Link> / {category.name}
+          <Link href="/">Начало</Link> / <Link href="/categories">Категории букети</Link> / {category.name}
         </Breadcrumb>
         
         <CategoryInfo>
@@ -99,13 +99,13 @@ export default function CategoryPage({category, products, parentCategory}) {
             </CategoryDescription>
           )}
           <ProductCount>
-            {products.length} {products.length === 1 ? 'екскурзия' : 'екскурзии'} в тази категория
+            {products.length} {products.length === 1 ? 'букет' : 'букета'} в тази категория
           </ProductCount>
         </CategoryInfo>
 
         {products.length === 0 ? (
           <NoProducts>
-            Няма намерени екскурзии в тази категория.
+            Няма намерени букети в тази категория.
           </NoProducts>
         ) : (
           <ProductsGrid products={products} />
