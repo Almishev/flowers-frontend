@@ -42,23 +42,36 @@ const WishlistButton = styled.button`
 
 const WhiteBox = styled(Link)`
   background-color: #fff;
-  padding: 20px;
-  height: 120px;
+  padding: 16px;
+  height: 160px;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
 `;
+
+const ThumbWrapper = styled.div`
+  width: 100%;
+  max-width: 220px;
+  height: 120px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 0 auto;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const PlaceholderThumb = styled.div`
-  width: 80px;
-  height: 80px;
+  width: 100%;
+  height: 100%;
   border: 1px dashed #d4d4d8;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
   background: #f9fafb;
 `;
 
@@ -148,18 +161,17 @@ export default function ProductBox({
         <HeartIcon filled={inWishlist} className="w-5 h-5" />
       </WishlistButton>
       <WhiteBox href={url}>
-        <div>
+        <ThumbWrapper>
           {images?.[0] ? (
-              <Image 
+            <Image 
               src={images[0]} 
               alt={title}
-              width={120}
-              height={80}
+              width={220}
+              height={120}
               style={{
-                maxWidth: '100%',
-                width: 'auto',
-                height: 'auto',
-                objectFit: 'contain',
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
               }}
               loading="lazy"
               unoptimized={images[0]?.includes('s3.amazonaws.com')}
@@ -169,7 +181,7 @@ export default function ProductBox({
               <BookPlaceholderIcon size={32} />
             </PlaceholderThumb>
           )}
-        </div>
+        </ThumbWrapper>
       </WhiteBox>
       <ProductInfoBox>
         <Title href={url}>{title}</Title>

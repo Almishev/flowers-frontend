@@ -77,7 +77,7 @@ export default function DestinationsPage({destinations, page, totalPages, totalC
         title="Дестинации"
         description={`Дестинации за екскурзии. Общо ${totalCount} ${totalCount === 1 ? 'дестинация' : 'дестинации'}.`}
         url="/destinations"
-        image="/logo-shop-flowers.avif"
+        image="/logo-shop-flowers.png"
       />
       <Header />
       <Center>

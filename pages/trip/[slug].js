@@ -127,7 +127,7 @@ export default function TripPage({product}) {
   
   // Взимаме първото изображение или fallback към логото
   // Ако изображението е от S3 или друг външен източник, използваме го директно
-  let tripImage = '/logo-shop-flowers.avif';
+  let tripImage = '/logo-shop-flowers.png';
   if (product.images?.[0]) {
     tripImage = product.images[0];
   }

@@ -71,7 +71,7 @@ export default function TripsPage({
         title={seoTitle}
         description={seoDescription}
         url={basePath}
-        image="/logo-shop-flowers.avif"
+        image="/logo-shop-flowers.png"
       />
       <Header />
       <Center>
