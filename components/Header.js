@@ -104,7 +104,7 @@ const LogoImage = styled(Image)`
 `;
 const Wrapper = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   flex-wrap: nowrap;
   gap: 16px;
@@ -301,16 +301,6 @@ export default function Header() {
     <StyledHeader>
       <HeaderInner>
         <Wrapper>
-          <Logo href={'/'}>
-            <LogoImage 
-              src="/logo-perli.png" 
-              alt="Flowers Boutique MIA - Онлайн магазин за цветя" 
-              width={200} 
-              height={80}
-              style={{objectFit: 'contain'}}
-            />
-            <LogoText>Flowers Boutique MIA</LogoText>
-          </Logo>
           <NavArea>
             <StyledNav>
               <NavLink href={'/'}>Начало</NavLink>

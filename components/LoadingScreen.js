@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
+import Image from 'next/image';
 
 const fadeIn = keyframes`
   from {
@@ -45,13 +46,44 @@ const LoadingOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('/background.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 9999;
   animation: ${props => props.isHiding ? fadeOut : fadeIn} 0.3s ease;
   pointer-events: ${props => props.isHiding ? 'none' : 'auto'};
+`;
+
+const LogoContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+`;
+
+const AnimatedLogo = styled.div`
+  animation: ${pulse} 2s ease-in-out infinite;
+  position: relative;
+`;
+
+const Spinner = styled.div`
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #000;
+  border-radius: 50%;
+  animation: ${rotate} 1s linear infinite;
+  margin-top: 20px;
+`;
+
+const LoadingText = styled.p`
+  color: #000;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 `;
 
 export default function LoadingScreen() {
@@ -160,6 +192,22 @@ export default function LoadingScreen() {
 
   return (
     <LoadingOverlay isHiding={isHiding}>
+      <LogoContainer>
+        <AnimatedLogo>
+          <Image
+            src="/logo.png"
+            alt="Loading"
+            width={200}
+            height={200}
+            priority
+            style={{
+              objectFit: 'contain',
+            }}
+          />
+        </AnimatedLogo>
+        <LoadingText>Making connections</LoadingText>
+        <Spinner />
+      </LogoContainer>
     </LoadingOverlay>
   );
 }
