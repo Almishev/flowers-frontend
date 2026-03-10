@@ -326,24 +326,24 @@ export default function CartPage() {
                         </Button>
                       </td>
                       <td>
-                        {cartProducts.filter(id => id === product._id).length * product.price} BGN
+                        {cartProducts.filter(id => id === product._id).length * product.price} EUR
                       </td>
                     </tr>
                   ))}
                   <tr>
                     <td></td>
                     <td>Междинна сума:</td>
-                    <td>{subtotal} BGN</td>
+                    <td>{subtotal} EUR</td>
                   </tr>
                   <tr>
                     <td></td>
                     <td>Доставка:</td>
-                    <td>{shippingPrice} BGN</td>
+                    <td>{shippingPrice} EUR</td>
                   </tr>
                   <tr>
                     <td></td>
                     <td><strong>Общо:</strong></td>
-                    <td><strong>{total} BGN</strong></td>
+                    <td><strong>{total} EUR</strong></td>
                   </tr>
                 </tbody>
               </Table>

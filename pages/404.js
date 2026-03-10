@@ -132,7 +132,7 @@ export default function NotFoundPage() {
         description="Тази страница не съществува. Върнете се към началото или разгледайте екскурзиите."
         keywords="404 страница, не е намерено"
         url="/404"
-        image="/logo.png"
+        image="/logo-shop-flowers.avif"
       />
       <Header />
       <Wrapper>

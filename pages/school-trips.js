@@ -136,7 +136,7 @@ export default function SchoolTripsPage({schoolTrips}) {
         description="Специализирана туристическа агенция за ученически екскурзии и зелени училища в Гоце Делчев и Гърмен. Организираме образователни пътувания, културно-исторически турове и групови екскурзии за училища."
         keywords="ученически екскурзии, зелени училища, туристическа агенция за училища, образователни екскурзии, групови екскурзии, туристическа агенция Гоце Делчев, туристическа агенция Гърмен, екскурзии за ученици"
         url="/school-trips"
-        image="/logo.png"
+        image="/logo-shop-flowers.avif"
         structuredData={[
           {
             '@context': 'https://schema.org',
@@ -234,7 +234,7 @@ export default function SchoolTripsPage({schoolTrips}) {
                           src={trip.images[0]} 
                           alt={trip.title}
                           onError={(e) => {
-                            e.target.src = '/logo.png';
+                            e.target.src = '/logo-shop-flowers.avif';
                           }}
                         />
                       )}

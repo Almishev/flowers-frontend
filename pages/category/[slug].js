@@ -79,11 +79,11 @@ export default function CategoryPage({category, products, parentCategory}) {
   return (
     <>
       <SEO 
-        title={`${category.name} - Категория екскурзии`}
-        description={`Екскурзии в категория "${category.name}". ${products.length} налични.`}
-        keywords={`${category.name}, категория, екскурзии, пътувания`}
+        title={`${category.name} - Категория букети`}
+        description={`Букети и цветни аранжировки в категория "${category.name}". ${products.length} налични.`}
+        keywords={`${category.name}, категория, букети, цветя, аранжировки`}
         url={`/category/${category.slug || category._id}`}
-        image="/logo.png"
+        image="/logo-shop-flowers.avif"
       />
       <Header />
       <Center>

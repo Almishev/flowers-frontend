@@ -198,6 +198,7 @@ export default function Footer() {
             <h3>Информация</h3>
             <ul>
               <li><Link href="/about">За нас</Link></li>
+              <li><Link href="/care">Грижа за цветята</Link></li>
               <li><Link href="/privacy-policy">Политика на поверителност</Link></li>
               <li><Link href="/terms">Общи условия</Link></li>
             </ul>

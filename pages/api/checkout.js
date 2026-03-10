@@ -68,7 +68,7 @@ export default async function handler(req,res) {
       line_items.push({
         quantity,
         price_data: {
-          currency: 'BGN',
+          currency: 'EUR',
           product_data: {name:productInfo.title},
           unit_amount: Math.round(productInfo.price * 100),
         },
@@ -80,7 +80,7 @@ export default async function handler(req,res) {
     line_items.push({
       quantity: 1,
       price_data: {
-        currency: 'BGN',
+        currency: 'EUR',
         product_data: {name: 'Доставка'},
         unit_amount: Math.round(shippingPrice * 100),
       },

@@ -195,8 +195,8 @@ export default function LoadingScreen() {
       <LogoContainer>
         <AnimatedLogo>
           <Image
-            src="/logo.png"
-            alt="Loading"
+            src="/logo-shop-flowers.avif"
+            alt="Flowers Boutique MIA"
             width={200}
             height={200}
             priority

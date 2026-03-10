@@ -28,7 +28,7 @@ const TripSchema = new Schema({
 
   // Цена
   price: { type: Number, required: true },
-  currency: { type: String, default: "BGN" },
+  currency: { type: String, default: "EUR" },
 
   // Тип пътуване
   travelType: {

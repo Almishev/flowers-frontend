@@ -309,7 +309,6 @@ export default function Header() {
               <NavLink href={'/'}>Начало</NavLink>
               <NavLink href={'/bouquets'}>Букети</NavLink>
               <NavLink href={'/categories'}>Категории</NavLink>
-              <NavLink href={'/care'}>Грижа за цветята</NavLink>
               <NavLink href={'/about'}>За нас</NavLink>
               <NavLink href={'/account'}>Акаунт</NavLink>
               <NavLink href={'/cart'}>
@@ -330,7 +329,6 @@ export default function Header() {
             <NavLink href={'/'} onClick={() => setMobileNavActive(false)}>Начало</NavLink>
             <NavLink href={'/bouquets'} onClick={() => setMobileNavActive(false)}>Букети</NavLink>
             <NavLink href={'/categories'} onClick={() => setMobileNavActive(false)}>Категории</NavLink>
-            <NavLink href={'/care'} onClick={() => setMobileNavActive(false)}>Грижа за цветята</NavLink>
             <NavLink href={'/about'} onClick={() => setMobileNavActive(false)}>За нас</NavLink>
             <NavLink href={'/account'} onClick={() => setMobileNavActive(false)}>Акаунт</NavLink>
             <NavLink href={'/cart'} onClick={() => setMobileNavActive(false)}>

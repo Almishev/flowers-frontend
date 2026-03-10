@@ -24,7 +24,7 @@ export default function HomePage({featuredProduct,newProducts,popularDestination
         description="Онлайн магазин за цветя и букети за всеки повод – рожден ден, годишнина, сватба или просто жест на внимание. Flowers Boutique MIA – уникални естествени и изкуствени цветя, букети, кошници, украси, декорации за дома."
         keywords="онлайн магазин за цветя, букет, букети, доставка на цветя, цветарница, цветя за рожден ден, цветя за сватба, цветя с доставка, Flowers Boutique MIA"
         url="/"
-        image="/logo.png"
+        image="/logo-shop-flowers.avif"
       />
       <div>
         <Header />

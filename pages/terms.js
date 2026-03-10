@@ -12,7 +12,7 @@ export default function TermsPage() {
         description="Общи условия за ползване на онлайн магазина за цветя Flowers Boutique MIA – поръчки, плащане, доставка, отказ и поверителност."
         keywords="общи условия, онлайн магазин за цветя, Flowers Boutique MIA, поръчки, плащане, доставка"
         url="/terms"
-        image="/logo-perli.png"
+        image="/logo-shop-flowers.avif"
       />
       <Header />
       <Center>

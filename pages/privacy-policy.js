@@ -117,7 +117,7 @@ export default function PrivacyPolicyPage() {
         description="Политика за поверителност и защита на личните данни на Flowers Boutique MIA - онлайн магазин за цветя, букети, кошници и декорации."
         keywords="политика поверителност, защита данни, GDPR, лични данни, Flowers Boutique MIA"
         url="/privacy-policy"
-        image="/logo.png"
+        image="/logo-shop-flowers.avif"
       />
       <Header />
       <Center>

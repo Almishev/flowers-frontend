@@ -176,7 +176,7 @@ export default function ProductBox({
         <PriceRow>
           {typeof price === 'number' && (
             <Price>
-              {price.toFixed(2)} {currency || 'BGN'}
+              {price.toFixed(2)} {currency || 'EUR'}
             </Price>
           )}
           <Subtitle>Ръчно подбран букет, подготвен при поръчка.</Subtitle>
