@@ -204,9 +204,9 @@ export default function TripsPage({
               style={{
                 display: 'flex',
                 flexWrap: 'wrap',
-                gap: '10px 16px',
+                gap: '8px 8px',
                 marginBottom: '10px',
-                fontSize: '0.9rem',
+                fontSize: '0.8rem',
               }}
             >
               {categories.map((cat) => {
@@ -222,7 +222,10 @@ export default function TripsPage({
                       cursor: 'pointer',
                       background: checked ? '#dcfce7' : '#f3f4f6',
                       borderRadius: '999px',
-                      padding: '6px 12px',
+                      padding: '5px 8px',
+                      flex: '1 1 calc(33.333% - 8px)',
+                      justifyContent: 'flex-start',
+                      boxSizing: 'border-box',
                     }}
                   >
                     <input
