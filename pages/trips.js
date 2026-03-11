@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Center from "@/components/Center";
 import {mongooseConnect} from "@/lib/mongoose";
 import {Product} from "@/models/Product";
+import {Category} from "@/models/Category";
 import ProductsGrid from "@/components/ProductsGrid";
 import Title from "@/components/Title";
 import Footer from "@/components/Footer";
@@ -27,12 +28,17 @@ export default function TripsPage({
   sort: initialSort,
   typeFilter: initialTypeFilter,
   availableTypeValues,
+  categories,
+  initialCategoryFilterIds = [],
 }) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState(initialSearch || '');
   // Празна стойност означава "по подразбиране – най-нови"
   const [sort, setSort] = useState(initialSort || '');
   const [typeFilter, setTypeFilter] = useState(initialTypeFilter || '');
+  const [categoryFilterIds, setCategoryFilterIds] = useState(
+    Array.isArray(initialCategoryFilterIds) ? initialCategoryFilterIds : []
+  );
 
   function handleSearch(e) {
     e.preventDefault();
@@ -44,6 +50,7 @@ export default function TripsPage({
     if (searchTerm.trim()) params.set('search', searchTerm.trim());
     if (sort) params.set('sort', sort);
     if (typeFilter) params.set('type', typeFilter);
+     if (categoryFilterIds.length > 0) params.set('cat', categoryFilterIds.join(','));
     params.set('page', '1');
     router.push('/bouquets?' + params.toString());
   }
@@ -52,6 +59,7 @@ export default function TripsPage({
     setSearchTerm('');
     setSort('');
     setTypeFilter('');
+    setCategoryFilterIds([]);
     router.push('/bouquets');
   }
 
@@ -60,12 +68,14 @@ export default function TripsPage({
     if (searchTerm.trim()) params.set('search', searchTerm.trim());
     if (sort) params.set('sort', sort);
     if (typeFilter) params.set('type', typeFilter);
+    if (categoryFilterIds.length > 0) params.set('cat', categoryFilterIds.join(','));
     const queryString = params.toString();
     return queryString ? `/bouquets?${queryString}` : '/bouquets';
   }
 
   const basePath = buildBasePath();
-  const hasActiveFilters = !!searchTerm || !!typeFilter || !!sort;
+  const hasActiveFilters =
+    !!searchTerm || !!typeFilter || !!sort || categoryFilterIds.length > 0;
 
   // SEO текстовете
   const seoTitle = initialSearch
@@ -188,6 +198,57 @@ export default function TripsPage({
               </button>
             )}
           </form>
+
+          {categories && categories.length > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '10px 16px',
+                marginBottom: '10px',
+                fontSize: '0.9rem',
+              }}
+            >
+              {categories.map((cat) => {
+                const id = cat._id?.toString?.() || cat._id;
+                const checked = categoryFilterIds.includes(id);
+                return (
+                  <label
+                    key={id}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      cursor: 'pointer',
+                      background: checked ? '#dcfce7' : '#f3f4f6',
+                      borderRadius: '999px',
+                      padding: '6px 12px',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={(e) => {
+                        const next = e.target.checked
+                          ? [...categoryFilterIds, id]
+                          : categoryFilterIds.filter((cId) => cId !== id);
+                        setCategoryFilterIds(next);
+                        const params = new URLSearchParams();
+                        if (searchTerm.trim()) params.set('search', searchTerm.trim());
+                        if (sort) params.set('sort', sort);
+                        if (typeFilter) params.set('type', typeFilter);
+                        if (next.length > 0) params.set('cat', next.join(','));
+                        params.set('page', '1');
+                        router.push('/bouquets?' + params.toString());
+                      }}
+                      style={{accentColor: '#16a34a'}}
+                    />
+                    <span>{cat.name}</span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {trips.length === 0 ? (
@@ -217,6 +278,8 @@ export async function getServerSideProps({query}) {
     // ако няма sort в URL, показваме по подразбиране "най-нови"
     const sortParam = query.sort || '';
     const typeFilter = query.type?.trim() || '';
+    const catParam = query.cat || '';
+    const categoryFilterIds = catParam ? catParam.split(',') : [];
 
     // Създаваме query за филтриране на букети
     let mongoQuery = {
@@ -232,8 +295,13 @@ export async function getServerSideProps({query}) {
       ];
     }
 
+    // Филтър по избрани категории
+    if (categoryFilterIds.length > 0) {
+      mongoQuery.category = { $in: categoryFilterIds };
+    }
+
     // Филтър по тип цветя (свойство). Името на ключа тук трябва да съвпада с това,
-    // което използвате в админ панела, напр. \"Тип цветя\".
+    // което използвате в админ панела, напр. "Тип цветя".
     if (typeFilter) {
       mongoQuery['properties.Тип цветя'] = typeFilter;
     }
@@ -254,12 +322,18 @@ export async function getServerSideProps({query}) {
       sortQuery = { _id: -1 };
     }
 
-    const trips = await Product.find(mongoQuery)
+    const [trips, categories] = await Promise.all([
+      Product.find(mongoQuery)
       .select('slug title price currency images category status isFeatured description')
       .sort(sortQuery)
       .skip(skip)
       .limit(PAGE_SIZE)
-      .lean();
+      .lean(),
+      Category.find({ status: { $ne: 'archived' } })
+        .select('name slug')
+        .sort({ name: 1 })
+        .lean(),
+    ]);
 
     return {
       props: {
@@ -271,6 +345,8 @@ export async function getServerSideProps({query}) {
         sort: sortParam,
         typeFilter,
         availableTypeValues: [],
+        categories: JSON.parse(JSON.stringify(categories)),
+        initialCategoryFilterIds: categoryFilterIds,
       },
     };
   } catch (error) {
