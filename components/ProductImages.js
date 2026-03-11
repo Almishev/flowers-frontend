@@ -117,6 +117,14 @@ export default function ProductImages({images = []}) {
         close={() => setOpen(false)}
         index={images.indexOf(activeImage)}
         slides={images.map((src) => ({ src }))}
+        toolbar={{ buttons: ["close"] }}
+        styles={{
+          toolbar: {
+            backgroundColor: "transparent",
+            padding: "10px 14px",
+            justifyContent: "flex-end",
+          },
+        }}
       />
     </>
   );

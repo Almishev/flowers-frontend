@@ -6,7 +6,7 @@ import {useWishlist} from "@/components/WishlistContext";
 import toast from "react-hot-toast";
 import BookPlaceholderIcon from "@/components/BookPlaceholderIcon";
 import Button from "@/components/Button";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import {CartContext} from "@/components/CartContext";
 import { motion } from "framer-motion";
 
@@ -160,6 +160,7 @@ export default function ProductBox({
   };
 
   const [isDesktop, setIsDesktop] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [lensState, setLensState] = useState({
     visible: false,
     x: 0,
@@ -167,6 +168,7 @@ export default function ProductBox({
     width: 0,
     height: 0,
   });
+  const touchStartXRef = useRef(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -175,6 +177,8 @@ export default function ProductBox({
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
   }, []);
+
+  const mainImage = images?.[currentIndex] || images?.[0] || null;
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -187,7 +191,7 @@ export default function ProductBox({
   };
 
   function handleMouseMove(e) {
-    if (!isDesktop || !images?.[0]) return;
+    if (!isDesktop || !mainImage) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const lensSize = 110;
     const half = lensSize / 2;
@@ -212,6 +216,37 @@ export default function ProductBox({
     setLensState((prev) => ({ ...prev, visible: false }));
   }
 
+  function handleTouchStart(e) {
+    if (isDesktop || !images || images.length < 2) return;
+    touchStartXRef.current = e.touches[0].clientX;
+  }
+
+  function handleTouchEnd(e) {
+    if (isDesktop || !images || images.length < 2) return;
+    if (touchStartXRef.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
+    const threshold = 40;
+    if (Math.abs(deltaX) < threshold) {
+      touchStartXRef.current = null;
+      return;
+    }
+
+    // Спираме навигацията, ако е реален свайп
+    e.preventDefault();
+    e.stopPropagation();
+
+    setCurrentIndex((prev) => {
+      if (deltaX < 0) {
+        // swipe наляво -> следваща снимка
+        return (prev + 1) % images.length;
+      }
+      // swipe надясно -> предишна снимка
+      return (prev - 1 + images.length) % images.length;
+    });
+
+    touchStartXRef.current = null;
+  }
+
   return (
     <ProductWrapper
       initial={{ opacity: 0, y: 15 }}
@@ -230,10 +265,12 @@ export default function ProductBox({
         <ThumbWrapper
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
           {images?.[0] ? (
             <Image 
-              src={images[0]} 
+              src={mainImage} 
               alt={title}
               width={220}
               height={120}
@@ -243,21 +280,21 @@ export default function ProductBox({
                 objectFit: 'cover',
               }}
               loading="lazy"
-              unoptimized={images[0]?.includes('s3.amazonaws.com')}
+              unoptimized={mainImage?.includes('s3.amazonaws.com')}
             />
           ) : (
             <PlaceholderThumb>
               <BookPlaceholderIcon size={32} />
             </PlaceholderThumb>
           )}
-          {isDesktop && lensState.visible && images?.[0] && (
+          {isDesktop && lensState.visible && mainImage && (
             <ZoomLens
               style={{
                 width: lensState.size,
                 height: lensState.size,
                 left: lensState.x - lensState.size / 2,
                 top: lensState.y - lensState.size / 2,
-                backgroundImage: `url(${images[0]})`,
+                backgroundImage: `url(${mainImage})`,
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: `${lensState.width * 2}px ${lensState.height * 2}px`,
                 backgroundPosition: `${

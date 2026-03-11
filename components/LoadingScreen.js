@@ -206,7 +206,7 @@ export default function LoadingScreen() {
             }}
           />
         </AnimatedLogo>
-        <LoadingText>Making connections</LoadingText>
+        <LoadingText>Цветарски бутик MIA</LoadingText>
         <Spinner />
       </LogoContainer>
     </LoadingOverlay>

@@ -6,6 +6,26 @@ import BarsIcon from "@/components/icons/Bars";
 import CartIcon from "@/components/icons/CartIcon";
 import {CartContext} from "@/components/CartContext";
 
+const TopBar = styled.div`
+  background-color: #16a34a;
+  color: #e5e7eb;
+  padding: 6px 0;
+  font-size: 14px;
+`;
+
+const TopBarInner = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  
+  @media screen and (max-width: 400px) {
+    padding: 0 16px;
+  }
+`;
+
 const StyledHeader = styled.header`
   background-color: #222;
   padding: 16px 0;
@@ -258,6 +278,41 @@ const UserArea = styled.div`
   }
 `;
 
+const PhoneLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #e5e7eb;
+  text-decoration: none;
+  font-size: 14px;
+  white-space: nowrap;
+  
+  &:hover {
+    color: #ffffff;
+  }
+  
+  @media screen and (max-width: 900px) {
+    font-size: 13px;
+  }
+`;
+
+const PhoneIcon = styled.span`
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(248, 250, 252, 0.5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  line-height: 1;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.35);
+  
+  &::before {
+    content: '☎';
+  }
+`;
+
 
 export default function Header() {
   const [mobileNavActive,setMobileNavActive] = useState(false);
@@ -298,9 +353,18 @@ export default function Header() {
     }
   };
   return (
-    <StyledHeader>
-      <HeaderInner>
-        <Wrapper>
+    <>
+      <TopBar>
+        <TopBarInner>
+          <PhoneLink href="tel:+359877382224">
+            <PhoneIcon />
+            <span>+359 877 382 224</span>
+          </PhoneLink>
+        </TopBarInner>
+      </TopBar>
+      <StyledHeader>
+        <HeaderInner>
+          <Wrapper>
           <Logo href={'/'}>
             <LogoText>Flowers Boutique MIA</LogoText>
           </Logo>
@@ -366,7 +430,8 @@ export default function Header() {
             <BarsIcon className="w-8 h-8" />
           </NavButton>
         </Wrapper>
-      </HeaderInner>
-    </StyledHeader>
+        </HeaderInner>
+      </StyledHeader>
+    </>
   );
 }
