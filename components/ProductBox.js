@@ -77,10 +77,16 @@ const PlaceholderThumb = styled.div`
 
 const Title = styled(Link)`
   font-weight: normal;
-  font-size:.9rem;
-  color:inherit;
-  text-decoration:none;
-  margin:0;
+  font-size: .9rem;
+  color: inherit;
+  text-decoration: none;
+  margin: 6px 0 0;
+  display: block;
+  /* Фиксирана височина за до 2 реда заглавие,
+     за да са подравнени картите независимо от дължината */
+  min-height: 2.6em;
+  line-height: 1.3;
+  overflow: hidden;
 `;
 
 const ProductInfoBox = styled.div`
@@ -119,7 +125,7 @@ export default function ProductBox({
   const {addProduct} = useContext(CartContext);
   const {addToWishlist, removeFromWishlist, isInWishlist} = useWishlist();
   // Винаги използваме slug, ако съществува, иначе fallback към _id
-  const url = '/trip/'+(slug || _id);
+  const url = '/bouquet/'+(slug || _id);
   const inWishlist = isInWishlist(_id);
 
   const handleWishlistClick = (e) => {
@@ -188,7 +194,7 @@ export default function ProductBox({
         <PriceRow>
           {typeof price === 'number' && (
             <Price>
-              {price.toFixed(2)} {currency || 'EUR'}
+              {price.toFixed(2)} EUR
             </Price>
           )}
           <Subtitle>Ръчно подбран букет, подготвен при поръчка.</Subtitle>

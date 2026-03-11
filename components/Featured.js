@@ -78,7 +78,7 @@ export default function Featured({product}) {
               <Title>{product.title}</Title>
               <Desc>{product.description}</Desc>
               <ButtonsWrapper ref={buttonAnimation.ref} style={buttonAnimation.style}>
-                <ButtonLink href={'/trip/'+(product.slug || product._id)} outline={1} white={1}>Прочети повече</ButtonLink>
+                <ButtonLink href={'/bouquet/'+(product.slug || product._id)} outline={1} white={1}>Прочети повече</ButtonLink>
               </ButtonsWrapper>
             </div>
           </Column>

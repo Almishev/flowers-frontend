@@ -227,7 +227,7 @@ export default function SchoolTripsPage({schoolTrips}) {
               <SectionTitle>Предложения за ученически екскурзии</SectionTitle>
               <TripsGrid>
                 {schoolTrips.map(trip => (
-                  <Link key={trip._id} href={`/trip/${trip.slug || trip._id}`}>
+                  <Link key={trip._id} href={`/bouquet/${trip.slug || trip._id}`}>
                     <TripCard>
                       {trip.images?.[0] && (
                         <img 

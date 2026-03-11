@@ -13,15 +13,26 @@ const PAGE_SIZE = 20;
 import {useRouter} from "next/router";
 import {useState} from "react";
 
+const SORT_OPTIONS = [
+  { value: 'price_asc', label: 'Цена – възходяща' },
+  { value: 'price_desc', label: 'Цена – низходяща' },
+];
+
 export default function TripsPage({
   trips,
   page,
   totalPages,
   totalCount,
   search: initialSearch,
+  sort: initialSort,
+  typeFilter: initialTypeFilter,
+  availableTypeValues,
 }) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState(initialSearch || '');
+  // Празна стойност означава "по подразбиране – най-нови"
+  const [sort, setSort] = useState(initialSort || '');
+  const [typeFilter, setTypeFilter] = useState(initialTypeFilter || '');
 
   function handleSearch(e) {
     e.preventDefault();
@@ -30,31 +41,31 @@ export default function TripsPage({
 
   function applyFilters() {
     const params = new URLSearchParams();
-    if (searchTerm.trim()) {
-      params.set('search', searchTerm.trim());
-    }
-    params.set('page', '1'); // Reset to page 1 on new filters
+    if (searchTerm.trim()) params.set('search', searchTerm.trim());
+    if (sort) params.set('sort', sort);
+    if (typeFilter) params.set('type', typeFilter);
+    params.set('page', '1');
     router.push('/bouquets?' + params.toString());
   }
 
-
   function clearFilters() {
     setSearchTerm('');
+    setSort('');
+    setTypeFilter('');
     router.push('/bouquets');
   }
 
-  // Build base path for pagination (preserves all filters)
   function buildBasePath() {
     const params = new URLSearchParams();
-    if (searchTerm.trim()) {
-      params.set('search', searchTerm.trim());
-    }
+    if (searchTerm.trim()) params.set('search', searchTerm.trim());
+    if (sort) params.set('sort', sort);
+    if (typeFilter) params.set('type', typeFilter);
     const queryString = params.toString();
     return queryString ? `/bouquets?${queryString}` : '/bouquets';
   }
 
   const basePath = buildBasePath();
-  const hasActiveFilters = !!searchTerm;
+  const hasActiveFilters = !!searchTerm || !!typeFilter || !!sort;
 
   // SEO текстовете
   const seoTitle = initialSearch
@@ -83,7 +94,10 @@ export default function TripsPage({
         </p>
         
         <div style={{marginBottom: '20px'}}>
-          <form onSubmit={handleSearch} style={{marginBottom: '15px', display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
+          <form
+            onSubmit={handleSearch}
+            style={{marginBottom: '15px', display: 'flex', gap: '10px', flexWrap: 'wrap'}}
+          >
             <input
               type="text"
               placeholder="Търси по име, описание или повод..."
@@ -116,6 +130,54 @@ export default function TripsPage({
             >
               Търси
             </button>
+            <select
+              value={sort}
+              onChange={(e) => {
+                setSort(e.target.value);
+                // при промяна на сортирането пренасочваме със запазени филтри
+                const params = new URLSearchParams();
+                if (searchTerm.trim()) params.set('search', searchTerm.trim());
+                if (e.target.value) params.set('sort', e.target.value);
+                if (typeFilter) params.set('type', typeFilter);
+                params.set('page', '1');
+                router.push('/bouquets?' + params.toString());
+              }}
+              style={{
+                padding: '10px',
+                border: '1px solid #ddd',
+                borderRadius: '5px',
+                minWidth: '200px',
+              }}
+            >
+              <option value="">Сортирай по: най-нови</option>
+              {SORT_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            {availableTypeValues && availableTypeValues.length > 0 && (
+              <select
+                value={typeFilter}
+                onChange={(e) => {
+                  setTypeFilter(e.target.value);
+                  applyFilters();
+                }}
+                style={{
+                  padding: '10px',
+                  border: '1px solid #ddd',
+                  borderRadius: '5px',
+                  minWidth: '180px',
+                }}
+              >
+                <option value="">Всички типове цветя</option>
+                {availableTypeValues.map((val) => (
+                  <option key={val} value={val}>
+                    {val}
+                  </option>
+                ))}
+              </select>
+            )}
             {hasActiveFilters && (
               <button
                 type="button"
@@ -152,6 +214,9 @@ export async function getServerSideProps({query}) {
     const pageParam = parseInt(query.page, 10);
     const page = Math.max(1, isNaN(pageParam) ? 1 : pageParam);
     const search = query.search?.trim() || '';
+    // ако няма sort в URL, показваме по подразбиране "най-нови"
+    const sortParam = query.sort || '';
+    const typeFilter = query.type?.trim() || '';
 
     // Създаваме query за филтриране на букети
     let mongoQuery = {
@@ -167,14 +232,31 @@ export async function getServerSideProps({query}) {
       ];
     }
 
+    // Филтър по тип цветя (свойство). Името на ключа тук трябва да съвпада с това,
+    // което използвате в админ панела, напр. \"Тип цветя\".
+    if (typeFilter) {
+      mongoQuery['properties.Тип цветя'] = typeFilter;
+    }
+
     const totalCount = await Product.countDocuments(mongoQuery);
     const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
     const currentPage = Math.min(page, totalPages);
     const skip = (currentPage - 1) * PAGE_SIZE;
 
+    // Определяме сортирането
+    let sortQuery = {};
+    if (sortParam === 'price_asc') {
+      sortQuery = { price: 1 };
+    } else if (sortParam === 'price_desc') {
+      sortQuery = { price: -1 };
+    } else {
+      // по подразбиране – най-новите продукти
+      sortQuery = { _id: -1 };
+    }
+
     const trips = await Product.find(mongoQuery)
       .select('slug title price currency images category status isFeatured description')
-      .sort({ _id: -1 })
+      .sort(sortQuery)
       .skip(skip)
       .limit(PAGE_SIZE)
       .lean();
@@ -186,6 +268,9 @@ export async function getServerSideProps({query}) {
         totalPages,
         totalCount,
         search,
+        sort: sortParam,
+        typeFilter,
+        availableTypeValues: [],
       },
     };
   } catch (error) {
@@ -197,6 +282,9 @@ export async function getServerSideProps({query}) {
         totalPages: 1,
         totalCount: 0,
         search: '',
+        sort: '',
+        typeFilter: '',
+        availableTypeValues: [],
       },
     };
   }

@@ -262,6 +262,9 @@ export default function CartPage() {
   }
   const total = subtotal + Number(shippingPrice || 0);
 
+  const formatMoney = (value) =>
+    typeof value === 'number' ? value.toFixed(2) : Number(value || 0).toFixed(2);
+
   if (isSuccess) {
     return (
       <>
@@ -326,24 +329,24 @@ export default function CartPage() {
                         </Button>
                       </td>
                       <td>
-                        {cartProducts.filter(id => id === product._id).length * product.price} EUR
+                        {formatMoney(cartProducts.filter(id => id === product._id).length * product.price)} EUR
                       </td>
                     </tr>
                   ))}
                   <tr>
                     <td></td>
                     <td>Междинна сума:</td>
-                    <td>{subtotal} EUR</td>
+                    <td>{formatMoney(subtotal)} EUR</td>
                   </tr>
                   <tr>
                     <td></td>
                     <td>Доставка:</td>
-                    <td>{shippingPrice} EUR</td>
+                    <td>{formatMoney(Number(shippingPrice || 0))} EUR</td>
                   </tr>
                   <tr>
                     <td></td>
                     <td><strong>Общо:</strong></td>
-                    <td><strong>{total} EUR</strong></td>
+                    <td><strong>{formatMoney(total)} EUR</strong></td>
                   </tr>
                 </tbody>
               </Table>
