@@ -87,11 +87,27 @@ export default async function handler(req,res) {
     });
   }
 
+  // изчисляваме общата сума (в EUR) на базата на line_items
+  const totalCents = line_items.reduce((sum, item) => {
+    const qty = item.quantity || 0;
+    const amount = item.price_data?.unit_amount || 0;
+    return sum + qty * amount;
+  }, 0);
+  const total = totalCents / 100;
+
   try {
     const orderDoc = await Order.create({
-      line_items,name,email,phone,city,postalCode,
-      streetAddress,country,paid:false,
+      line_items,
+      name,
+      email,
+      phone,
+      city,
+      postalCode,
+      streetAddress,
+      country,
+      paid: false,
       paymentMethod: 'cash',
+      total,
     });
 
     // Актуализиране на наличностите и завършване на поръчка с наложен платеж
@@ -102,19 +118,7 @@ export default async function handler(req,res) {
         const prod = await Product.findById(productId);
         if (!prod) continue;
         const newStock = Math.max(0, (prod.stock || 0) - qty);
-        if (newStock === 0) {
-          const images = Array.isArray(prod?.images) ? prod.images : [];
-          await Product.deleteOne({_id: productId});
-          if (images.length > 0) {
-            try {
-              await deleteS3Objects(images);
-            } catch (s3Error) {
-              console.error(`Error deleting images from S3 for product ${productId}:`, s3Error);
-            }
-          }
-        } else {
-          await Product.updateOne({_id: productId}, {stock: newStock});
-        }
+        await Product.updateOne({_id: productId}, {stock: newStock});
       }
     } catch (invErr) {
       console.error('Inventory update error:', invErr);
