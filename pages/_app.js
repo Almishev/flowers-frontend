@@ -31,7 +31,7 @@ export default function App({ Component, pageProps }) {
         </CartContextProvider>
         {/* <ViberChatButton phoneNumber="+359877382224" /> */}
         <Toaster 
-          position="bottom-right"
+          position="top-center"
           toastOptions={{
             duration: 3000,
             style: {

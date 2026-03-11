@@ -184,10 +184,6 @@ export default function ProductBox({
     e.preventDefault();
     e.stopPropagation();
     addProduct(_id);
-    toast.success(`${title} е добавен в кошницата!`, {
-      icon: '🛒',
-      duration: 2500,
-    });
   };
 
   function handleMouseMove(e) {

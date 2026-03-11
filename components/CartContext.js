@@ -1,4 +1,5 @@
 import {createContext, useEffect, useState} from "react";
+import toast from "react-hot-toast";
 
 export const CartContext = createContext({});
 
@@ -19,7 +20,18 @@ export function CartContextProvider({children}) {
   }, [ls]);
 
   function addProduct(productId) {
-    setCartProducts(prev => [...prev,productId]);
+    setCartProducts(prev => {
+      const next = [...prev, productId];
+      // Леко потвърждение, че продукт е добавен
+      try {
+        toast.success('Продуктът е добавен в кошницата 🛒', {
+          duration: 2200,
+        });
+      } catch (e) {
+        // ignore toast errors (напр. по време на SSR)
+      }
+      return next;
+    });
   }
 
   function removeProduct(productId) {
