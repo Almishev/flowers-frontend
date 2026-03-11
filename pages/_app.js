@@ -29,8 +29,7 @@ export default function App({ Component, pageProps }) {
         <CartContextProvider>
           <Component {...pageProps} />
         </CartContextProvider>
-        {/*}
-        <ViberChatButton phoneNumber="+359877382224" />
+        {/* <ViberChatButton phoneNumber="+359877382224" /> */}
         <Toaster 
           position="bottom-right"
           toastOptions={{
@@ -57,7 +56,6 @@ export default function App({ Component, pageProps }) {
             },
           }}
         />
-        */}
       </WishlistProvider>
     </>
   );
