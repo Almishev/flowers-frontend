@@ -2,6 +2,8 @@ import styled from "styled-components";
 import {useEffect, useState} from "react";
 import Image from "next/image";
 import BookPlaceholderIcon from "@/components/BookPlaceholderIcon";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 
 // Image components са заменени с Next.js Image за lazy loading
 const ImageButtons = styled.div`
@@ -27,6 +29,9 @@ const ImageButton = styled.div`
 `;
 const BigImageWrapper = styled.div`
   text-align: center;
+  cursor: pointer;
+  max-width: 420px;
+  margin: 0 auto;
 `;
 const PlaceholderWrapper = styled.div`
   width: 100%;
@@ -51,6 +56,7 @@ const InnerPlaceholder = styled.div`
 export default function ProductImages({images = []}) {
   const hasImages = images.length > 0;
   const [activeImage,setActiveImage] = useState(hasImages ? images[0] : null);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     setActiveImage(hasImages ? images[0] : null);
@@ -67,18 +73,17 @@ export default function ProductImages({images = []}) {
   }
 
   return (
-    <>
-      <BigImageWrapper>
+  <>
+      <BigImageWrapper onClick={() => setOpen(true)}>
         <Image 
           src={activeImage} 
           alt=""
           width={400}
-          height={200}
+          height={260}
           style={{
             maxWidth: '100%',
-            maxHeight: '200px',
-            width: 'auto',
-            height: 'auto',
+            width: '100%',
+            height: '260px',
             objectFit: 'contain',
           }}
           loading="lazy"
@@ -107,6 +112,12 @@ export default function ProductImages({images = []}) {
           </ImageButton>
         ))}
       </ImageButtons>
+      <Lightbox
+        open={open}
+        close={() => setOpen(false)}
+        index={images.indexOf(activeImage)}
+        slides={images.map((src) => ({ src }))}
+      />
     </>
   );
 }

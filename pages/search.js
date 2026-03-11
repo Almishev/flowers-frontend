@@ -31,7 +31,7 @@ export default function SearchPage({query, trips, page, totalPages, totalCount})
         title={`Търсене: "${query}"`}
         description={`Търсене на екскурзии по "${query}". Намерени ${totalCount}.`}
         url={`/search?q=${encodeURIComponent(query)}`}
-        image="/logo-shop-flowers.png"
+        image="/logo-shop-flowers-v2.png"
       />
       <Header />
       <Center>

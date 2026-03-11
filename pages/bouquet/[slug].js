@@ -125,7 +125,7 @@ export default function BouquetPage({product}) {
     ? `${product.description.substring(0, 150)}...` 
     : `Букет "${product.title}" от Flowers Boutique MIA.`;
   
-  let tripImage = '/logo-shop-flowers.png';
+  let tripImage = '/logo-shop-flowers-v2.png';
   if (product.images?.[0]) {
     tripImage = product.images[0];
   }

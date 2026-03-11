@@ -101,7 +101,7 @@ export default function AboutPage() {
         description="Flowers Boutique MIA е бутикова цветарница, която предлага уникални естествени и изкуствени цветя, букети, кошници, украси и декорации за дома с доставка в цяла България."
         keywords="Flowers Boutique MIA, цветарски магазин, букети, изкуствени цветя, кошници с цветя, декорации за дома, доставка на цветя в България"
         url="/about"
-        image="/logo-shop-flowers.png"
+        image="/logo-shop-flowers-v2.png"
       />
       <Header />
       <Center>

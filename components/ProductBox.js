@@ -6,10 +6,11 @@ import {useWishlist} from "@/components/WishlistContext";
 import toast from "react-hot-toast";
 import BookPlaceholderIcon from "@/components/BookPlaceholderIcon";
 import Button from "@/components/Button";
-import {useContext} from "react";
+import {useContext, useEffect, useState} from "react";
 import {CartContext} from "@/components/CartContext";
+import { motion } from "framer-motion";
 
-const ProductWrapper = styled.div`
+const ProductWrapper = styled(motion.div)`
   position: relative;
 `;
 
@@ -62,6 +63,7 @@ const ThumbWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 `;
 
 const PlaceholderThumb = styled.div`
@@ -114,6 +116,16 @@ const Subtitle = styled.div`
   margin-top: 2px;
 `;
 
+const ZoomLens = styled.div`
+  position: absolute;
+  border-radius: 999px;
+  border: 2px solid rgba(22, 163, 74, 0.9);
+  box-shadow: 0 0 10px rgba(0,0,0,0.25);
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 5;
+`;
+
 export default function ProductBox({
   _id,
   slug,
@@ -147,6 +159,23 @@ export default function ProductBox({
     }
   };
 
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [lensState, setLensState] = useState({
+    visible: false,
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const check = () => setIsDesktop(window.innerWidth >= 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -157,8 +186,39 @@ export default function ProductBox({
     });
   };
 
+  function handleMouseMove(e) {
+    if (!isDesktop || !images?.[0]) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const lensSize = 110;
+    const half = lensSize / 2;
+    let x = e.clientX - rect.left;
+    let y = e.clientY - rect.top;
+
+    x = Math.max(half, Math.min(rect.width - half, x));
+    y = Math.max(half, Math.min(rect.height - half, y));
+
+    setLensState({
+      visible: true,
+      x,
+      y,
+      width: rect.width,
+      height: rect.height,
+      size: lensSize,
+    });
+  }
+
+  function handleMouseLeave() {
+    if (!isDesktop) return;
+    setLensState((prev) => ({ ...prev, visible: false }));
+  }
+
   return (
-    <ProductWrapper>
+    <ProductWrapper
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+    >
       <WishlistButton 
         filled={inWishlist}
         onClick={handleWishlistClick}
@@ -167,7 +227,10 @@ export default function ProductBox({
         <HeartIcon filled={inWishlist} className="w-5 h-5" />
       </WishlistButton>
       <WhiteBox href={url}>
-        <ThumbWrapper>
+        <ThumbWrapper
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        >
           {images?.[0] ? (
             <Image 
               src={images[0]} 
@@ -186,6 +249,24 @@ export default function ProductBox({
             <PlaceholderThumb>
               <BookPlaceholderIcon size={32} />
             </PlaceholderThumb>
+          )}
+          {isDesktop && lensState.visible && images?.[0] && (
+            <ZoomLens
+              style={{
+                width: lensState.size,
+                height: lensState.size,
+                left: lensState.x - lensState.size / 2,
+                top: lensState.y - lensState.size / 2,
+                backgroundImage: `url(${images[0]})`,
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: `${lensState.width * 2}px ${lensState.height * 2}px`,
+                backgroundPosition: `${
+                  -(lensState.x * 2 - lensState.size / 2)
+                }px ${
+                  -(lensState.y * 2 - lensState.size / 2)
+                }px`,
+              }}
+            />
           )}
         </ThumbWrapper>
       </WhiteBox>

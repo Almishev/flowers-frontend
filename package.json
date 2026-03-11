@@ -14,11 +14,13 @@
     "canvas-confetti": "^1.9.3",
     "eslint": "8.36.0",
     "eslint-config-next": "13.2.4",
+    "framer-motion": "^12.35.2",
     "mongoose": "^7.0.2",
     "next": "13.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.6.0",
-    "styled-components": "^5.3.9"
+    "styled-components": "^5.3.9",
+    "yet-another-react-lightbox": "^3.29.1"
   }
 }
