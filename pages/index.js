@@ -2,6 +2,7 @@ import { Suspense, lazy } from "react";
 import Header from "@/components/Header";
 import Featured from "@/components/Featured";
 import {Product} from "@/models/Product";
+import {Category} from "@/models/Category";
 import {mongooseConnect} from "@/lib/mongoose";
 import Footer from "@/components/Footer";
 import HeroVideo from "@/components/HeroVideo";
@@ -11,12 +12,13 @@ import {Settings} from "@/models/Settings";
 
 // Lazy load компонентите, които не са видими веднага
 const NewProducts = lazy(() => import("@/components/NewProducts"));
+const PopularCategoriesHome = lazy(() => import("@/components/PopularCategoriesHome"));
 const PopularDestinations = lazy(() => import("@/components/PopularDestinations"));
 const MemoriesSection = lazy(() => import("@/components/MemoriesSection"));
 const AboutSection = lazy(() => import("@/components/AboutSection"));
 const FAQSection = lazy(() => import("@/components/FAQSection"));
 
-export default function HomePage({featuredProduct,newProducts,popularDestinations, heroSettings}) {
+export default function HomePage({featuredProduct,newProducts,popularCategories, popularDestinations, heroSettings}) {
   return (
     <>
       <SEO 
@@ -49,7 +51,15 @@ export default function HomePage({featuredProduct,newProducts,popularDestination
             </div>
           </div>
         )}
-        
+
+        {popularCategories && popularCategories.length > 0 && (
+          <LazySection>
+            <Suspense fallback={null}>
+              <PopularCategoriesHome categories={popularCategories} />
+            </Suspense>
+          </LazySection>
+        )}
+
         <LazySection>
           <Suspense fallback={null}>
             <NewProducts products={newProducts} />
@@ -164,11 +174,28 @@ export async function getServerSideProps() {
       count: item.count,
       sample: item.sample || null,
     }));
+
+    // Популярни категории букети – сортирани по брой продукти (топ 4)
+    const allCategories = await Category.find().lean();
+    const categoriesWithCounts = await Promise.all(
+      allCategories.map(async (cat) => {
+        const productCount = await Product.countDocuments({ category: cat._id });
+        return {
+          ...cat,
+          productCount,
+        };
+      })
+    );
+
+    const popularCategories = categoriesWithCounts
+      .sort((a, b) => (b.productCount || 0) - (a.productCount || 0))
+      .slice(0, 4);
     
     return {
       props: {
         featuredProduct: featuredProduct ? JSON.parse(JSON.stringify(featuredProduct)) : null,
         newProducts: JSON.parse(JSON.stringify(newProducts)),
+        popularCategories: JSON.parse(JSON.stringify(popularCategories)),
         popularDestinations: JSON.parse(JSON.stringify(popularDestinations)),
         heroSettings: {
           heroMediaType: settingsMap.heroMediaType || 'video',
@@ -186,6 +213,7 @@ export async function getServerSideProps() {
       props: {
         featuredProduct: null,
         newProducts: [],
+        popularCategories: [],
         popularDestinations: [],
         heroSettings: null,
       },
