@@ -365,6 +365,9 @@ export default function Header() {
       <StyledHeader>
         <HeaderInner>
           <Wrapper>
+          <NavButton className="nav-toggle" mobileOpen={mobileNavActive} onClick={() => setMobileNavActive(prev => !prev)}>
+            <BarsIcon className="w-8 h-8" />
+          </NavButton>
           <Logo href={'/'}>
             <LogoText>Flowers Boutique MIA</LogoText>
           </Logo>
@@ -426,9 +429,6 @@ export default function Header() {
               </div>
             )}
           </MobileNav>
-          <NavButton className="nav-toggle" mobileOpen={mobileNavActive} onClick={() => setMobileNavActive(prev => !prev)}>
-            <BarsIcon className="w-8 h-8" />
-          </NavButton>
         </Wrapper>
         </HeaderInner>
       </StyledHeader>
