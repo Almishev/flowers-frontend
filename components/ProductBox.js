@@ -50,6 +50,10 @@ const WhiteBox = styled(Link)`
   align-items: center;
   justify-content: center;
   border-radius: 10px;
+
+  @media (max-width: 768px) {
+    height: 190px;
+  }
 `;
 
 const ThumbWrapper = styled.div`
@@ -64,6 +68,11 @@ const ThumbWrapper = styled.div`
   align-items: center;
   justify-content: center;
   position: relative;
+
+  @media (max-width: 768px) {
+    max-width: 260px;
+    height: 160px;
+  }
 `;
 
 const PlaceholderThumb = styled.div`
@@ -268,8 +277,8 @@ export default function ProductBox({
             <Image 
               src={mainImage} 
               alt={title}
-              width={220}
-              height={120}
+              width={260}
+              height={160}
               style={{
                 width: '100%',
                 height: '100%',
