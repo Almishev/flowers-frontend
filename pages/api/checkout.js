@@ -2,6 +2,7 @@ import {mongooseConnect} from "@/lib/mongoose";
 import {Product} from "@/models/Product";
 import {Order} from "@/models/Order";
 import {deleteS3Objects} from "@/lib/s3";
+import {sendOrderEmail} from "@/lib/sendEmail";
 
 export default async function handler(req,res) {
   if (req.method !== 'POST') {
@@ -122,6 +123,13 @@ export default async function handler(req,res) {
       }
     } catch (invErr) {
       console.error('Inventory update error:', invErr);
+    }
+
+    // Изпращаме имейл с детайли за поръчката (fire-and-forget – грешките не спират клиента)
+    try {
+      await sendOrderEmail({ order: orderDoc, lineItems: line_items });
+    } catch (mailErr) {
+      console.error('Order email error:', mailErr);
     }
     
     res.json({
