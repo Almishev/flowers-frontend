@@ -222,34 +222,75 @@ export default function ProductBox({
   }
 
   function handleTouchStart(e) {
-    if (isDesktop || !images || images.length < 2) return;
-    touchStartXRef.current = e.touches[0].clientX;
+    if (isDesktop || !mainImage) return;
+    const touch = e.touches[0];
+    const rect = e.currentTarget.getBoundingClientRect();
+    const lensSize = 110;
+    const half = lensSize / 2;
+    let x = touch.clientX - rect.left;
+    let y = touch.clientY - rect.top;
+
+    x = Math.max(half, Math.min(rect.width - half, x));
+    y = Math.max(half, Math.min(rect.height - half, y));
+
+    setLensState({
+      visible: true,
+      x,
+      y,
+      width: rect.width,
+      height: rect.height,
+      size: lensSize,
+    });
+
+    touchStartXRef.current = touch.clientX;
+  }
+
+  function handleTouchMove(e) {
+    if (isDesktop || !mainImage) return;
+    const touch = e.touches[0];
+    const rect = e.currentTarget.getBoundingClientRect();
+    const lensSize = 110;
+    const half = lensSize / 2;
+    let x = touch.clientX - rect.left;
+    let y = touch.clientY - rect.top;
+
+    x = Math.max(half, Math.min(rect.width - half, x));
+    y = Math.max(half, Math.min(rect.height - half, y));
+
+    setLensState((prev) => ({
+      ...prev,
+      visible: true,
+      x,
+      y,
+      width: rect.width,
+      height: rect.height,
+      size: lensSize,
+    }));
   }
 
   function handleTouchEnd(e) {
-    if (isDesktop || !images || images.length < 2) return;
-    if (touchStartXRef.current === null) return;
-    const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
-    const threshold = 40;
-    if (Math.abs(deltaX) < threshold) {
-      touchStartXRef.current = null;
-      return;
+    if (isDesktop || !images) return;
+    if (touchStartXRef.current !== null && images.length >= 2) {
+      const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
+      const threshold = 40;
+      if (Math.abs(deltaX) >= threshold) {
+        // Спираме навигацията, ако е реален свайп
+        e.preventDefault();
+        e.stopPropagation();
+
+        setCurrentIndex((prev) => {
+          if (deltaX < 0) {
+            // swipe наляво -> следваща снимка
+            return (prev + 1) % images.length;
+          }
+          // swipe надясно -> предишна снимка
+          return (prev - 1 + images.length) % images.length;
+        });
+      }
     }
 
-    // Спираме навигацията, ако е реален свайп
-    e.preventDefault();
-    e.stopPropagation();
-
-    setCurrentIndex((prev) => {
-      if (deltaX < 0) {
-        // swipe наляво -> следваща снимка
-        return (prev + 1) % images.length;
-      }
-      // swipe надясно -> предишна снимка
-      return (prev - 1 + images.length) % images.length;
-    });
-
     touchStartXRef.current = null;
+    setLensState((prev) => ({ ...prev, visible: false }));
   }
 
   return (
@@ -271,6 +312,7 @@ export default function ProductBox({
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
           {images?.[0] ? (
@@ -292,7 +334,7 @@ export default function ProductBox({
               <BookPlaceholderIcon size={32} />
             </PlaceholderThumb>
           )}
-          {isDesktop && lensState.visible && mainImage && (
+          {lensState.visible && mainImage && (
             <ZoomLens
               style={{
                 width: lensState.size,
