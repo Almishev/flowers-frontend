@@ -62,7 +62,7 @@ export default function CategoriesPage({categories}) {
         description={`Разгледайте категории с букети, кошници с цветя и тематични аранжировки за сватби, рождени дни и специални поводи.`}
         keywords="категории букети, кошници с цветя, сватбени букети, букети за рожден ден, цветарски магазин"
         url="/categories"
-        image="/logo-shop-flowers-v2.png"
+        image="/pirin-pixel-yellow.png"
       />
       <Header />
       <Center>

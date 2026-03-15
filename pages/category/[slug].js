@@ -83,7 +83,7 @@ export default function CategoryPage({category, products, parentCategory}) {
         description={`Букети и цветни аранжировки в категория "${category.name}". ${products.length} налични.`}
         keywords={`${category.name}, категория, букети, цветя, аранжировки`}
         url={`/category/${category.slug || category._id}`}
-        image="/logo-shop-flowers-v2.png"
+        image="/pirin-pixel-yellow.png"
       />
       <Header />
       <Center>

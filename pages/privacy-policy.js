@@ -117,7 +117,7 @@ export default function PrivacyPolicyPage() {
         description="Политика за поверителност и защита на личните данни на Flowers Boutique MIA - онлайн магазин за цветя, букети, кошници и декорации."
         keywords="политика поверителност, защита данни, GDPR, лични данни, Flowers Boutique MIA"
         url="/privacy-policy"
-        image="/logo-shop-flowers-v2.png"
+        image="/pirin-pixel-yellow.png"
       />
       <Header />
       <Center>
@@ -245,10 +245,10 @@ export default function PrivacyPolicyPage() {
               ул. Серес 12, Гоце Делчев, България, 2900
             </Paragraph>
             <Paragraph>
-              <strong>Имейл:</strong> <a href="mailto:aleksova_2012@abv.bg">aleksova_2012@abv.bg</a>
+              <strong>Имейл:</strong> <a href="mailto:antonalmishev123@gmail.com">antonalmishev123@gmail.com</a>
             </Paragraph>
             <Paragraph>
-              <strong>Телефон:</strong> <a href="tel:+359898690246">089 869 0246</a>
+              <strong>Телефон:</strong> <a href="tel:+359877382224">087 738 2224</a>
             </Paragraph>
           </ContactBox>
 

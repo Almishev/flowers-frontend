@@ -215,6 +215,30 @@ const NavLink = styled(Link)`
   }
 `;
 
+const MobileMenuButton = styled.button`
+  width: 100%;
+  background: transparent;
+  border: 0;
+  color: #aaa;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 12px 4px;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #fff;
+  }
+
+  @media screen and (min-width: 769px) {
+    display: none;
+  }
+`;
+
 const CategoriesDropdown = styled.div`
   position: relative;
   
@@ -475,9 +499,9 @@ export default function Header() {
     <>
       <TopBar>
         <TopBarInner>
-          <PhoneLink href="tel:+359898690246">
+          <PhoneLink href="tel:+359877382224">
             <PhoneIcon />
-            <span>089 869 0246</span>
+            <span>087 738 2224</span>
           </PhoneLink>
         </TopBarInner>
       </TopBar>
@@ -655,7 +679,7 @@ export default function Header() {
               Начало
             </NavLink>
             <div style={{width: '100%', marginTop: '4px', marginBottom: '4px'}}>
-              <button
+              <MobileMenuButton
                 type="button"
                 onClick={() => {
                   setMobileBouquetsOpen(prev => {
@@ -665,20 +689,6 @@ export default function Header() {
                     }
                     return next;
                   });
-                }}
-                style={{
-                  width: '100%',
-                  background: 'transparent',
-                  border: '0',
-                  color: '#e5e7eb',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '6px',
-                  padding: '12px 4px',
-                  fontSize: '18px',
-                  fontWeight: 500,
-                  cursor: 'pointer',
                 }}
               >
                 <span>Букети</span>
@@ -692,7 +702,7 @@ export default function Header() {
                 >
                   ▾
                 </span>
-              </button>
+              </MobileMenuButton>
               {mobileBouquetsOpen && (
                 <div style={{marginTop: '4px', marginBottom: '8px'}}>
                   <NavLink
@@ -745,7 +755,7 @@ export default function Header() {
               )}
             </div>
             <div style={{width: '100%', marginTop: '4px', marginBottom: '4px'}}>
-              <button
+              <MobileMenuButton
                 type="button"
                 onClick={() => {
                   setMobileCategoriesOpen(prev => {
@@ -755,20 +765,6 @@ export default function Header() {
                     }
                     return next;
                   });
-                }}
-                style={{
-                  width: '100%',
-                  background: 'transparent',
-                  border: '0',
-                  color: '#e5e7eb',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '6px',
-                  padding: '12px 4px',
-                  fontSize: '18px',
-                  fontWeight: 500,
-                  cursor: 'pointer',
                 }}
               >
                 <span>Категории</span>
@@ -782,7 +778,7 @@ export default function Header() {
                 >
                   ▾
                 </span>
-              </button>
+              </MobileMenuButton>
               {mobileCategoriesOpen && (
                 <div style={{marginTop: '4px', marginBottom: '8px'}}>
                   <NavLink
@@ -874,7 +870,7 @@ export default function Header() {
               </span>
             </NavLink>
             {isLoggedIn && (
-              <div style={{marginTop: '24px', textAlign: 'center', color: '#e5e7eb'}}>
+              <div style={{marginTop: '24px', textAlign: 'center', color: '#aaa'}}>
                 <div style={{marginBottom: '8px'}}>
                   {userName || userEmail}
                 </div>
@@ -885,10 +881,10 @@ export default function Header() {
                   }}
                   style={{
                     background: 'transparent',
-                    border: '1px solid #e5e7eb',
+                    border: '1px solid #aaa',
                     borderRadius: '4px',
                     padding: '6px 14px',
-                    color: '#e5e7eb',
+                    color: '#aaa',
                     fontSize: '14px',
                     cursor: 'pointer',
                   }}

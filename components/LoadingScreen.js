@@ -196,7 +196,7 @@ export default function LoadingScreen() {
       <LogoContainer>
         <AnimatedLogo>
           <Image
-            src="/logo-shop-flowers-v2.png"
+            src="/pirin-pixel-yellow.png"
             alt="Flowers Boutique MIA"
             width={200}
             height={200}
@@ -206,7 +206,7 @@ export default function LoadingScreen() {
             }}
           />
         </AnimatedLogo>
-        <LoadingText>Цветарски бутик MIA</LoadingText>
+        <LoadingText>Цветарски бутик MI</LoadingText>
         <Spinner />
       </LogoContainer>
     </LoadingOverlay>

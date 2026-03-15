@@ -4,7 +4,7 @@ export default function SEO({
   title = 'Туристическа агенция - Екскурзии и пътувания',
   description = 'Организираме разнообразни пътувания и екскурзии за всяка възраст и вкус.',
   keywords = 'туристическа агенция, екскурзии, почивки, пътувания',
-  image = '/logo-shop-flowers-v2.png',
+  image = '/pirin-pixel-yellow.png',
   url,
   type = 'website',
   author,

@@ -12,7 +12,7 @@ export default function CarePage() {
         description="Подробни съвети за грижа за рязани цветя, букети, кошници и декорации от Flowers Boutique MIA – как да запазите цветята свежи по-дълго у дома."
         keywords="грижа за цветята, грижа за букети, как да запазим цветята свежи, грижа за рози, грижа за кошници с цветя, Flowers Boutique MIA"
         url="/care"
-        image="/logo-shop-flowers-v2.png"
+        image="/pirin-pixel-yellow.png"
       />
       <Header />
       <Center>

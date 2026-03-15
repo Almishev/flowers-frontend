@@ -101,7 +101,7 @@ export default function AboutPage() {
         description="Flowers Boutique MIA е бутикова цветарница, която предлага уникални естествени и изкуствени цветя, букети, кошници, украси и декорации за дома с доставка в цяла България."
         keywords="Flowers Boutique MIA, цветарски магазин, букети, изкуствени цветя, кошници с цветя, декорации за дома, доставка на цветя в България"
         url="/about"
-        image="/logo-shop-flowers-v2.png"
+        image="/pirin-pixel-yellow.png"
       />
       <Header />
       <Center>
@@ -122,8 +122,8 @@ export default function AboutPage() {
           <AnimatedSection ref={teamAnimation.ref} style={teamAnimation.style}>
             <SectionTitle>Собственик и визия</SectionTitle>
             <Paragraph>
-              Зад Flowers Boutique MIA стои <strong>Марияна Алексова</strong> – човек, който вярва, че детайлите правят всяко пространство и всеки повод специален. 
-              Нейната страст към цветовете, формите и естетиката се превръща в внимателно подбрани композиции от свежи и изкуствени цветя.
+              Зад Flowers Boutique MIA стои <strong>Антон Алмишев</strong> – човек, който вярва, че детайлите правят всяко пространство и всеки повод специален. 
+              Неговата страст към цветовете, формите и естетиката се превръща в внимателно подбрани композиции от свежи и изкуствени цветя.
             </Paragraph>
             <Paragraph>
               Всеки букет, кошница или декорация се изработва с лично отношение – от избора на цветя до финалната опаковка. 
@@ -170,13 +170,13 @@ export default function AboutPage() {
             <ContactInfo>
               <SectionTitle>Контакти</SectionTitle>
               <Paragraph>
-                <strong>Собственик:</strong> Марияна Алексова
+                <strong>Собственик:</strong> Антон Алмишев
               </Paragraph>
               <Paragraph>
-                <strong>Телефон за поръчки:</strong> 089 869 0246
+                <strong>Телефон за поръчки:</strong> 087 738 2224
               </Paragraph>
               <Paragraph>
-                <strong>Email:</strong> aleksova_2012@abv.bg
+                <strong>Email:</strong> antonalmishev123@gmail.com
               </Paragraph>
               <Paragraph>
                 <strong>Доставка:</strong> Изпращаме поръчки в <strong>цялата страна</strong> чрез доверени куриерски партньори.

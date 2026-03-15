@@ -129,10 +129,10 @@ export default function NotFoundPage() {
     <>
       <SEO
         title="404 - Страницата не е намерена"
-        description="Тази страница не съществува. Върнете се към началото или разгледайте екскурзиите."
+        description="Тази страница не съществува. Върнете се към началото или разгледайте букетите."
         keywords="404 страница, не е намерено"
         url="/404"
-        image="/logo-shop-flowers-v2.png"
+        image="/pirin-pixel-yellow.png"
       />
       <Header />
       <Wrapper>
@@ -141,14 +141,14 @@ export default function NotFoundPage() {
           <Title>О, не! Загубихме тази страница.</Title>
           <Description>
             Търсената страница не съществува или е преместена. 
-            Опитайте отново от началото или разгледайте наличните екскурзии.
+            Опитайте отново от началото или разгледайте наличните букети и категории.
           </Description>
           <Actions>
             <PrimaryButton href="/">← Към началната страница</PrimaryButton>
-            <SecondaryButton href="/trips">Разгледай екскурзиите</SecondaryButton>
+            <SecondaryButton href="/bouquets">Разгледай букетите</SecondaryButton>
           </Actions>
           <Tip>
-            Ако смятате, че това е грешка, свържете се с нас: officefriendlytravel@gmail.com
+            Ако смятате, че това е грешка, свържете се с нас: antonalmishev123@gmail.com
           </Tip>
         </Content>
       </Wrapper>

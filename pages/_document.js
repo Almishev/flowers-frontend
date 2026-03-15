@@ -33,7 +33,7 @@ export default class MyDocument extends Document {
       <Html lang="bg">
         <Head>
           {/* Preload критични ресурси за по-бързо зареждане */}
-          <link rel="preload" href="/logo-shop-flowers-v2.png" as="image" type="image/png" />
+          <link rel="preload" href="/pirin-pixel-yellow.png" as="image" type="image/png" />
           
           {/* DNS prefetch за външни ресурси */}
           <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
