@@ -12,6 +12,7 @@ import {useContext, useEffect, useState} from "react";
 import Button from "@/components/Button";
 import SEO from "@/components/SEO";
 import {CartContext} from "@/components/CartContext";
+import {getRecaptchaToken} from "@/lib/recaptcha";
 
 const ColWrapper = styled.div`
   display: grid;
@@ -112,12 +113,18 @@ export default function PerfumePage({product}) {
     if (!titleText.trim() || !content.trim()) return;
     setSubmitting(true);
     try {
-      const res = await fetch('/api/reviews',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product:product._id,rating:Number(rating),title:titleText.trim(),content:content.trim(),email:userEmail})});
+      const recaptchaToken = await getRecaptchaToken('review');
+      const res = await fetch('/api/reviews',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product:product._id,rating:Number(rating),title:titleText.trim(),content:content.trim(),email:userEmail,recaptchaToken})});
       if (res.ok){
         setTitleText(''); setContent(''); setRating(5);
         const list = await fetch(`/api/reviews?product=${product._id}`).then(r=>r.json());
         setReviews(list);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || 'Грешка при изпращане на ревюто.');
       }
+    } catch (error) {
+      alert(error?.message || 'Грешка при изпращане на ревюто.');
     } finally { setSubmitting(false); }
   }
   
@@ -192,9 +199,15 @@ export default function PerfumePage({product}) {
                 </Stars>
                 <InputEl type="text" placeholder="Заглавие на ревюто" value={titleText} onChange={e=>setTitleText(e.target.value)} />
                 <TextareaEl placeholder="Беше ли добро? Плюсове? Минуси?" value={content} onChange={e=>setContent(e.target.value)} />
-                <Button primary disabled={submitting}>
+                <Button black disabled={submitting}>
                   {submitting ? 'Изпращане...' : 'Изпрати ревю'}
                 </Button>
+                <SmallMuted style={{marginTop: '12px'}}>
+                  Този сайт е защитен с reCAPTCHA и важат{' '}
+                  <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">Поверителност</a>
+                  {' '}и{' '}
+                  <a href="https://policies.google.com/terms" target="_blank" rel="noreferrer">Условия</a> на Google.
+                </SmallMuted>
               </form>
             </Card>
             <Card>

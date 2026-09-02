@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Center from "@/components/Center";
 import {useState, useEffect} from "react";
 import axios from "axios";
+import {getRecaptchaToken} from "@/lib/recaptcha";
 import {useWishlist} from "@/components/WishlistContext";
 import ProductBox from "@/components/ProductBox";
 import ProductsGrid from "@/components/ProductsGrid";
@@ -67,6 +68,15 @@ const Button = styled.button`
   
   &:hover {
     background-color: #333;
+  }
+`;
+
+const RecaptchaNote = styled.p`
+  margin-top: 12px;
+  font-size: 0.75rem;
+  color: #6b7280;
+  a {
+    color: #6b7280;
   }
 `;
 
@@ -153,9 +163,11 @@ export default function AccountPage() {
     }
     setAuthLoading(true);
     try {
+      const recaptchaToken = await getRecaptchaToken('register');
       const res = await axios.post('/api/auth/register', {
         email: registerEmail,
         password: registerPassword,
+        recaptchaToken,
       });
       const userEmail = res.data.email;
       localStorage.setItem('userEmail', userEmail);
@@ -273,6 +285,12 @@ export default function AccountPage() {
                 <Button onClick={handleRegister} disabled={authLoading}>
                   {authLoading ? 'Моля, изчакайте...' : 'Регистрация'}
                 </Button>
+                <RecaptchaNote>
+                  Този сайт е защитен с reCAPTCHA и важат
+                  {' '}<a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">Поверителност</a>
+                  {' '}и{' '}
+                  <a href="https://policies.google.com/terms" target="_blank" rel="noreferrer">Условия</a> на Google.
+                </RecaptchaNote>
               </div>
             )}
           </Box>

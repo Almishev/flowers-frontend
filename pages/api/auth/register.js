@@ -1,5 +1,6 @@
 import {mongooseConnect} from "@/lib/mongoose";
 import {User} from "@/models/User";
+import {verifyRecaptcha} from "@/lib/recaptcha";
 
 export default async function handle(req, res) {
   if (req.method !== 'POST') {
@@ -9,7 +10,12 @@ export default async function handle(req, res) {
   try {
     await mongooseConnect();
 
-    const {email, password} = req.body;
+    const {email, password, recaptchaToken} = req.body;
+
+    const captchaOk = await verifyRecaptcha(recaptchaToken, 'register');
+    if (!captchaOk) {
+      return res.status(400).json({message: 'reCAPTCHA проверката не успя. Опитайте отново.'});
+    }
 
     if (!email || !password) {
       return res.status(400).json({message: 'Email and password are required'});
