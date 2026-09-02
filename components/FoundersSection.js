@@ -115,6 +115,7 @@ export default function FoundersSection() {
       <FoundersGrid>
         {founders.map((founder, index) => (
           <FounderCard key={index}>
+            {/*
             <PhotoWrapper>
               {founder.image ? (
                 <Image
@@ -135,6 +136,7 @@ export default function FoundersSection() {
                 </PlaceholderPhoto>
               )}
             </PhotoWrapper>
+            */}
             <FounderName>{founder.name}</FounderName>
             <FounderPhone href={`tel:+359${founder.phone.substring(1)}`}>
               {founder.phone}
