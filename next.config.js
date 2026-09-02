@@ -27,6 +27,30 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
+  async redirects() {
+    return [
+      {
+        source: '/bouquets',
+        destination: '/perfumes',
+        permanent: true,
+      },
+      {
+        source: '/bouquets/:path*',
+        destination: '/perfumes/:path*',
+        permanent: true,
+      },
+      {
+        source: '/bouquet/:slug',
+        destination: '/perfume/:slug',
+        permanent: true,
+      },
+      {
+        source: '/trips',
+        destination: '/perfumes',
+        permanent: true,
+      },
+    ];
+  },
   // Добавяне на cache headers за статични ресурси
   async headers() {
     return [

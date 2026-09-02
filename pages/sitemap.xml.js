@@ -1,6 +1,7 @@
 import {mongooseConnect} from "@/lib/mongoose";
 import {Product} from "@/models/Product";
 import {Category} from "@/models/Category";
+import {categorySlug} from "@/lib/slugify";
 
 function generateSiteMap(products, categories) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.friendlytravel.eu';
@@ -13,7 +14,7 @@ function generateSiteMap(products, categories) {
        <priority>1.0</priority>
      </url>
      <url>
-       <loc>${siteUrl}/trips</loc>
+       <loc>${siteUrl}/perfumes</loc>
        <changefreq>daily</changefreq>
        <priority>0.9</priority>
      </url>
@@ -23,30 +24,23 @@ function generateSiteMap(products, categories) {
        <priority>0.8</priority>
      </url>
      <url>
-       <loc>${siteUrl}/destinations</loc>
-       <changefreq>weekly</changefreq>
-       <priority>0.8</priority>
-     </url>
-     <url>
-       <loc>${siteUrl}/school-trips</loc>
-       <changefreq>weekly</changefreq>
-       <priority>0.9</priority>
-     </url>
-     <url>
        <loc>${siteUrl}/about</loc>
        <changefreq>monthly</changefreq>
        <priority>0.8</priority>
      </url>
-     ${categories.map((category) => `
+     ${categories.map((category) => {
+       const slug = categorySlug(category);
+       if (!slug) return '';
+       return `
        <url>
-           <loc>${siteUrl}/category/${category.slug || category._id}</loc>
+           <loc>${siteUrl}/category/${slug}</loc>
            <changefreq>weekly</changefreq>
            <priority>0.7</priority>
-       </url>
-     `).join('')}
+       </url>`;
+     }).join('')}
     ${products.map((product) => `
        <url>
-           <loc>${siteUrl}/bouquet/${product.slug || product._id}</loc>
+           <loc>${siteUrl}/perfume/${product.slug || product._id}</loc>
            <changefreq>monthly</changefreq>
            <priority>0.6</priority>
        </url>
@@ -63,13 +57,11 @@ export async function getServerSideProps({ res }) {
   try {
     await mongooseConnect();
     
-    // Взимаме всички продукти и категории
     const [products, categories] = await Promise.all([
-      Product.find({}).select('_id').lean(),
-      Category.find({}).select('_id').lean(),
+      Product.find({}).select('_id slug').lean(),
+      Category.find({}).select('_id slug name').lean(),
     ]);
 
-    // Генерираме XML sitemap
     const sitemap = generateSiteMap(products, categories);
 
     res.setHeader('Content-Type', 'text/xml');
@@ -90,4 +82,3 @@ export async function getServerSideProps({ res }) {
 }
 
 export default SiteMap;
-

@@ -227,7 +227,7 @@ export default function SchoolTripsPage({schoolTrips}) {
               <SectionTitle>Предложения за ученически екскурзии</SectionTitle>
               <TripsGrid>
                 {schoolTrips.map(trip => (
-                  <Link key={trip._id} href={`/bouquet/${trip.slug || trip._id}`}>
+                  <Link key={trip._id} href={`/perfume/${trip.slug || trip._id}`}>
                     <TripCard>
                       {trip.images?.[0] && (
                           <img 
@@ -269,7 +269,7 @@ export default function SchoolTripsPage({schoolTrips}) {
                 <strong>Адрес:</strong> град Гоце Делчев, община Гоце Делчев, България
               </Paragraph>
               <CTAContainer>
-                <ButtonLink href="/trips" primary size="l">Вижте всички екскурзии</ButtonLink>
+                <ButtonLink href="/perfumes" primary size="l">Вижте всички парфюми</ButtonLink>
               </CTAContainer>
             </HighlightBox>
           </div>

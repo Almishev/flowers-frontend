@@ -9,6 +9,7 @@ import Title from "@/components/Title";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
+import { slugify, categorySlug, categoryPath } from "@/lib/slugify";
 
 const Breadcrumb = styled.div`
   margin-bottom: 20px;
@@ -79,16 +80,16 @@ export default function CategoryPage({category, products, parentCategory}) {
   return (
     <>
       <SEO 
-        title={`${category.name} - Категория букети`}
-        description={`Букети и цветни аранжировки в категория "${category.name}". ${products.length} налични.`}
-        keywords={`${category.name}, категория, букети, цветя, аранжировки`}
-        url={`/category/${category.slug || category._id}`}
+        title={`${category.name} - Категория парфюми`}
+        description={`Парфюми в категория "${category.name}". ${products.length} налични.`}
+        keywords={`${category.name}, категория, парфюми, DÉLIE`}
+        url={categoryPath(category)}
         image="/pirin-pixel-yellow.png"
       />
       <Header />
       <Center>
         <Breadcrumb>
-          <Link href="/">Начало</Link> / <Link href="/categories">Категории букети</Link> / {category.name}
+          <Link href="/">Начало</Link> / <Link href="/categories">Категории парфюми</Link> / {category.name}
         </Breadcrumb>
         
         <CategoryInfo>
@@ -99,13 +100,13 @@ export default function CategoryPage({category, products, parentCategory}) {
             </CategoryDescription>
           )}
           <ProductCount>
-            {products.length} {products.length === 1 ? 'букет' : 'букета'} в тази категория
+            {products.length} {products.length === 1 ? 'парфюм' : 'парфюма'} в тази категория
           </ProductCount>
         </CategoryInfo>
 
         {products.length === 0 ? (
           <NoProducts>
-            Няма намерени букети в тази категория.
+            Няма намерени парфюми в тази категория.
           </NoProducts>
         ) : (
           <ProductsGrid products={products} />
@@ -121,14 +122,15 @@ export async function getServerSideProps(context) {
     await mongooseConnect();
     const {slug} = context.query;
     
-    // Първо опитваме да намерим категорията по slug
     let category = await Category.findOne({ slug }).populate('parent');
-    
-    // Ако не намери по slug, опитваме по ID (за обратна съвместимост със стари линкове)
+
     if (!category) {
-      if (slug && /^[0-9a-fA-F]{24}$/.test(slug)) {
-        category = await Category.findById(slug).populate('parent');
-      }
+      const allCategories = await Category.find().populate('parent');
+      category = allCategories.find((cat) => slugify(cat.name) === slug) || null;
+    }
+
+    if (!category && slug && /^[0-9a-fA-F]{24}$/.test(slug)) {
+      category = await Category.findById(slug).populate('parent');
     }
     
     if (!category) {
@@ -138,6 +140,16 @@ export async function getServerSideProps(context) {
           products: [],
           parentCategory: null,
         }
+      };
+    }
+
+    const canonicalSlug = categorySlug(category);
+    if (canonicalSlug && slug !== canonicalSlug) {
+      return {
+        redirect: {
+          destination: `/category/${canonicalSlug}`,
+          permanent: true,
+        },
       };
     }
     

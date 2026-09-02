@@ -9,6 +9,7 @@ import Link from "next/link";
 import Title from "@/components/Title";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
+import {categoryPath} from "@/lib/slugify";
 
 const CategoryGrid = styled.div`
   display: grid;
@@ -58,21 +59,21 @@ export default function CategoriesPage({categories}) {
   return (
     <>
       <SEO 
-        title="Категории букети и цветни аранжировки"
-        description={`Разгледайте категории с букети, кошници с цветя и тематични аранжировки за сватби, рождени дни и специални поводи.`}
-        keywords="категории букети, кошници с цветя, сватбени букети, букети за рожден ден, цветарски магазин"
+        title="Категории парфюми"
+        description={`Разгледайте категории парфюми – дамски, мъжки, унисекс, арабски и нишови аромати.`}
+        keywords="категории парфюми, дамски парфюми, мъжки парфюми, унисекс, арабски парфюми, нишови парфюми, DÉLIE"
         url="/categories"
         image="/pirin-pixel-yellow.png"
       />
       <Header />
       <Center>
-        <Title>Категории букети</Title>
+        <Title>Категории парфюми</Title>
         {categories.length === 0 ? (
           <div>Няма намерени категории.</div>
         ) : (
           <CategoryGrid>
             {categories.map(category => (
-              <CategoryCard key={category._id} href={`/category/${category.slug || category._id}`}>
+              <CategoryCard key={category._id} href={categoryPath(category)}>
                 {category.image && (
                   <Image 
                     src={category.image} 
@@ -96,7 +97,7 @@ export default function CategoriesPage({categories}) {
                   {category.parent ? `Подкатегория на ${category.parent.name}` : 'Основна категория'}
                 </CategoryDescription>
                 <ProductCount>
-                  {category.productCount || 0} букета
+                  {category.productCount || 0} {category.productCount === 1 ? 'парфюм' : 'парфюма'}
                 </ProductCount>
               </CategoryCard>
             ))}

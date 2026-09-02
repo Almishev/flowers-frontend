@@ -14,17 +14,16 @@ import {Settings} from "@/models/Settings";
 const NewProducts = lazy(() => import("@/components/NewProducts"));
 const PopularCategoriesHome = lazy(() => import("@/components/PopularCategoriesHome"));
 const PopularDestinations = lazy(() => import("@/components/PopularDestinations"));
-const MemoriesSection = lazy(() => import("@/components/MemoriesSection"));
 const AboutSection = lazy(() => import("@/components/AboutSection"));
 const FAQSection = lazy(() => import("@/components/FAQSection"));
 
-export default function HomePage({featuredProduct,newProducts,popularCategories, popularDestinations, heroSettings}) {
+export default function HomePage({featuredProduct,newProducts,popularCategories, heroSettings}) {
   return (
     <>
       <SEO 
-        title="Онлайн магазин за цветя и букети | Flowers Boutique MIA"
-        description="Онлайн магазин за цветя и букети за всеки повод – рожден ден, годишнина, сватба или просто жест на внимание. Flowers Boutique MIA – уникални естествени и изкуствени цветя, букети, кошници, украси, декорации за дома."
-        keywords="онлайн магазин за цветя, букет, букети, доставка на цветя, цветарница, цветя за рожден ден, цветя за сватба, цветя с доставка, Flowers Boutique MIA"
+        title="Онлайн магазин за парфюми | DÉLIE"
+        description="DÉLIE е бутик за дамски, мъжки, унисекс, арабски и нишови парфюми. Подбрани аромати с доставка в цяла България."
+        keywords="парфюми, дамски парфюми, мъжки парфюми, унисекс, арабски парфюми, нишови парфюми, онлайн магазин за парфюми, DÉLIE"
         url="/"
         image="/pirin-pixel-yellow.png"
       />
@@ -44,9 +43,9 @@ export default function HomePage({featuredProduct,newProducts,popularCategories,
             justifyContent: 'center'
           }}>
             <div style={{ textAlign: 'center', maxWidth: '600px', padding: '0 20px' }}>
-              <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Акцентни букети</h2>
+              <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Акцентни парфюми</h2>
               <p style={{ color: '#aaa', marginBottom: '1.5rem' }}>
-                В момента няма избран акцентен букет. Моля, влезте в админ панела и изберете препоръчан продукт.
+                В момента няма избран акцентен парфюм. Моля, влезте в админ панела и изберете препоръчан продукт.
               </p>
             </div>
           </div>
@@ -68,13 +67,7 @@ export default function HomePage({featuredProduct,newProducts,popularCategories,
 
         <LazySection>
           <Suspense fallback={null}>
-            <PopularDestinations destinations={popularDestinations} />
-          </Suspense>
-        </LazySection>
-
-        <LazySection>
-          <Suspense fallback={null}>
-            <MemoriesSection />
+            <PopularDestinations />
           </Suspense>
         </LazySection>
 
@@ -131,51 +124,7 @@ export async function getServerSideProps() {
       }
     }
     
-    // Взимаме популярни дестинации (топ 6 по брой екскурзии)
-    const popularDestinationsAgg = await Product.aggregate([
-      {
-        $addFields: {
-          destinationName: {
-            $trim: {
-              input: {
-                $concat: [
-                  {$ifNull: ["$destinationCountry", ""]},
-                  " ",
-                  {$ifNull: ["$destinationCity", ""]},
-                ],
-              },
-            },
-          },
-        },
-      },
-      {
-        $match: {
-          destinationName: {$ne: ""},
-        },
-      },
-      {
-        $group: {
-          _id: "$destinationName",
-          count: {$sum: 1},
-          sample: {
-            $first: {
-              title: "$title",
-              image: {$arrayElemAt: ["$images", 0]},
-            },
-          },
-        },
-      },
-      {$sort: {count: -1}}, // Сортиране по брой екскурзии (най-популярните първи)
-      {$limit: 6},
-    ]);
-
-    const popularDestinations = popularDestinationsAgg.map(item => ({
-      name: item._id ? item._id.replace(/\s+/g, ' ').trim() : item._id,
-      count: item.count,
-      sample: item.sample || null,
-    }));
-
-    // Популярни категории букети – сортирани по брой продукти (топ 4)
+    // Популярни категории – сортирани по брой продукти (топ 4)
     const allCategories = await Category.find().lean();
     const categoriesWithCounts = await Promise.all(
       allCategories.map(async (cat) => {
@@ -196,14 +145,13 @@ export async function getServerSideProps() {
         featuredProduct: featuredProduct ? JSON.parse(JSON.stringify(featuredProduct)) : null,
         newProducts: JSON.parse(JSON.stringify(newProducts)),
         popularCategories: JSON.parse(JSON.stringify(popularCategories)),
-        popularDestinations: JSON.parse(JSON.stringify(popularDestinations)),
         heroSettings: {
           heroMediaType: settingsMap.heroMediaType || 'video',
           heroVideoDesktop: settingsMap.heroVideoDesktop || '',
           heroVideoMobile: settingsMap.heroVideoMobile || '',
           heroImage: settingsMap.heroImage || '',
-          heroTitle: settingsMap.heroTitle || 'Flowers Boutique MIA',
-          heroSubtitle: settingsMap.heroSubtitle || 'Уникални естествени и изкуствени цветя, букети, кошници, украси, декорации за дома.',
+          heroTitle: settingsMap.heroTitle || 'DÉLIE',
+          heroSubtitle: settingsMap.heroSubtitle || 'Дамски, мъжки, унисекс, арабски и нишови парфюми.',
         },
       },
     };
@@ -214,7 +162,6 @@ export async function getServerSideProps() {
         featuredProduct: null,
         newProducts: [],
         popularCategories: [],
-        popularDestinations: [],
         heroSettings: null,
       },
     };

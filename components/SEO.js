@@ -1,9 +1,9 @@
 import Head from 'next/head';
 
 export default function SEO({
-  title = 'Туристическа агенция - Екскурзии и пътувания',
-  description = 'Организираме разнообразни пътувания и екскурзии за всяка възраст и вкус.',
-  keywords = 'туристическа агенция, екскурзии, почивки, пътувания',
+  title = 'DÉLIE - онлайн магазин за парфюми',
+  description = 'Бутик за дамски, мъжки, унисекс, арабски и нишови парфюми. Подбрани аромати с доставка в цяла България.',
+  keywords = 'парфюми, дамски парфюми, мъжки парфюми, унисекс, арабски парфюми, нишови парфюми, DÉLIE',
   image = '/pirin-pixel-yellow.png',
   url,
   type = 'website',
@@ -37,59 +37,26 @@ export default function SEO({
     fullImage = `${siteUrl}${encodeURI(imagePath)}`;
   }
 
-  // Structured Data за туристическа агенция (TravelAgency + LocalBusiness)
+  // Structured Data за парфюмен магазин
   const defaultStructuredData = [
     {
       '@context': 'https://schema.org',
-      '@type': ['TravelAgency', 'LocalBusiness'],
-      name: 'Friendly Travel - Туристическа агенция за ученически екскурзии',
-      alternateName: 'Friendly Travel',
-      description: 'Специализирана туристическа агенция за училища и ученически екскурзии в Гоце Делчев и Гърмен. Организираме образователни пътувания, зелени училища и групови екскурзии.',
+      '@type': ['Store', 'Organization'],
+      name: 'DÉLIE',
+      alternateName: 'DELIE',
+      description: 'Онлайн магазин за дамски, мъжки, унисекс, арабски и нишови парфюми.',
       address: {
         '@type': 'PostalAddress',
         addressLocality: 'Гоце Делчев',
         addressRegion: 'Благоевград',
         addressCountry: 'BG',
-        streetAddress: 'град Гоце Делчев',
+        streetAddress: 'ул. Серес 12',
         postalCode: '2900',
       },
-      areaServed: [
-        {
-          '@type': 'City',
-          name: 'Гоце Делчев'
-        },
-        {
-          '@type': 'City',
-          name: 'Гърмен'
-        },
-        {
-          '@type': 'AdministrativeArea',
-          name: 'Община Гърмен'
-        }
-      ],
       url: siteUrl,
-      telephone: '+359 896 178 447',
-      email: 'officefriendlytravel@gmail.com',
+      telephone: '+359 877 382 224',
+      email: 'antonalmishev123@gmail.com',
       priceRange: '$$',
-      openingHoursSpecification: {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        opens: '09:00',
-        closes: '18:00'
-      },
-      serviceType: [
-        'Ученически екскурзии',
-        'Зелени училища',
-        'Образователни пътувания',
-        'Групови екскурзии',
-        'Екскурзии за училища',
-        'Културно-исторически турове'
-      ],
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '5',
-        reviewCount: '10'
-      }
     },
   ];
 
@@ -99,7 +66,7 @@ export default function SEO({
       <title>{title}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
-      <meta name="author" content={author || 'Туристическа агенция'} />
+      <meta name="author" content={author || 'DÉLIE'} />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="language" content="bg" />
       <meta name="geo.region" content="BG-01" />
@@ -108,11 +75,11 @@ export default function SEO({
       <meta name="ICBM" content="41.5700, 23.2800" />
       
       {/* Допълнителни SEO meta tags */}
-      <meta name="classification" content="Travel Agency, Educational Tours, School Trips" />
-      <meta name="category" content="Туристическа агенция, Ученически екскурзии, Зелени училища" />
-      <meta name="coverage" content="Гоце Делчев, Гърмен, Благоевград, България" />
+      <meta name="classification" content="Perfume Store, Online Shop" />
+      <meta name="category" content="Парфюми, онлайн магазин" />
+      <meta name="coverage" content="Гоце Делчев, България" />
       <meta name="distribution" content="Global" />
-      <meta name="target" content="Училища, Ученици, Групи, Образователни институции" />
+      <meta name="target" content="Клиенти, подаръци, парфюми" />
 
       {/* Open Graph / Facebook / Viber */}
       <meta property="og:type" content={type} />
@@ -127,7 +94,7 @@ export default function SEO({
       <meta property="og:image:type" content="image/png" />
       <meta property="og:image:alt" content={title} />
       <meta property="og:locale" content="bg_BG" />
-      <meta property="og:site_name" content="Туристическа агенция" />
+      <meta property="og:site_name" content="DÉLIE" />
       
       {/* Допълнителни тагове за Viber и други платформи */}
       <meta name="image" content={fullImage} />

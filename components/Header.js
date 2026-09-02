@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import BarsIcon from "@/components/icons/Bars";
 import CartIcon from "@/components/icons/CartIcon";
 import {CartContext} from "@/components/CartContext";
+import {categoryPath} from "@/lib/slugify";
 
 const TopBar = styled.div`
   background-color: #16a34a;
@@ -501,7 +502,7 @@ export default function Header() {
         <TopBarInner>
           <PhoneLink href="tel:+359877382224">
             <PhoneIcon />
-            <span>087 738 2224</span>
+            <span>0897455021</span>
           </PhoneLink>
         </TopBarInner>
       </TopBar>
@@ -512,7 +513,7 @@ export default function Header() {
             <BarsIcon className="w-8 h-8" />
           </NavButton>
           <Logo href={'/'}>
-            <LogoText>Flowers Boutique MIA</LogoText>
+            <LogoText>DÉLIE</LogoText>
           </Logo>
           <NavArea>
             <StyledNav>
@@ -535,9 +536,9 @@ export default function Header() {
                   }, 180);
                 }}
               >
-                <NavLink href={'/bouquets'}>
+                <NavLink href={'/perfumes'}>
                   <span style={{display: 'inline-flex', alignItems: 'center', gap: '8px'}}>
-                    Букети
+                    Парфюми
                     <span
                       style={{
                         display: 'inline-flex',
@@ -558,21 +559,21 @@ export default function Header() {
                     variants={desktopSubMenuVariants}
                   >
                     <CategoryGroup>
-                      <CategoryGroupTitle href="/bouquets">
-                        Всички букети
+                      <CategoryGroupTitle href="/perfumes">
+                        Всички парфюми
                       </CategoryGroupTitle>
                     </CategoryGroup>
                     {mainCategories.map(cat => {
                       const children = getChildren(cat._id);
                       return (
                         <CategoryGroup key={cat._id}>
-                          <CategoryGroupTitle href={`/category/${cat.slug || cat._id}`}>
+                          <CategoryGroupTitle href={categoryPath(cat)}>
                             {cat.name}
                           </CategoryGroupTitle>
                           {children.map(sub => (
                             <CategorySubLink
                               key={sub._id}
-                              href={`/category/${sub.slug || sub._id}`}
+                              href={categoryPath(sub)}
                             >
                               {sub.name}
                             </CategorySubLink>
@@ -624,21 +625,21 @@ export default function Header() {
                     variants={desktopSubMenuVariants}
                   >
                     <CategoryGroup>
-                      <CategoryGroupTitle href="/bouquets">
-                        Всички букети
+                      <CategoryGroupTitle href="/perfumes">
+                        Всички парфюми
                       </CategoryGroupTitle>
                     </CategoryGroup>
                     {mainCategories.map(cat => {
                       const children = getChildren(cat._id);
                       return (
                         <CategoryGroup key={cat._id}>
-                          <CategoryGroupTitle href={`/category/${cat.slug || cat._id}`}>
+                          <CategoryGroupTitle href={categoryPath(cat)}>
                             {cat.name}
                           </CategoryGroupTitle>
                           {children.map(sub => (
                             <CategorySubLink
                               key={sub._id}
-                              href={`/category/${sub.slug || sub._id}`}
+                              href={categoryPath(sub)}
                             >
                               {sub.name}
                             </CategorySubLink>
@@ -691,7 +692,7 @@ export default function Header() {
                   });
                 }}
               >
-                <span>Букети</span>
+                <span>Парфюми</span>
                 <span
                   style={{
                     display: 'inline-flex',
@@ -706,7 +707,7 @@ export default function Header() {
               {mobileBouquetsOpen && (
                 <div style={{marginTop: '4px', marginBottom: '8px'}}>
                   <NavLink
-                    href={'/bouquets'}
+                    href={'/perfumes'}
                     onClick={() => { setMobileNavActive(false); setMobileBouquetsOpen(false); }}
                     style={{
                       width: '100%',
@@ -715,14 +716,14 @@ export default function Header() {
                       fontSize: '16px',
                     }}
                   >
-                    Всички букети
+                    Всички парфюми
                   </NavLink>
                   {mainCategories.map(cat => {
                     const children = getChildren(cat._id);
                     return (
                       <div key={cat._id} style={{marginTop: '2px', marginBottom: '2px'}}>
                         <NavLink
-                          href={`/category/${cat.slug || cat._id}`}
+                          href={categoryPath(cat)}
                           onClick={() => { setMobileNavActive(false); setMobileBouquetsOpen(false); }}
                           style={{
                             width: '100%',
@@ -736,7 +737,7 @@ export default function Header() {
                         {children.map(sub => (
                           <NavLink
                             key={sub._id}
-                            href={`/category/${sub.slug || sub._id}`}
+                            href={categoryPath(sub)}
                             onClick={() => { setMobileNavActive(false); setMobileBouquetsOpen(false); }}
                             style={{
                               width: '100%',
@@ -782,7 +783,7 @@ export default function Header() {
               {mobileCategoriesOpen && (
                 <div style={{marginTop: '4px', marginBottom: '8px'}}>
                   <NavLink
-                    href={'/bouquets'}
+                    href={'/perfumes'}
                     onClick={() => { setMobileNavActive(false); setMobileCategoriesOpen(false); }}
                     style={{
                       width: '100%',
@@ -791,14 +792,14 @@ export default function Header() {
                       fontSize: '16px',
                     }}
                   >
-                    Всички букети
+                    Всички парфюми
                   </NavLink>
                   {mainCategories.map(cat => {
                     const children = getChildren(cat._id);
                     return (
                       <div key={cat._id} style={{marginTop: '2px', marginBottom: '2px'}}>
                         <NavLink
-                          href={`/category/${cat.slug || cat._id}`}
+                          href={categoryPath(cat)}
                           onClick={() => { setMobileNavActive(false); setMobileCategoriesOpen(false); }}
                           style={{
                             width: '100%',
@@ -812,7 +813,7 @@ export default function Header() {
                         {children.map(sub => (
                           <NavLink
                             key={sub._id}
-                            href={`/category/${sub.slug || sub._id}`}
+                            href={categoryPath(sub)}
                             onClick={() => { setMobileNavActive(false); setMobileCategoriesOpen(false); }}
                             style={{
                               width: '100%',

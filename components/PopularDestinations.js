@@ -1,9 +1,16 @@
 import styled from "styled-components";
 import Center from "@/components/Center";
 import Link from "next/link";
-import Image from "next/image";
 import ButtonLink from "@/components/ButtonLink";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+
+const COLLECTIONS = [
+  { name: "Дамски", href: "/categories" },
+  { name: "Мъжки", href: "/categories" },
+  { name: "Унисекс", href: "/categories" },
+  { name: "Арабски", href: "/categories" },
+  { name: "Нишови", href: "/categories" },
+];
 
 const Section = styled.section`
   padding: 60px 0;
@@ -34,12 +41,14 @@ const DestinationCard = styled(Link)`
   background-color: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 20px;
+  padding: 28px 20px;
   text-decoration: none;
   color: inherit;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  min-height: 120px;
+  justify-content: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   
   &:hover {
@@ -65,17 +74,6 @@ const TripCount = styled.span`
   align-self: flex-start;
 `;
 
-const ImageWrapper = styled.div`
-  width: 100%;
-  height: 150px;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: #f3f3f3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
 const ButtonWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -83,41 +81,20 @@ const ButtonWrapper = styled.div`
   ${props => props.style}
 `;
 
-export default function PopularDestinations({destinations}) {
+export default function PopularDestinations() {
   const titleAnimation = useScrollAnimation({ animation: 'fadeIn', delay: 0 });
   const gridAnimation = useScrollAnimation({ animation: 'scale', delay: 200 });
   const buttonAnimation = useScrollAnimation({ animation: 'fadeIn', delay: 400 });
 
-  if (!destinations || destinations.length === 0) {
-    return null;
-  }
-
   return (
     <Section>
       <Center>
-        <Title ref={titleAnimation.ref} style={titleAnimation.style}>Популярни букети и поводи</Title>
+        <Title ref={titleAnimation.ref} style={titleAnimation.style}>Колекции</Title>
         <DestinationsGrid ref={gridAnimation.ref} style={gridAnimation.style}>
-          {destinations.slice(0, 6).map((dest, index) => (
-            <DestinationCard key={index} href={`/destination/${encodeURIComponent(dest.name)}`}>
-              {dest.sample?.image && (
-                <ImageWrapper>
-                  <Image 
-                    src={dest.sample.image} 
-                    alt={dest.name}
-                    width={250}
-                    height={150}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                    }}
-                    loading="lazy"
-                    unoptimized={dest.sample.image?.includes('s3.amazonaws.com')}
-                  />
-                </ImageWrapper>
-              )}
-              <DestinationName>{dest.name}</DestinationName>
-              <TripCount>{dest.count} {dest.count === 1 ? 'букет' : 'букета'}</TripCount>
+          {COLLECTIONS.map((collection) => (
+            <DestinationCard key={collection.name} href={collection.href}>
+              <DestinationName>{collection.name}</DestinationName>
+              <TripCount>Парфюми</TripCount>
             </DestinationCard>
           ))}
         </DestinationsGrid>
@@ -130,4 +107,3 @@ export default function PopularDestinations({destinations}) {
     </Section>
   );
 }
-

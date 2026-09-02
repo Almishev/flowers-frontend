@@ -7,9 +7,8 @@ export async function getServerSideProps(context) {
 
   return {
     redirect: {
-      destination: `/bouquet/${slug}`,
+      destination: `/perfume/${slug}`,
       permanent: true,
     },
   };
 }
-

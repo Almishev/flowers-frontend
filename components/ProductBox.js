@@ -146,7 +146,7 @@ export default function ProductBox({
   const {addProduct} = useContext(CartContext);
   const {addToWishlist, removeFromWishlist, isInWishlist} = useWishlist();
   // Винаги използваме slug, ако съществува, иначе fallback към _id
-  const url = '/bouquet/'+(slug || _id);
+  const url = '/perfume/'+(slug || _id);
   const inWishlist = isInWishlist(_id);
 
   const handleWishlistClick = (e) => {
@@ -362,7 +362,7 @@ export default function ProductBox({
               {price.toFixed(2)} EUR
             </Price>
           )}
-          <Subtitle>Ръчно подбран букет, подготвен при поръчка.</Subtitle>
+          <Subtitle>Подбран аромат от колекцията DÉLIE.</Subtitle>
           <Button primary size="s" onClick={handleAddToCart}>
             Добави в кошницата
           </Button>

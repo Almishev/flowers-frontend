@@ -52,7 +52,7 @@ export default function TripsPage({
     if (typeFilter) params.set('type', typeFilter);
      if (categoryFilterIds.length > 0) params.set('cat', categoryFilterIds.join(','));
     params.set('page', '1');
-    router.push('/bouquets?' + params.toString());
+    router.push('/perfumes?' + params.toString());
   }
 
   function clearFilters() {
@@ -60,7 +60,7 @@ export default function TripsPage({
     setSort('');
     setTypeFilter('');
     setCategoryFilterIds([]);
-    router.push('/bouquets');
+    router.push('/perfumes');
   }
 
   function buildBasePath() {
@@ -70,7 +70,7 @@ export default function TripsPage({
     if (typeFilter) params.set('type', typeFilter);
     if (categoryFilterIds.length > 0) params.set('cat', categoryFilterIds.join(','));
     const queryString = params.toString();
-    return queryString ? `/bouquets?${queryString}` : '/bouquets';
+    return queryString ? `/perfumes?${queryString}` : '/perfumes';
   }
 
   const basePath = buildBasePath();
@@ -79,12 +79,12 @@ export default function TripsPage({
 
   // SEO текстовете
   const seoTitle = initialSearch
-    ? `Търсене на букети: "${initialSearch}"`
-    : 'Всички букети';
+    ? `Търсене на парфюми: "${initialSearch}"`
+    : 'Всички парфюми';
 
   const seoDescription = initialSearch
-    ? `Резултати за търсене на букети по "${initialSearch}". Намерени ${totalCount}.`
-    : `Всички букети в Flowers Boutique MIA. Общо ${totalCount}.`;
+    ? `Резултати за търсене на парфюми по "${initialSearch}". Намерени ${totalCount}.`
+    : `Всички парфюми в DÉLIE. Общо ${totalCount}.`;
 
   return (
     <>
@@ -96,11 +96,11 @@ export default function TripsPage({
       />
       <Header />
       <Center>
-        <Title>Всички букети</Title>
+        <Title>Всички парфюми</Title>
         <p style={{color:'#6b7280', marginTop: '-8px'}}>
           {searchTerm
-            ? `Намерени ${totalCount} ${totalCount === 1 ? 'букет' : 'букета'}`
-            : `Общо букети: ${totalCount}`}
+            ? `Намерени ${totalCount} ${totalCount === 1 ? 'парфюм' : 'парфюма'}`
+            : `Общо парфюми: ${totalCount}`}
         </p>
         
         <div style={{marginBottom: '20px'}}>
@@ -110,7 +110,7 @@ export default function TripsPage({
           >
             <input
               type="text"
-              placeholder="Търси по име, описание или повод..."
+              placeholder="Търси по име, бранд или описание..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{flex: '1 1 300px', padding: '10px', border: '1px solid #ddd', borderRadius: '5px', minWidth: '200px'}}
@@ -150,7 +150,7 @@ export default function TripsPage({
                 if (e.target.value) params.set('sort', e.target.value);
                 if (typeFilter) params.set('type', typeFilter);
                 params.set('page', '1');
-                router.push('/bouquets?' + params.toString());
+                router.push('/perfumes?' + params.toString());
               }}
               style={{
                 padding: '10px',
@@ -180,7 +180,7 @@ export default function TripsPage({
                   minWidth: '180px',
                 }}
               >
-                <option value="">Всички типове цветя</option>
+                <option value="">Всички типове</option>
                 {availableTypeValues.map((val) => (
                   <option key={val} value={val}>
                     {val}
@@ -242,7 +242,7 @@ export default function TripsPage({
                         if (typeFilter) params.set('type', typeFilter);
                         if (next.length > 0) params.set('cat', next.join(','));
                         params.set('page', '1');
-                        router.push('/bouquets?' + params.toString());
+                        router.push('/perfumes?' + params.toString());
                       }}
                       style={{accentColor: '#16a34a'}}
                     />
@@ -255,7 +255,7 @@ export default function TripsPage({
         </div>
 
         {trips.length === 0 ? (
-          <div>Няма намерени букети.</div>
+          <div>Няма намерени парфюми.</div>
         ) : (
           <>
             <ProductsGrid products={trips} />
@@ -272,7 +272,18 @@ export default function TripsPage({
   );
 }
 
-export async function getServerSideProps({query}) {
+export async function getServerSideProps({query, resolvedUrl}) {
+  const path = (resolvedUrl || '').split('?')[0];
+  if (path === '/trips') {
+    const qs = resolvedUrl.includes('?') ? resolvedUrl.slice(resolvedUrl.indexOf('?')) : '';
+    return {
+      redirect: {
+        destination: `/perfumes${qs}`,
+        permanent: true,
+      },
+    };
+  }
+
   try {
     await mongooseConnect();
     const pageParam = parseInt(query.page, 10);
@@ -284,7 +295,7 @@ export async function getServerSideProps({query}) {
     const catParam = query.cat || '';
     const categoryFilterIds = catParam ? catParam.split(',') : [];
 
-    // Създаваме query за филтриране на букети
+    // Създаваме query за филтриране на парфюми
     let mongoQuery = {
       status: { $ne: 'archived' }, // Не показваме архивирани
     };

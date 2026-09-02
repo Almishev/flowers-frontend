@@ -3,6 +3,7 @@ import Center from "@/components/Center";
 import Link from "next/link";
 import {useState, useEffect} from "react";
 import axios from "axios";
+import {categoryPath} from "@/lib/slugify";
 
 const StyledFooter = styled.footer`
   background-color: #222;
@@ -150,12 +151,12 @@ export default function Footer() {
         <FooterContent>
           <FooterSection>
             <Logo>
-              <h2>Flowers Boutique MIA</h2>
+              <h2>DÉLIE</h2>
               <p style={{fontWeight: '500', marginBottom: '8px'}}>
-                Уникални естествени и изкуствени цветя, букети, кошници, украси, декорации за дома.
+                Бутик за дамски, мъжки, унисекс, арабски и нишови парфюми.
               </p>
               <p style={{fontSize: '0.85rem', marginTop: '0'}}>
-                Комбинираме свежи и изкуствени цветя, стилни кошници и декоративни елементи, за да създадем атмосфера с характер във всеки дом или събитие.
+                Подбрани аромати за всеки стил – от класически композиции до нишови и арабски колекции.
               </p>
              
                
@@ -182,13 +183,13 @@ export default function Footer() {
           </FooterSection>
 
           <FooterSection>
-            <h3>Букети</h3>
+            <h3>Парфюми</h3>
             <ul>
-              <li><Link href="/bouquets">Всички букети</Link></li>
+              <li><Link href="/perfumes">Всички парфюми</Link></li>
               
               {mainCategories.map(category => (
                 <li key={category._id}>
-                  <Link href={`/category/${category.slug || category._id}`}>{category.name}</Link>
+                  <Link href={categoryPath(category)}>{category.name}</Link>
                 </li>
               ))}
             </ul>
@@ -198,7 +199,7 @@ export default function Footer() {
             <h3>Информация</h3>
             <ul>
               <li><Link href="/about">За нас</Link></li>
-              <li><Link href="/care">Грижа за цветята</Link></li>
+              <li><Link href="/care">Грижа за парфюма</Link></li>
               <li><Link href="/privacy-policy">Политика на поверителност</Link></li>
               <li><Link href="/terms">Общи условия</Link></li>
             </ul>
@@ -218,7 +219,7 @@ export default function Footer() {
                 <svg fill="currentColor" viewBox="0 0 24 24">
                   <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
                 </svg>
-                <span>087 738 2224</span>
+                <span>0897455021</span>
               </div>
               <div className="contact-item">
                 <svg fill="currentColor" viewBox="0 0 24 24">
@@ -233,7 +234,7 @@ export default function Footer() {
         <BottomBar>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px'}}>
             <div>
-              © {new Date().getFullYear()} Flowers Boutique MIA. Всички права запазени.
+              © {new Date().getFullYear()} DÉLIE. Всички права запазени.
             </div>
           </div>
         </BottomBar>

@@ -196,8 +196,8 @@ const defaultSettings = {
   heroVideoDesktop: '',
   heroVideoMobile: '',
   heroImage: '',
-  heroTitle: 'Flowers Boutique MIA',
-  heroSubtitle: 'Уникални естествени и изкуствени цветя, букети, кошници, украси, декорации за дома.',
+  heroTitle: 'DÉLIE',
+  heroSubtitle: 'Дамски, мъжки, унисекс, арабски и нишови парфюми.',
 };
 
 export default function HeroVideo({ heroSettings }) {
@@ -296,9 +296,9 @@ export default function HeroVideo({ heroSettings }) {
               <p>{settings.heroSubtitle}</p>
           </TextOverlay>
           <ButtonOverlay>
-            <Link href="/bouquets" passHref legacyBehavior>
+            <Link href="/perfumes" passHref legacyBehavior>
               <ButtonCTA>
-                Разгледайте букетите
+                Разгледайте парфюмите
               </ButtonCTA>
             </Link>
           </ButtonOverlay>
@@ -340,9 +340,9 @@ export default function HeroVideo({ heroSettings }) {
               <p>{settings.heroSubtitle}</p>
           </TextOverlay>
           <ButtonOverlay>
-            <Link href="/bouquets" passHref legacyBehavior>
+            <Link href="/perfumes" passHref legacyBehavior>
               <ButtonCTA>
-                Разгледайте букетите
+                Разгледайте парфюмите
               </ButtonCTA>
             </Link>
           </ButtonOverlay>
@@ -379,9 +379,9 @@ export default function HeroVideo({ heroSettings }) {
             <p>{settings.heroSubtitle}</p>
         </TextOverlay>
         <ButtonOverlay>
-          <Link href="/trips" passHref legacyBehavior>
+          <Link href="/perfumes" passHref legacyBehavior>
             <ButtonCTA>
-              Разгледайте екскурзиите
+              Разгледайте парфюмите
             </ButtonCTA>
           </Link>
         </ButtonOverlay>
@@ -399,9 +399,9 @@ export default function HeroVideo({ heroSettings }) {
               <p>{settings.heroSubtitle}</p>
           </TextOverlay>
           <ButtonOverlay>
-            <Link href="/bouquets" passHref legacyBehavior>
+            <Link href="/perfumes" passHref legacyBehavior>
               <ButtonCTA>
-                Разгледайте букетите
+                Разгледайте парфюмите
               </ButtonCTA>
             </Link>
           </ButtonOverlay>
@@ -433,9 +433,9 @@ export default function HeroVideo({ heroSettings }) {
           <p>{settings.heroSubtitle}</p>
       </TextOverlay>
       <ButtonOverlay>
-        <Link href="/bouquets" passHref legacyBehavior>
+        <Link href="/perfumes" passHref legacyBehavior>
           <ButtonCTA>
-            Разгледайте букетите
+            Разгледайте парфюмите
           </ButtonCTA>
         </Link>
       </ButtonOverlay>

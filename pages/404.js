@@ -129,7 +129,7 @@ export default function NotFoundPage() {
     <>
       <SEO
         title="404 - Страницата не е намерена"
-        description="Тази страница не съществува. Върнете се към началото или разгледайте букетите."
+        description="Тази страница не съществува. Върнете се към началото или разгледайте парфюмите."
         keywords="404 страница, не е намерено"
         url="/404"
         image="/pirin-pixel-yellow.png"
@@ -141,11 +141,11 @@ export default function NotFoundPage() {
           <Title>О, не! Загубихме тази страница.</Title>
           <Description>
             Търсената страница не съществува или е преместена. 
-            Опитайте отново от началото или разгледайте наличните букети и категории.
+            Опитайте отново от началото или разгледайте наличните парфюми и категории.
           </Description>
           <Actions>
             <PrimaryButton href="/">← Към началната страница</PrimaryButton>
-            <SecondaryButton href="/bouquets">Разгледай букетите</SecondaryButton>
+            <SecondaryButton href="/perfumes">Разгледай парфюмите</SecondaryButton>
           </Actions>
           <Tip>
             Ако смятате, че това е грешка, свържете се с нас: antonalmishev123@gmail.com

@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import Center from "@/components/Center";
 import Link from "next/link";
+import {categoryPath} from "@/lib/slugify";
 
 const SectionWrapper = styled.section`
   background: #f9fafb;
@@ -92,12 +93,12 @@ export default function PopularCategoriesHome({ categories = [] }) {
   return (
     <SectionWrapper>
       <Center>
-        <Title>Популярни категории букети</Title>
+        <Title>Популярни категории</Title>
         <Grid>
           {categories.map((cat) => (
             <Card
               key={cat._id}
-              href={`/category/${cat.slug || cat._id}`}
+              href={categoryPath(cat)}
             >
               <ImageWrapper>
                 {cat.image ? (
@@ -112,15 +113,15 @@ export default function PopularCategoriesHome({ categories = [] }) {
                   />
                 ) : (
                   <span style={{ color: "#9ca3af", fontSize: "0.9rem" }}>
-                    Категория букет
+                    Категория парфюми
                   </span>
                 )}
               </ImageWrapper>
               <CategoryName>{cat.name}</CategoryName>
               <CategoryMeta>
                 {typeof cat.productCount === "number"
-                  ? `${cat.productCount} ${cat.productCount === 1 ? "букет" : "букета"}`
-                  : "Букети в тази категория"}
+                  ? `${cat.productCount} ${cat.productCount === 1 ? "парфюм" : "парфюма"}`
+                  : "Парфюми в тази категория"}
               </CategoryMeta>
             </Card>
           ))}

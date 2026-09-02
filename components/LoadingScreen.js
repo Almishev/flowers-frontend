@@ -196,8 +196,8 @@ export default function LoadingScreen() {
       <LogoContainer>
         <AnimatedLogo>
           <Image
-            src="/pirin-pixel-yellow.png"
-            alt="Flowers Boutique MIA"
+            src="/parfumes.png"
+            alt="DÉLIE"
             width={200}
             height={200}
             priority
