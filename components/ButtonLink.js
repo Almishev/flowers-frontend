@@ -45,13 +45,13 @@ const StyledLink = styled(BaseLink)`
       }
     `}
     ${props => props.black && !props.outline && css`
-      background-color: #333;
+      background-color: #1f2937;
       transform: translateY(-1px);
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     `}
     ${props => props.black && props.outline && css`
-      background-color: rgba(0, 0, 0, 0.05);
-      border-color: #333;
+      background-color: rgba(17, 24, 39, 0.05);
+      border-color: #1f2937;
     `}
     ${props => props.primary && !props.outline && css`
       background-color: ${primary};

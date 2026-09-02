@@ -363,7 +363,7 @@ export default function ProductBox({
             </Price>
           )}
           <Subtitle>Подбран аромат от колекцията DÉLIE.</Subtitle>
-          <Button primary size="s" onClick={handleAddToCart}>
+          <Button black size="s" onClick={handleAddToCart}>
             Добави в кошницата
           </Button>
         </PriceRow>

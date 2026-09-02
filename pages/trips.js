@@ -92,7 +92,7 @@ export default function TripsPage({
         title={seoTitle}
         description={seoDescription}
         url={basePath}
-        image="/pirin-pixel-yellow.png"
+        image="/parfumes_sell.png"
       />
       <Header />
       <Center>

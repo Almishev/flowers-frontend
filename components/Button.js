@@ -29,13 +29,13 @@ export const ButtonStyle = css`
     border: 1px solid #fff;
   `}
   ${props => props.black && !props.outline && css`
-    background-color: #000;
+    background-color: #111827;
     color: #fff;
   `}
   ${props => props.black && props.outline && css`
     background-color: transparent;
-    color: #000;
-    border: 1px solid #000;
+    color: #111827;
+    border: 1px solid #111827;
   `}
   ${props => props.primary && !props.outline && css`
     background-color: ${primary};
@@ -71,13 +71,13 @@ const StyledButton = styled.button`
       border-color: #fff;
     `}
     ${props => props.black && !props.outline && css`
-      background-color: #333;
+      background-color: #1f2937;
       transform: translateY(-1px);
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     `}
     ${props => props.black && props.outline && css`
-      background-color: rgba(0, 0, 0, 0.05);
-      border-color: #333;
+      background-color: rgba(17, 24, 39, 0.05);
+      border-color: #1f2937;
     `}
     ${props => props.primary && !props.outline && css`
       background-color: ${primary};

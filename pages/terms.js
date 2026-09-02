@@ -12,7 +12,7 @@ export default function TermsPage() {
         description="Общи условия за ползване на онлайн магазина за парфюми DÉLIE – поръчки, плащане, доставка, отказ и поверителност."
         keywords="общи условия, онлайн магазин за парфюми, DÉLIE, поръчки, плащане, доставка"
         url="/terms"
-        image="/pirin-pixel-yellow.png"
+        image="/parfumes_sell.png"
       />
       <Header />
       <Center>

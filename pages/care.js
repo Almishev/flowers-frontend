@@ -12,7 +12,7 @@ export default function CarePage() {
         description="Как да съхранявате и нанасяте парфюм, за да запазите аромата по-дълго. Съвети от DÉLIE."
         keywords="грижа за парфюм, съхранение на парфюм, как да нанасяме парфюм, DÉLIE"
         url="/care"
-        image="/pirin-pixel-yellow.png"
+        image="/parfumes_sell.png"
       />
       <Header />
       <Center>

@@ -18,15 +18,22 @@ const Title = styled.h2`
 
 const SeeAllLink = styled(Link)`
   display: inline-flex;
-  font-size: 0.95rem;
-  color: #16a34a;
-  text-decoration: none;
+  font-size: 1.2rem;
   font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+  color: #fff;
+  background-color: #111827;
+  text-decoration: none;
   align-items: center;
   justify-content: center;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
 
   &:hover {
-    text-decoration: underline;
+    background-color: #1f2937;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
 `;
 

@@ -117,7 +117,7 @@ export default function PrivacyPolicyPage() {
         description="Политика за поверителност и защита на личните данни на DÉLIE - онлайн магазин за парфюми."
         keywords="политика поверителност, защита данни, GDPR, лични данни, DÉLIE"
         url="/privacy-policy"
-        image="/pirin-pixel-yellow.png"
+        image="/parfumes_sell.png"
       />
       <Header />
       <Center>
@@ -245,7 +245,7 @@ export default function PrivacyPolicyPage() {
               ул. Серес 12, Гоце Делчев, България, 2900
             </Paragraph>
             <Paragraph>
-              <strong>Имейл:</strong> <a href="mailto:antonalmishev123@gmail.com">antonalmishev123@gmail.com</a>
+              <strong>Имейл:</strong> <a href="mailto:danieladelieva1985@gmail.com">danieladelieva1985@gmail.com</a>
             </Paragraph>
             <Paragraph>
               <strong>Телефон:</strong> <a href="tel:+359877382224">0897455021</a>

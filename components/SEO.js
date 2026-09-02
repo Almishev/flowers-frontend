@@ -4,7 +4,7 @@ export default function SEO({
   title = 'DÉLIE - онлайн магазин за парфюми',
   description = 'Бутик за дамски, мъжки, унисекс, арабски и нишови парфюми. Подбрани аромати с доставка в цяла България.',
   keywords = 'парфюми, дамски парфюми, мъжки парфюми, унисекс, арабски парфюми, нишови парфюми, DÉLIE',
-  image = '/pirin-pixel-yellow.png',
+  image = '/parfumes_sell.png',
   url,
   type = 'website',
   author,
@@ -55,7 +55,7 @@ export default function SEO({
       },
       url: siteUrl,
       telephone: '+359 877 382 224',
-      email: 'antonalmishev123@gmail.com',
+      email: 'danieladelieva1985@gmail.com',
       priceRange: '$$',
     },
   ];

@@ -25,7 +25,7 @@ export default function HomePage({featuredProduct,newProducts,popularCategories,
         description="DÉLIE е бутик за дамски, мъжки, унисекс, арабски и нишови парфюми. Подбрани аромати с доставка в цяла България."
         keywords="парфюми, дамски парфюми, мъжки парфюми, унисекс, арабски парфюми, нишови парфюми, онлайн магазин за парфюми, DÉLIE"
         url="/"
-        image="/pirin-pixel-yellow.png"
+        image="/parfumes_sell.png"
       />
       <div>
         <Header />

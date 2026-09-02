@@ -99,7 +99,7 @@ export default function PopularDestinations() {
           ))}
         </DestinationsGrid>
         <ButtonWrapper ref={buttonAnimation.ref} style={buttonAnimation.style}>
-          <ButtonLink href="/categories" primary size="l">
+          <ButtonLink href="/categories" black size="l">
             Виж всички категории
           </ButtonLink>
         </ButtonWrapper>

@@ -132,7 +132,7 @@ export default function NotFoundPage() {
         description="Тази страница не съществува. Върнете се към началото или разгледайте парфюмите."
         keywords="404 страница, не е намерено"
         url="/404"
-        image="/pirin-pixel-yellow.png"
+        image="/parfumes_sell.png"
       />
       <Header />
       <Wrapper>
@@ -148,7 +148,7 @@ export default function NotFoundPage() {
             <SecondaryButton href="/perfumes">Разгледай парфюмите</SecondaryButton>
           </Actions>
           <Tip>
-            Ако смятате, че това е грешка, свържете се с нас: antonalmishev123@gmail.com
+            Ако смятате, че това е грешка, свържете се с нас: danieladelieva1985@gmail.com
           </Tip>
         </Content>
       </Wrapper>

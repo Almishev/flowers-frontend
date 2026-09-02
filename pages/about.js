@@ -101,7 +101,7 @@ export default function AboutPage() {
         description="DÉLIE е парфюмен бутик с дамски, мъжки, унисекс, арабски и нишови аромати. Подбрани парфюми с доставка в цяла България."
         keywords="DÉLIE, парфюмен бутик, дамски парфюми, мъжки парфюми, унисекс, арабски парфюми, нишови парфюми"
         url="/about"
-        image="/pirin-pixel-yellow.png"
+        image="/parfumes_sell.png"
       />
       <Header />
       <Center>
@@ -122,8 +122,8 @@ export default function AboutPage() {
           <AnimatedSection ref={teamAnimation.ref} style={teamAnimation.style}>
             <SectionTitle>Собственик и визия</SectionTitle>
             <Paragraph>
-              Зад DÉLIE стои <strong>Даниела Делиева</strong> – човек, който вярва, че детайлите правят всеки жест специален. 
-              Неговият усет към стила се превръща в внимателно подбрана колекция от класически и нишови аромати.
+              Зад DÉLIE стои <strong>Даниела Делиева</strong> – която вярва, че детайлите правят всеки жест специален. 
+              Нейният усет към стила се превръща в внимателно подбрана колекция от класически и нишови аромати.
             </Paragraph>
             <Paragraph>
               Всяка поръчка се подготвя с лично отношение – от избора на парфюм до опаковката. 
@@ -175,7 +175,7 @@ export default function AboutPage() {
                 <strong>Телефон за поръчки:</strong> 0897455021
               </Paragraph>
               <Paragraph>
-                <strong>Email:</strong> antonalmishev123@gmail.com
+                <strong>Email:</strong> danieladelieva1985@gmail.com
               </Paragraph>
               <Paragraph>
                 <strong>Доставка:</strong> Изпращаме поръчки в <strong>цялата страна</strong> чрез доверени куриерски партньори.

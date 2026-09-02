@@ -125,7 +125,7 @@ export default function PerfumePage({product}) {
     ? `${product.description.substring(0, 150)}...` 
     : `Парфюм "${product.title}" от DÉLIE.`;
   
-  let productImage = '/pirin-pixel-yellow.png';
+  let productImage = '/parfumes_sell.png';
   if (product.images?.[0]) {
     productImage = product.images[0];
   }
@@ -168,7 +168,7 @@ export default function PerfumePage({product}) {
             )}
             <PriceRow style={{marginTop: '24px'}}>
               <Button 
-                primary 
+                black 
                 onClick={() => addProduct(product._id)}
                 disabled={product.stock !== undefined && product.stock <= 0}
               >

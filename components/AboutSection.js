@@ -75,7 +75,7 @@ export default function AboutSection() {
         </Content>
         <FoundersSection />
         <ButtonWrapper>
-          <ButtonLink href="/about" primary size="l">
+          <ButtonLink href="/about" black size="l">
             Научете повече за нас
           </ButtonLink>
         </ButtonWrapper>

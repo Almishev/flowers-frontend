@@ -84,7 +84,7 @@ export default function CategoryPage({category, products, parentCategory}) {
         description={`Парфюми в категория "${category.name}". ${products.length} налични.`}
         keywords={`${category.name}, категория, парфюми, DÉLIE`}
         url={categoryPath(category)}
-        image="/pirin-pixel-yellow.png"
+        image="/parfumes_sell.png"
       />
       <Header />
       <Center>

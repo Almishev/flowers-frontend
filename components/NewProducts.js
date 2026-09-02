@@ -35,7 +35,7 @@ export default function NewProducts({products}) {
         <ProductsGrid products={products} />
       </AnimatedGrid>
       <ButtonWrapper ref={buttonAnimation.ref} style={buttonAnimation.style}>
-        <ButtonLink href="/perfumes" primary size="l">
+        <ButtonLink href="/perfumes" black size="l">
           Виж всички парфюми
         </ButtonLink>
       </ButtonWrapper>

@@ -69,7 +69,7 @@ export default function DestinationPage({destination, trips}) {
         title={`${destination} - Екскурзии`}
         description={`Екскурзии до ${destination}. ${trips.length} налични.`}
         url={`/destination/${encodeURIComponent(destination)}`}
-        image="/pirin-pixel-yellow.png"
+        image="/parfumes_sell.png"
       />
       <Header />
       <Center>

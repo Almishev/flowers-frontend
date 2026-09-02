@@ -63,7 +63,7 @@ export default function CategoriesPage({categories}) {
         description={`Разгледайте категории парфюми – дамски, мъжки, унисекс, арабски и нишови аромати.`}
         keywords="категории парфюми, дамски парфюми, мъжки парфюми, унисекс, арабски парфюми, нишови парфюми, DÉLIE"
         url="/categories"
-        image="/pirin-pixel-yellow.png"
+        image="/parfumes_sell.png"
       />
       <Header />
       <Center>
