@@ -49,6 +49,11 @@ const nextConfig = {
         destination: '/perfumes',
         permanent: true,
       },
+      {
+        source: '/school-trips',
+        destination: '/',
+        permanent: true,
+      },
     ];
   },
   // Добавяне на cache headers за статични ресурси
