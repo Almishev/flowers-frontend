@@ -36,7 +36,7 @@ const Paragraph = styled.p`
 const Motto = styled.p`
   font-size: 1.2rem;
   font-style: italic;
-  color: #16a34a;
+  color: #c9a227;
   font-weight: 500;
   text-align: center;
   margin: 15px 0 30px;
@@ -51,12 +51,12 @@ const ServicesList = styled.ul`
   }
 `;
 
-const DestinationsHighlight = styled.div`
+const DeliveryHighlight = styled.div`
   background-color: #f8f9fa;
   padding: 25px;
   border-radius: 8px;
   margin: 30px 0;
-  border-left: 4px solid #16a34a;
+  border-left: 4px solid #c9a227;
 `;
 
 const ContactInfo = styled.div`
@@ -89,7 +89,7 @@ export default function AboutPage() {
   const mottoAnimation = useScrollAnimation({ animation: 'fadeIn', delay: 200 });
   const teamAnimation = useScrollAnimation({ animation: 'slideUp', delay: 400 });
   const missionAnimation = useScrollAnimation({ animation: 'slideUp', delay: 600 });
-  const destinationsAnimation = useScrollAnimation({ animation: 'slideUp', delay: 800 });
+  const deliveryAnimation = useScrollAnimation({ animation: 'slideUp', delay: 800 });
   const servicesAnimation = useScrollAnimation({ animation: 'slideUp', delay: 1000 });
   const foundersAnimation = useScrollAnimation({ animation: 'fadeIn', delay: 1200 });
   const contactAnimation = useScrollAnimation({ animation: 'fadeIn', delay: 1400 });
@@ -142,14 +142,14 @@ export default function AboutPage() {
             </Paragraph>
           </AnimatedSection>
 
-          <AnimatedSection ref={destinationsAnimation.ref} style={destinationsAnimation.style}>
-            <DestinationsHighlight>
+          <AnimatedSection ref={deliveryAnimation.ref} style={deliveryAnimation.style}>
+            <DeliveryHighlight>
               <SectionTitle>Доставка в цяла България</SectionTitle>
               <Paragraph>
                 Изпращаме поръчките с надеждни куриерски партньори до всяка точка на страната. 
                 Така можете да зарадвате себе си или любим човек – ние ще се погрижим парфюмът да пристигне добре опакован.
               </Paragraph>
-            </DestinationsHighlight>
+            </DeliveryHighlight>
           </AnimatedSection>
 
           <AnimatedSection ref={servicesAnimation.ref} style={servicesAnimation.style}>

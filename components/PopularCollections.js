@@ -3,14 +3,7 @@ import Center from "@/components/Center";
 import Link from "next/link";
 import ButtonLink from "@/components/ButtonLink";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-
-const COLLECTIONS = [
-  { name: "Дамски", href: "/categories" },
-  { name: "Мъжки", href: "/categories" },
-  { name: "Унисекс", href: "/categories" },
-  { name: "Арабски", href: "/categories" },
-  { name: "Нишови", href: "/categories" },
-];
+import { categoryPath } from "@/lib/slugify";
 
 const Section = styled.section`
   padding: 60px 0;
@@ -25,7 +18,7 @@ const Title = styled.h2`
   ${props => props.style}
 `;
 
-const DestinationsGrid = styled.div`
+const CollectionsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
@@ -37,7 +30,7 @@ const DestinationsGrid = styled.div`
   ${props => props.style}
 `;
 
-const DestinationCard = styled(Link)`
+const CollectionCard = styled(Link)`
   background-color: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -53,18 +46,19 @@ const DestinationCard = styled(Link)`
   
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 20px rgba(201, 162, 39, 0.18);
+    border-color: #c9a227;
   }
 `;
 
-const DestinationName = styled.h3`
+const CollectionName = styled.h3`
   margin: 0;
   font-size: 1.2rem;
   color: #111;
   font-weight: 600;
 `;
 
-const TripCount = styled.span`
+const CollectionLabel = styled.span`
   display: inline-block;
   background-color: #f1f5f9;
   color: #475569;
@@ -81,23 +75,29 @@ const ButtonWrapper = styled.div`
   ${props => props.style}
 `;
 
-export default function PopularDestinations() {
+export default function PopularCollections({ departments = [] }) {
   const titleAnimation = useScrollAnimation({ animation: 'fadeIn', delay: 0 });
   const gridAnimation = useScrollAnimation({ animation: 'scale', delay: 200 });
   const buttonAnimation = useScrollAnimation({ animation: 'fadeIn', delay: 400 });
 
+  if (!departments.length) return null;
+
   return (
     <Section>
       <Center>
-        <Title ref={titleAnimation.ref} style={titleAnimation.style}>Колекции</Title>
-        <DestinationsGrid ref={gridAnimation.ref} style={gridAnimation.style}>
-          {COLLECTIONS.map((collection) => (
-            <DestinationCard key={collection.name} href={collection.href}>
-              <DestinationName>{collection.name}</DestinationName>
-              <TripCount>Парфюми</TripCount>
-            </DestinationCard>
+        <Title ref={titleAnimation.ref} style={titleAnimation.style}>Отдели</Title>
+        <CollectionsGrid ref={gridAnimation.ref} style={gridAnimation.style}>
+          {departments.map((department) => (
+            <CollectionCard key={department._id} href={categoryPath(department)}>
+              <CollectionName>{department.name}</CollectionName>
+              <CollectionLabel>
+                {(department.childrenCount || 0) === 1
+                  ? '1 подкатегория'
+                  : `${department.childrenCount || 0} подкатегории`}
+              </CollectionLabel>
+            </CollectionCard>
           ))}
-        </DestinationsGrid>
+        </CollectionsGrid>
         <ButtonWrapper ref={buttonAnimation.ref} style={buttonAnimation.style}>
           <ButtonLink href="/categories" black size="l">
             Виж всички категории

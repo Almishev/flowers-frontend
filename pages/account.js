@@ -38,12 +38,13 @@ const Tab = styled.button`
   font-size: 1rem;
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  color: ${props => props.active ? '#000' : '#666'};
-  border-bottom-color: ${props => props.active ? '#000' : 'transparent'};
+  color: ${props => props.active ? '#c9a227' : '#666'};
+  border-bottom-color: ${props => props.active ? '#c9a227' : 'transparent'};
   font-weight: ${props => props.active ? 'bold' : 'normal'};
+  transition: color 0.2s ease, border-color 0.2s ease;
   
   &:hover {
-    color: #000;
+    color: #d4af37;
   }
 `;
 
@@ -54,10 +55,16 @@ const Input = styled.input`
   border: 1px solid #ddd;
   border-radius: 5px;
   font-size: 1rem;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #c9a227;
+  }
 `;
 
 const Button = styled.button`
-  background-color: #000;
+  background-color: #1a1a1a;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -65,9 +72,11 @@ const Button = styled.button`
   cursor: pointer;
   font-size: 1rem;
   margin-right: 10px;
+  transition: all 0.3s ease;
   
   &:hover {
-    background-color: #333;
+    background-color: #d4af37;
+    color: #1a1a1a;
   }
 `;
 

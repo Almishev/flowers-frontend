@@ -22,28 +22,45 @@ const EmptyState = styled.div`
   color: #6b7280;
 `;
 
-export default function SearchPage({query, trips, page, totalPages, totalCount}) {
-  const basePath = `/search?q=${encodeURIComponent(query)}`;
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+export default function SearchPage({query, brand, products, page, totalPages, totalCount}) {
+  const isBrand = !!brand;
+  const label = isBrand ? brand : query;
+  const basePath = isBrand
+    ? `/search?brand=${encodeURIComponent(brand)}`
+    : `/search?q=${encodeURIComponent(query)}`;
+  const noun = totalCount === 1 ? 'продукт' : 'продукта';
 
   return (
     <>
       <SEO 
-        title={`Търсене: "${query}"`}
-        description={`Търсене на екскурзии по "${query}". Намерени ${totalCount}.`}
-        url={`/search?q=${encodeURIComponent(query)}`}
+        title={isBrand ? `Продукти от ${brand}` : `Търсене: "${query}"`}
+        description={isBrand
+          ? `Всички продукти от ${brand} в DÉLIE. Намерени ${totalCount}.`
+          : `Търсене на продукти по "${query}". Намерени ${totalCount}.`}
+        url={basePath}
         image="/parfumes_sell.png"
       />
       <Header />
       <Center>
-        <Title>Търсене</Title>
+        <Title>{isBrand ? `Продукти от ${brand}` : 'Търсене'}</Title>
         <SearchSummary>
-          Резултати за: <strong>{query}</strong> ({totalCount} {totalCount === 1 ? 'екскурзия' : 'екскурзии'})
+          {isBrand
+            ? `${totalCount} ${noun}`
+            : <>Резултати за: <strong>{label}</strong> ({totalCount} {noun})</>}
         </SearchSummary>
-        {trips.length === 0 ? (
-          <EmptyState>Няма намерени екскурзии по тази заявка.</EmptyState>
+        {products.length === 0 ? (
+          <EmptyState>
+            {isBrand
+              ? `Няма намерени продукти от ${brand}.`
+              : 'Няма намерени продукти по тази заявка.'}
+          </EmptyState>
         ) : (
           <>
-            <ProductsGrid products={trips} />
+            <ProductsGrid products={products} />
             <Pagination 
               page={page} 
               totalPages={totalPages} 
@@ -59,7 +76,8 @@ export default function SearchPage({query, trips, page, totalPages, totalCount})
 
 export async function getServerSideProps({query}) {
   const searchQuery = query.q?.trim() || '';
-  if (!searchQuery) {
+  const brandQuery = query.brand?.trim() || '';
+  if (!searchQuery && !brandQuery) {
     return {
       redirect: {
         destination: '/',
@@ -73,34 +91,33 @@ export async function getServerSideProps({query}) {
     
     const pageParam = parseInt(query.page, 10);
     const page = Math.max(1, isNaN(pageParam) ? 1 : pageParam);
-    const skip = (page - 1) * PAGE_SIZE;
 
-    const regex = new RegExp(searchQuery, 'i');
-    const mongoQuery = {
-      $or: [
-        { title: regex },
-        { destinationCountry: regex },
-        { destinationCity: regex },
-        { departureCity: regex },
-        { description: regex },
-      ]
-    };
+    const mongoQuery = brandQuery
+      ? { brand: new RegExp(`^${escapeRegex(brandQuery)}$`, 'i') }
+      : {
+          $or: [
+            { title: new RegExp(escapeRegex(searchQuery), 'i') },
+            { brand: new RegExp(escapeRegex(searchQuery), 'i') },
+            { description: new RegExp(escapeRegex(searchQuery), 'i') },
+          ]
+        };
 
     const totalCount = await Product.countDocuments(mongoQuery);
     const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
     const currentPage = Math.min(page, totalPages);
     const currentSkip = (currentPage - 1) * PAGE_SIZE;
 
-    const trips = await Product.find(mongoQuery, null, {
+    const products = await Product.find(mongoQuery, null, {
       sort: {'_id': -1},
       skip: currentSkip,
       limit: PAGE_SIZE,
-    }).lean();
+    }).select('slug title description images price currency brand volume concentration gender stock category').lean();
 
     return {
       props: {
         query: searchQuery,
-        trips: JSON.parse(JSON.stringify(trips)),
+        brand: brandQuery,
+        products: JSON.parse(JSON.stringify(products)),
         page: currentPage,
         totalPages,
         totalCount,
@@ -111,7 +128,8 @@ export async function getServerSideProps({query}) {
     return {
       props: {
         query: searchQuery,
-        trips: [],
+        brand: brandQuery,
+        products: [],
         page: 1,
         totalPages: 1,
         totalCount: 0,
@@ -119,4 +137,3 @@ export async function getServerSideProps({query}) {
     };
   }
 }
-

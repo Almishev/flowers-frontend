@@ -45,8 +45,23 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: '/trip/:slug',
+        destination: '/perfume/:slug',
+        permanent: true,
+      },
+      {
         source: '/trips',
         destination: '/perfumes',
+        permanent: true,
+      },
+      {
+        source: '/destinations',
+        destination: '/categories',
+        permanent: true,
+      },
+      {
+        source: '/destination/:path*',
+        destination: '/categories',
         permanent: true,
       },
       {

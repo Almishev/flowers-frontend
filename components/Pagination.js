@@ -14,8 +14,8 @@ const PageButton = styled(Link)`
   padding: 8px 14px;
   border-radius: 999px;
   border: 1px solid #d4d4d8;
-  background: ${({active}) => (active ? "#4338ca" : "#fff")};
-  color: ${({active}) => (active ? "#fff" : "#374151")};
+  background: ${({active}) => (active ? "#c9a227" : "#fff")};
+  color: ${({active}) => (active ? "#1a1a1a" : "#374151")};
   text-decoration: none;
   font-weight: 500;
   min-width: 40px;
@@ -23,6 +23,13 @@ const PageButton = styled(Link)`
   cursor: ${({disabled}) => (disabled ? "not-allowed" : "pointer")};
   opacity: ${({disabled}) => (disabled ? 0.4 : 1)};
   pointer-events: ${({disabled}) => (disabled ? "none" : "auto")};
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: ${({active}) => (active ? "#d4af37" : "#f5edd0")};
+    border-color: #c9a227;
+    color: #1a1a1a;
+  }
 `;
 
 const ArrowButton = styled(PageButton)`

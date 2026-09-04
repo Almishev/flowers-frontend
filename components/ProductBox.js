@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {useWishlist} from "@/components/WishlistContext";
 import toast from "react-hot-toast";
-import BookPlaceholderIcon from "@/components/BookPlaceholderIcon";
+import ProductPlaceholderIcon from "@/components/ProductPlaceholderIcon";
 import Button from "@/components/Button";
 import {useContext, useEffect, useRef, useState} from "react";
 import {CartContext} from "@/components/CartContext";
@@ -33,6 +33,7 @@ const WishlistButton = styled.button`
   &:hover {
     background: rgba(255, 255, 255, 1);
     transform: scale(1.1);
+    box-shadow: 0 0 0 2px #c9a227;
   }
   
   svg {
@@ -98,6 +99,11 @@ const Title = styled(Link)`
   min-height: 2.6em;
   line-height: 1.3;
   overflow: hidden;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #c9a227;
+  }
 `;
 
 const ProductInfoBox = styled.div`
@@ -331,7 +337,7 @@ export default function ProductBox({
             />
           ) : (
             <PlaceholderThumb>
-              <BookPlaceholderIcon size={32} />
+              <ProductPlaceholderIcon size={32} />
             </PlaceholderThumb>
           )}
           {lensState.visible && mainImage && (

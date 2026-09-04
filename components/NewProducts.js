@@ -30,13 +30,13 @@ export default function NewProducts({products}) {
 
   return (
     <Center>
-      <Title ref={titleAnimation.ref} style={titleAnimation.style}>Нови парфюми</Title>
+      <Title ref={titleAnimation.ref} style={titleAnimation.style}>Нови продукти</Title>
       <AnimatedGrid ref={gridAnimation.ref} style={gridAnimation.style}>
         <ProductsGrid products={products} />
       </AnimatedGrid>
       <ButtonWrapper ref={buttonAnimation.ref} style={buttonAnimation.style}>
-        <ButtonLink href="/perfumes" black size="l">
-          Виж всички парфюми
+        <ButtonLink href="/categories" black size="l">
+          Виж всички отдели
         </ButtonLink>
       </ButtonWrapper>
     </Center>

@@ -162,11 +162,11 @@ const ButtonCTA = styled.a`
   }
   
   &:hover {
-    background: #fff;
-    color: #16a34a;
-    border-color: #fff;
+    background: #d4af37;
+    color: #1a1a1a;
+    border-color: #d4af37;
     transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.4), 0 0 20px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(201, 162, 39, 0.45), 0 0 20px rgba(212, 175, 55, 0.35);
     text-shadow: none;
     
     &::before {
@@ -290,7 +290,7 @@ export default function HeroVideo({ heroSettings }) {
   if (settings.heroMediaType === 'image' && !settings.heroImage) {
     return (
       <VideoWrapper ref={videoWrapperRef}>
-        <ImageWrapper style={{ minHeight: '400px', height: '65vh', background: 'linear-gradient(135deg, #166534 0%, #22c55e 100%)' }}>
+        <ImageWrapper style={{ minHeight: '400px', height: '65vh', background: 'linear-gradient(135deg, #8b6914 0%, #d4af37 100%)' }}>
           <TextOverlay>
               <h1>{settings.heroTitle}</h1>
               <p>{settings.heroSubtitle}</p>
@@ -393,7 +393,7 @@ export default function HeroVideo({ heroSettings }) {
   if (!currentVideo && settings.heroMediaType !== 'image') {
     return (
       <VideoWrapper ref={videoWrapperRef}>
-        <ImageWrapper style={{ minHeight: '400px', height: '65vh', background: 'linear-gradient(135deg, #166534 0%, #22c55e 100%)' }}>
+        <ImageWrapper style={{ minHeight: '400px', height: '65vh', background: 'linear-gradient(135deg, #8b6914 0%, #d4af37 100%)' }}>
           <TextOverlay>
               <h1>{settings.heroTitle}</h1>
               <p>{settings.heroSubtitle}</p>

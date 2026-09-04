@@ -4,7 +4,7 @@ import {Category} from "@/models/Category";
 import {categorySlug} from "@/lib/slugify";
 
 function generateSiteMap(products, categories) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.friendlytravel.eu';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
   
   return `<?xml version="1.0" encoding="UTF-8"?>
    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

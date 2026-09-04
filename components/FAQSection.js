@@ -48,7 +48,7 @@ const Question = styled.button`
   gap: 20px;
   
   &:hover {
-    color: #16a34a;
+    color: #c9a227;
   }
 `;
 
@@ -62,7 +62,7 @@ const Answer = styled.div`
 
 const Icon = styled.span`
   font-size: 1.5rem;
-  color: #16a34a;
+  color: #c9a227;
   transition: transform 0.3s ease;
   transform: ${props => props.isOpen ? 'rotate(180deg)' : 'rotate(0deg)'};
 `;

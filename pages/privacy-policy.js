@@ -37,7 +37,7 @@ const InfoBox = styled.div`
   padding: 25px;
   border-radius: 8px;
   margin: 30px 0;
-  border-left: 4px solid #16a34a;
+  border-left: 4px solid #c9a227;
   
   p {
     margin-bottom: 10px;
@@ -60,7 +60,7 @@ const List = styled.ul`
 
 const ContactBox = styled.div`
   background-color: #fff;
-  border: 2px solid #16a34a;
+  border: 2px solid #c9a227;
   padding: 25px;
   border-radius: 8px;
   margin: 40px 0;
@@ -79,7 +79,7 @@ const ContactBox = styled.div`
   }
   
   a {
-    color: #16a34a;
+    color: #c9a227;
     text-decoration: none;
     
     &:hover {

@@ -18,7 +18,7 @@ export default function SEO({
     siteUrl = window.location.origin; // Автоматично взима текущия origin (localhost:3000 или production)
   }
   if (!siteUrl) {
-    siteUrl = 'https://www.friendlytravel.eu'; // Fallback за SSR
+    siteUrl = '';
   }
   const fullUrl = url ? `${siteUrl}${url}` : siteUrl;
   

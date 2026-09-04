@@ -10,6 +10,7 @@ import Link from "next/link";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { slugify, categorySlug, categoryPath } from "@/lib/slugify";
+import { isPerfumeDepartment, productNoun } from "@/lib/categories";
 
 const Breadcrumb = styled.div`
   margin-bottom: 20px;
@@ -21,7 +22,7 @@ const Breadcrumb = styled.div`
     text-decoration: none;
     
     &:hover {
-      color: #000;
+      color: #c9a227;
     }
   }
 `;
@@ -55,6 +56,28 @@ const ProductCount = styled.span`
   color: #495057;
 `;
 
+const Chips = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+`;
+
+const Chip = styled(Link)`
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  padding: 6px 12px;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.9rem;
+
+  &:hover {
+    border-color: #c9a227;
+    color: #c9a227;
+  }
+`;
+
 const NoProducts = styled.div`
   text-align: center;
   padding: 40px;
@@ -62,7 +85,7 @@ const NoProducts = styled.div`
   font-size: 1.1rem;
 `;
 
-export default function CategoryPage({category, products, parentCategory}) {
+export default function CategoryPage({category, products, parentCategory, childCategories, isRoot}) {
   if (!category) {
     return (
       <>
@@ -77,19 +100,34 @@ export default function CategoryPage({category, products, parentCategory}) {
     );
   }
 
+  const department = isRoot ? category : parentCategory;
+  const perfume = isPerfumeDepartment(department);
+  const noun = productNoun(products.length, {perfume});
+  const itemWord = perfume ? 'парфюми' : 'продукти';
+
   return (
     <>
       <SEO 
-        title={`${category.name} - Категория парфюми`}
-        description={`Парфюми в категория "${category.name}". ${products.length} налични.`}
-        keywords={`${category.name}, категория, парфюми, DÉLIE`}
+        title={`${category.name} – ${isRoot ? 'отдел' : 'категория'}`}
+        description={`${itemWord.charAt(0).toUpperCase() + itemWord.slice(1)} в „${category.name}“. ${products.length} налични.`}
+        keywords={`${category.name}, ${itemWord}, DÉLIE`}
         url={categoryPath(category)}
         image="/parfumes_sell.png"
       />
       <Header />
       <Center>
         <Breadcrumb>
-          <Link href="/">Начало</Link> / <Link href="/categories">Категории парфюми</Link> / {category.name}
+          <Link href="/">Начало</Link>
+          {' / '}
+          <Link href="/categories">Отдели</Link>
+          {parentCategory && (
+            <>
+              {' / '}
+              <Link href={categoryPath(parentCategory)}>{parentCategory.name}</Link>
+            </>
+          )}
+          {' / '}
+          {category.name}
         </Breadcrumb>
         
         <CategoryInfo>
@@ -100,13 +138,22 @@ export default function CategoryPage({category, products, parentCategory}) {
             </CategoryDescription>
           )}
           <ProductCount>
-            {products.length} {products.length === 1 ? 'парфюм' : 'парфюма'} в тази категория
+            {products.length} {noun} в {isRoot ? 'този отдел' : 'тази категория'}
           </ProductCount>
+          {isRoot && childCategories?.length > 0 && (
+            <Chips>
+              {childCategories.map(child => (
+                <Chip key={child._id} href={categoryPath(child)}>
+                  {child.name}
+                </Chip>
+              ))}
+            </Chips>
+          )}
         </CategoryInfo>
 
         {products.length === 0 ? (
           <NoProducts>
-            Няма намерени парфюми в тази категория.
+            Няма намерени {itemWord} в тази категория.
           </NoProducts>
         ) : (
           <ProductsGrid products={products} />
@@ -116,6 +163,8 @@ export default function CategoryPage({category, products, parentCategory}) {
     </>
   );
 }
+
+const PRODUCT_FIELDS = 'slug title description images price currency brand volume concentration gender stock category';
 
 export async function getServerSideProps(context) {
   try {
@@ -139,6 +188,8 @@ export async function getServerSideProps(context) {
           category: null,
           products: [],
           parentCategory: null,
+          childCategories: [],
+          isRoot: false,
         }
       };
     }
@@ -152,15 +203,24 @@ export async function getServerSideProps(context) {
         },
       };
     }
-    
-    // Взимаме продуктите в тази категория
-    const products = await Product.find({category: category._id}).select('slug title description images destinationCountry destinationCity price currency availableSeats maxSeats category status startDate endDate durationDays travelType isFeatured departureCity');
+
+    const isRoot = !category.parent;
+    const childDocs = isRoot
+      ? await Category.find({ parent: category._id }).sort({ name: 1 })
+      : [];
+    const queryIds = isRoot
+      ? [category._id, ...childDocs.map(child => child._id)]
+      : [category._id];
+
+    const products = await Product.find({category: {$in: queryIds}}).select(PRODUCT_FIELDS);
     
     return {
       props: {
         category: JSON.parse(JSON.stringify(category)),
         products: JSON.parse(JSON.stringify(products)),
         parentCategory: category.parent ? JSON.parse(JSON.stringify(category.parent)) : null,
+        childCategories: JSON.parse(JSON.stringify(childDocs)),
+        isRoot,
       }
     };
   } catch (error) {
@@ -170,8 +230,9 @@ export async function getServerSideProps(context) {
         category: null,
         products: [],
         parentCategory: null,
+        childCategories: [],
+        isRoot: false,
       }
     };
   }
 }
-

@@ -31,9 +31,10 @@ const SeeAllLink = styled(Link)`
   transition: all 0.3s ease;
 
   &:hover {
-    background-color: #1f2937;
+    background-color: #d4af37;
+    color: #1a1a1a;
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 14px rgba(201, 162, 39, 0.4);
   }
 `;
 
@@ -60,7 +61,7 @@ const Card = styled(Link)`
   &:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
-    border-color: #d1d5db;
+    border-color: #c9a227;
   }
 `;
 
@@ -120,15 +121,15 @@ export default function PopularCategoriesHome({ categories = [] }) {
                   />
                 ) : (
                   <span style={{ color: "#9ca3af", fontSize: "0.9rem" }}>
-                    Категория парфюми
+                    Категория
                   </span>
                 )}
               </ImageWrapper>
               <CategoryName>{cat.name}</CategoryName>
               <CategoryMeta>
                 {typeof cat.productCount === "number"
-                  ? `${cat.productCount} ${cat.productCount === 1 ? "парфюм" : "парфюма"}`
-                  : "Парфюми в тази категория"}
+                  ? `${cat.productCount} ${cat.productCount === 1 ? "продукт" : "продукта"}`
+                  : "Продукти в тази категория"}
               </CategoryMeta>
             </Card>
           ))}

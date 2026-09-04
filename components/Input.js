@@ -7,6 +7,12 @@ const StyledInput = styled.input`
   border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing:border-box;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #c9a227;
+  }
 `;
 
 export default function Input(props) {

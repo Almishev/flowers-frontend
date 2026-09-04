@@ -52,7 +52,7 @@ const FooterSection = styled.div`
     transition: color 0.3s ease;
     
     &:hover {
-      color: #fff;
+      color: #d4af37;
     }
   }
 `;
@@ -88,11 +88,11 @@ const SocialLinks = styled.div`
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    color: #b8860b;
+    color: #d4af37;
     
     &:hover {
-      background-color: #fff;
-      color: #b8860b;
+      background-color: #d4af37;
+      color: #1a1a1a;
     }
   }
 `;
@@ -130,20 +130,31 @@ const BottomBar = styled.div`
 
 
 export default function Footer() {
-  const [mainCategories, setMainCategories] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    // Взимаме всички категории от API
     axios.get('/api/categories')
       .then(response => {
-        // Филтрираме само главните категории (тези без parent)
-        const mainCats = response.data.filter(cat => !cat.parent);
-        setMainCategories(mainCats);
+        const all = response.data || [];
+        setCategories(all);
+        const roots = all
+          .filter(cat => !cat.parent)
+          .sort((a, b) => (a.navOrder || 0) - (b.navOrder || 0) || a.name.localeCompare(b.name, 'bg'));
+        setDepartments(roots);
       })
       .catch(error => {
         console.error('Error fetching categories:', error);
       });
   }, []);
+
+  function childrenOf(parentId) {
+    return categories.filter(cat => {
+      if (!cat.parent) return false;
+      if (typeof cat.parent === 'string') return cat.parent === parentId;
+      return cat.parent._id === parentId;
+    });
+  }
 
   return (
     <StyledFooter>
@@ -153,10 +164,10 @@ export default function Footer() {
             <Logo>
               <h2>DÉLIE</h2>
               <p style={{fontWeight: '500', marginBottom: '8px'}}>
-                Бутик за дамски, мъжки, унисекс, арабски и нишови парфюми.
+                Бутик за парфюми, козметика и бижута.
               </p>
               <p style={{fontSize: '0.85rem', marginTop: '0'}}>
-                Подбрани аромати за всеки стил – от класически композиции до нишови и арабски колекции.
+                Подбрани продукти за всеки стил – от класически аромати до грижа и аксесоари.
               </p>
              
                
@@ -183,13 +194,20 @@ export default function Footer() {
           </FooterSection>
 
           <FooterSection>
-            <h3>Парфюми</h3>
+            <h3>Магазин</h3>
             <ul>
-              <li><Link href="/perfumes">Всички парфюми</Link></li>
-              
-              {mainCategories.map(category => (
-                <li key={category._id}>
-                  <Link href={categoryPath(category)}>{category.name}</Link>
+              {departments.map(department => (
+                <li key={department._id}>
+                  <Link href={categoryPath(department)}>{department.name}</Link>
+                  {childrenOf(department._id).length > 0 && (
+                    <ul style={{marginTop: '6px', paddingLeft: '12px'}}>
+                      {childrenOf(department._id).map(child => (
+                        <li key={child._id}>
+                          <Link href={categoryPath(child)}>{child.name}</Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </li>
               ))}
             </ul>
@@ -198,6 +216,7 @@ export default function Footer() {
           <FooterSection>
             <h3>Информация</h3>
             <ul>
+              <li><Link href="/categories">Категории</Link></li>
               <li><Link href="/about">За нас</Link></li>
               <li><Link href="/care">Грижа за парфюма</Link></li>
               <li><Link href="/privacy-policy">Политика на поверителност</Link></li>

@@ -6,18 +6,20 @@ import {Category} from "@/models/Category";
 import {mongooseConnect} from "@/lib/mongoose";
 import Footer from "@/components/Footer";
 import HeroVideo from "@/components/HeroVideo";
+import BrandMarquee from "@/components/BrandMarquee";
 import SEO from "@/components/SEO";
 import LazySection from "@/components/LazySection";
 import {Settings} from "@/models/Settings";
 
-// Lazy load компонентите, които не са видими веднага
 const NewProducts = lazy(() => import("@/components/NewProducts"));
 const PopularCategoriesHome = lazy(() => import("@/components/PopularCategoriesHome"));
-const PopularDestinations = lazy(() => import("@/components/PopularDestinations"));
+const PopularCollections = lazy(() => import("@/components/PopularCollections"));
 const AboutSection = lazy(() => import("@/components/AboutSection"));
 const FAQSection = lazy(() => import("@/components/FAQSection"));
 
-export default function HomePage({featuredProduct,newProducts,popularCategories, heroSettings}) {
+const PRODUCT_FIELDS = 'slug title description images price currency brand volume concentration gender stock category';
+
+export default function HomePage({featuredProduct,newProducts,popularCategories, departments, brands, heroSettings}) {
   return (
     <>
       <SEO 
@@ -30,6 +32,7 @@ export default function HomePage({featuredProduct,newProducts,popularCategories,
       <div>
         <Header />
         <HeroVideo heroSettings={heroSettings} />
+        <BrandMarquee brands={brands} />
         {featuredProduct ? (
           <Featured product={featuredProduct} />
         ) : (
@@ -67,7 +70,7 @@ export default function HomePage({featuredProduct,newProducts,popularCategories,
 
         <LazySection>
           <Suspense fallback={null}>
-            <PopularDestinations />
+            <PopularCollections departments={departments} />
           </Suspense>
         </LazySection>
 
@@ -92,43 +95,53 @@ export default function HomePage({featuredProduct,newProducts,popularCategories,
 export async function getServerSideProps() {
   try {
     await mongooseConnect();
-    // Взимаме всички настройки
     const allSettings = await Settings.find();
     const settingsMap = {};
     allSettings.forEach((setting) => {
       settingsMap[setting.name] = setting.value;
     });
 
+    const rawBrands = await Product.distinct('brand', { brand: { $nin: ['', null] } });
+    const seenBrands = new Set();
+    const brands = rawBrands
+      .map((name) => String(name || '').trim())
+      .filter((name) => {
+        if (!name) return false;
+        const key = name.toLowerCase();
+        if (seenBrands.has(key)) return false;
+        seenBrands.add(key);
+        return true;
+      })
+      .sort((a, b) => a.localeCompare(b, 'bg'));
+
     const featuredProductId = settingsMap.featuredProductId;
-    
+
     let featuredProduct = null;
     if (featuredProductId) {
-      featuredProduct = await Product.findById(featuredProductId).select('slug title description images destinationCountry destinationCity price currency availableSeats maxSeats category status startDate endDate durationDays travelType isFeatured departureCity');
+      featuredProduct = await Product.findById(featuredProductId).select(PRODUCT_FIELDS);
     }
-    
-    // Първо опитваме да взимаме акцентираните екскурзии (isFeatured: true)
-    let newProducts = await Product.find({isFeatured: true}).select('slug title description images destinationCountry destinationCity price currency availableSeats maxSeats category status startDate endDate durationDays travelType isFeatured departureCity').sort({'_id':-1}).limit(12);
-    
-    // Ако няма акцентирани екскурзии, показваме 12-те с най-скорошна дата на заминаване
-    if (!newProducts || newProducts.length === 0) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Започваме от началото на днес
-      
-      newProducts = await Product.find({
-        startDate: { $gte: today } // Само екскурзии с дата >= днес
-      }).select('slug title description images destinationCountry destinationCity price currency availableSeats maxSeats category status startDate endDate durationDays travelType isFeatured departureCity').sort({ startDate: 1 }).limit(12);
-      
-      // Ако все още няма с бъдещи дати, взимаме последните 12 добавени
-      if (!newProducts || newProducts.length === 0) {
-        newProducts = await Product.find({}).select('slug title description images destinationCountry destinationCity price currency availableSeats maxSeats category status startDate endDate durationDays travelType isFeatured departureCity').sort({ '_id': -1 }).limit(12);
-      }
-    }
-    
-    // Популярни категории – сортирани по брой продукти (топ 4)
+
+    const newProducts = await Product.find({})
+      .select(PRODUCT_FIELDS)
+      .sort({ _id: -1 })
+      .limit(12);
+
     const allCategories = await Category.find().lean();
+    const childIdsByParent = {};
+    allCategories.forEach((cat) => {
+      const parentId = cat.parent ? String(cat.parent) : '';
+      if (!parentId) return;
+      if (!childIdsByParent[parentId]) childIdsByParent[parentId] = [];
+      childIdsByParent[parentId].push(cat._id);
+    });
+
     const categoriesWithCounts = await Promise.all(
       allCategories.map(async (cat) => {
-        const productCount = await Product.countDocuments({ category: cat._id });
+        const isRoot = !cat.parent;
+        const ids = isRoot
+          ? [cat._id, ...(childIdsByParent[String(cat._id)] || [])]
+          : [cat._id];
+        const productCount = await Product.countDocuments({ category: { $in: ids } });
         return {
           ...cat,
           productCount,
@@ -136,15 +149,33 @@ export async function getServerSideProps() {
       })
     );
 
-    const popularCategories = categoriesWithCounts
-      .sort((a, b) => (b.productCount || 0) - (a.productCount || 0))
-      .slice(0, 4);
-    
+    const popularCategories = (() => {
+      const leaves = categoriesWithCounts
+        .filter((cat) => !!cat.parent)
+        .sort((a, b) => (b.productCount || 0) - (a.productCount || 0))
+        .slice(0, 4);
+      if (leaves.length > 0) return leaves;
+      return categoriesWithCounts
+        .filter((cat) => !cat.parent)
+        .sort((a, b) => (b.productCount || 0) - (a.productCount || 0))
+        .slice(0, 4);
+    })();
+
+    const departments = categoriesWithCounts
+      .filter((cat) => !cat.parent)
+      .sort((a, b) => (a.navOrder || 0) - (b.navOrder || 0) || String(a.name).localeCompare(b.name, 'bg'))
+      .map((cat) => ({
+        ...cat,
+        childrenCount: (childIdsByParent[String(cat._id)] || []).length,
+      }));
+
     return {
       props: {
         featuredProduct: featuredProduct ? JSON.parse(JSON.stringify(featuredProduct)) : null,
         newProducts: JSON.parse(JSON.stringify(newProducts)),
         popularCategories: JSON.parse(JSON.stringify(popularCategories)),
+        departments: JSON.parse(JSON.stringify(departments)),
+        brands,
         heroSettings: {
           heroMediaType: settingsMap.heroMediaType || 'video',
           heroVideoDesktop: settingsMap.heroVideoDesktop || '',
@@ -162,6 +193,8 @@ export async function getServerSideProps() {
         featuredProduct: null,
         newProducts: [],
         popularCategories: [],
+        departments: [],
+        brands: [],
         heroSettings: null,
       },
     };

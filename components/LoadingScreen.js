@@ -46,7 +46,7 @@ const LoadingOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: #16a34a;
+  background: #c9a227;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -106,7 +106,7 @@ export default function LoadingScreen() {
 
     // Функция за скриване на loading screen
     const hideLoading = () => {
-      // Минимално време за показване – държим зеления екран малко по-дълго,
+      // Минимално време за показване – държим златистия екран малко по-дълго,
       // за да има време видеото/херо секцията да се появи гладко
       const minDisplayTime = 1200; // 1.2 секунди
       // Максимално време – ако нещо зарежда по-бавно, скриваме най-късно след 3 секунди

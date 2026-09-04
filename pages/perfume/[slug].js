@@ -62,10 +62,10 @@ const StarBtn = styled.button`
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
-  color: ${props => props.active ? '#16a34a' : '#cbd5e1'};
+  color: ${props => props.active ? '#c9a227' : '#cbd5e1'};
   padding: 0;
   transition: color .15s ease;
-  &:hover { color: ${props => props.active ? '#9a7209' : '#94a3b8'}; }
+  &:hover { color: ${props => props.active ? '#d4af37' : '#c9a227'}; }
 `;
 const InputEl = styled.input`
   width: 100%;
@@ -73,6 +73,11 @@ const InputEl = styled.input`
   border-radius: 8px;
   padding: 10px 12px;
   margin-bottom: 10px;
+  transition: border-color 0.2s ease;
+  &:focus {
+    outline: none;
+    border-color: #c9a227;
+  }
 `;
 const TextareaEl = styled.textarea`
   width: 100%;
@@ -82,6 +87,11 @@ const TextareaEl = styled.textarea`
   min-height: 90px;
   margin-bottom: 12px;
   resize: vertical;
+  transition: border-color 0.2s ease;
+  &:focus {
+    outline: none;
+    border-color: #c9a227;
+  }
 `;
 const SmallMuted = styled.div`
   font-size: .85rem;
@@ -165,7 +175,7 @@ export default function PerfumePage({product}) {
                 <div><strong>Цена:</strong> {product.price.toFixed(2)} EUR</div>
               )}
               {typeof product.stock === 'number' && (
-                <div style={{marginTop: '8px', color: product.stock > 0 ? '#16a34a' : '#dc2626'}}>
+                <div style={{marginTop: '8px', color: product.stock > 0 ? '#c9a227' : '#dc2626'}}>
                   {product.stock > 0 ? `Наличност: ${product.stock} бр.` : 'Изчерпан продукт'}
                 </div>
               )}
@@ -215,7 +225,7 @@ export default function PerfumePage({product}) {
               {reviews.length === 0 && <div>Няма ревюта.</div>}
               {reviews.map(r => (
                 <div key={r._id} style={{borderTop:'1px solid #eee', paddingTop:12, marginTop:12}}>
-                  <div style={{color:'#16a34a'}}>{'★'.repeat(r.rating)}{'☆'.repeat(5-r.rating)}</div>
+                  <div style={{color:'#c9a227'}}>{'★'.repeat(r.rating)}{'☆'.repeat(5-r.rating)}</div>
                   <div className="font-semibold">{r.title}</div>
                   <SmallMuted>{new Date(r.createdAt).toLocaleString()}</SmallMuted>
                   <div className="mt-1">{r.content}</div>

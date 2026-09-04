@@ -53,7 +53,7 @@ export default function App({ Component, pageProps }) {
             },
             success: {
               iconTheme: {
-                primary: '#4ade80',
+                primary: '#d4af37',
                 secondary: '#fff',
               },
             },

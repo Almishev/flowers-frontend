@@ -6,7 +6,7 @@ export default async function handle(req, res) {
     await mongooseConnect();
 
     if (req.method === 'GET') {
-      const categories = await Category.find();
+      const categories = await Category.find().sort({navOrder: 1, name: 1});
       res.json(categories);
     } else {
       res.status(405).json({message: 'Method Not Allowed'});

@@ -8,10 +8,11 @@ import BarsIcon from "@/components/icons/Bars";
 import CartIcon from "@/components/icons/CartIcon";
 import {CartContext} from "@/components/CartContext";
 import {categoryPath} from "@/lib/slugify";
+import {primary, primaryHover, primaryDark} from "@/lib/colors";
 
 const TopBar = styled.div`
-  background-color: #16a34a;
-  color: #e5e7eb;
+  background-color: ${primary};
+  color: #1a1a1a;
   padding: 6px 0;
   font-size: 14px;
 `;
@@ -64,7 +65,7 @@ const Logo = styled(Link)`
   min-width: 0;
   
   &:hover {
-    color: #fff;
+    color: ${primaryHover};
   }
   
   @media screen and (max-width: 768px) {
@@ -196,7 +197,7 @@ const NavLink = styled(Link)`
   transition: color 0.3s ease, transform 0.2s ease;
   
   &:hover {
-    color: #fff;
+    color: ${primaryHover};
     transform: translateY(-2px);
   }
   
@@ -205,7 +206,7 @@ const NavLink = styled(Link)`
     font-size: 18px;
     
     &:hover {
-      color: #fff;
+      color: ${primaryHover};
       transform: none;
     }
   }
@@ -232,11 +233,39 @@ const MobileMenuButton = styled.button`
   transition: color 0.3s ease;
 
   &:hover {
-    color: #fff;
+    color: ${primaryHover};
   }
 
   @media screen and (min-width: 769px) {
     display: none;
+  }
+`;
+
+const MobileDeptRow = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+  margin-bottom: 4px;
+
+  @media screen and (min-width: 769px) {
+    display: none;
+  }
+`;
+
+const MobileChevronButton = styled.button`
+  background: transparent;
+  border: 0;
+  color: #aaa;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 8px 4px;
+  flex-shrink: 0;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: ${primaryHover};
   }
 `;
 
@@ -284,7 +313,7 @@ const CategoryGroupTitle = styled(Link)`
   font-family: inherit;
   
   &:hover {
-    color: #ffffff;
+    color: ${primaryHover};
   }
 `;
 
@@ -300,7 +329,7 @@ const CategorySubLink = styled(Link)`
   font-family: inherit;
   
   &:hover {
-    color: #ffffff;
+    color: ${primaryHover};
   }
 `;
 
@@ -341,6 +370,11 @@ const NavButton = styled.button`
   position: relative;
   z-index: 10000;
   flex-shrink: 0;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: ${primaryHover};
+  }
   
   @media screen and (max-width: 768px) {
     display: flex;
@@ -389,6 +423,13 @@ const UserArea = styled.div`
     color: #fff;
     cursor: pointer;
     font-size: 13px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: ${primaryHover};
+      border-color: ${primaryHover};
+      color: #1a1a1a;
+    }
   }
 `;
 
@@ -396,13 +437,14 @@ const PhoneLink = styled.a`
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #e5e7eb;
+  color: #1a1a1a;
   text-decoration: none;
   font-size: 14px;
   white-space: nowrap;
+  transition: color 0.3s ease;
   
   &:hover {
-    color: #ffffff;
+    color: ${primaryDark};
   }
   
   @media screen and (max-width: 900px) {
@@ -414,7 +456,7 @@ const PhoneIcon = styled.span`
   width: 20px;
   height: 20px;
   border-radius: 999px;
-  border: 1px solid rgba(248, 250, 252, 0.5);
+  border: 1px solid rgba(26, 26, 26, 0.35);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -433,12 +475,9 @@ export default function Header() {
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [categories, setCategories] = useState([]);
-  const [isCategoriesHover, setIsCategoriesHover] = useState(false);
-  const [isBouquetsHover, setIsBouquetsHover] = useState(false);
-  const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
-  const [mobileBouquetsOpen, setMobileBouquetsOpen] = useState(false);
-  const bouquetsHoverTimeout = useRef(null);
-  const categoriesHoverTimeout = useRef(null);
+  const [openDeptId, setOpenDeptId] = useState(null);
+  const [mobileOpenDeptId, setMobileOpenDeptId] = useState(null);
+  const deptHoverTimeout = useRef(null);
   const isLoggedIn = !!userEmail;
   const {cartProducts = []} = useContext(CartContext);
   const cartCount = cartProducts.length;
@@ -475,7 +514,9 @@ export default function Header() {
       .catch(() => {});
   }, []);
 
-  const mainCategories = categories.filter(cat => !cat.parent);
+  const departments = categories
+    .filter(cat => !cat.parent)
+    .sort((a, b) => (a.navOrder || 0) - (b.navOrder || 0) || a.name.localeCompare(b.name, 'bg'));
 
   const getChildren = (parentId) => {
     if (!parentId) return [];
@@ -518,138 +559,66 @@ export default function Header() {
           <NavArea>
             <StyledNav>
               <NavLink href={'/'}>Начало</NavLink>
-              <MotionCategoriesDropdown
-                onHoverStart={() => {
-                  if (bouquetsHoverTimeout.current) {
-                    clearTimeout(bouquetsHoverTimeout.current);
-                    bouquetsHoverTimeout.current = null;
-                  }
-                  setIsBouquetsHover(true);
-                }}
-                onHoverEnd={() => {
-                  if (bouquetsHoverTimeout.current) {
-                    clearTimeout(bouquetsHoverTimeout.current);
-                  }
-                  bouquetsHoverTimeout.current = setTimeout(() => {
-                    setIsBouquetsHover(false);
-                    bouquetsHoverTimeout.current = null;
-                  }, 180);
-                }}
-              >
-                <NavLink href={'/perfumes'}>
-                  <span style={{display: 'inline-flex', alignItems: 'center', gap: '8px'}}>
-                    Парфюми
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        transition: 'transform 0.2s ease',
-                        transform: isBouquetsHover ? 'rotate(180deg)' : 'rotate(0deg)',
-                        fontSize: '26px',
-                        lineHeight: 1,
-                      }}
-                    >
-                      ▾
-                    </span>
-                  </span>
-                </NavLink>
-                {categories.length > 0 && (
-                  <MotionCategoriesDropdownMenu
-                    initial="hidden"
-                    animate={isBouquetsHover ? 'visible' : 'hidden'}
-                    variants={desktopSubMenuVariants}
+              {departments.map(dept => {
+                const children = getChildren(dept._id);
+                const isOpen = openDeptId === dept._id;
+                return (
+                  <MotionCategoriesDropdown
+                    key={dept._id}
+                    onHoverStart={() => {
+                      if (deptHoverTimeout.current) {
+                        clearTimeout(deptHoverTimeout.current);
+                        deptHoverTimeout.current = null;
+                      }
+                      setOpenDeptId(dept._id);
+                    }}
+                    onHoverEnd={() => {
+                      if (deptHoverTimeout.current) {
+                        clearTimeout(deptHoverTimeout.current);
+                      }
+                      deptHoverTimeout.current = setTimeout(() => {
+                        setOpenDeptId(null);
+                        deptHoverTimeout.current = null;
+                      }, 180);
+                    }}
                   >
-                    <CategoryGroup>
-                      <CategoryGroupTitle href="/perfumes">
-                        Всички парфюми
-                      </CategoryGroupTitle>
-                    </CategoryGroup>
-                    {mainCategories.map(cat => {
-                      const children = getChildren(cat._id);
-                      return (
-                        <CategoryGroup key={cat._id}>
-                          <CategoryGroupTitle href={categoryPath(cat)}>
-                            {cat.name}
-                          </CategoryGroupTitle>
-                          {children.map(sub => (
-                            <CategorySubLink
-                              key={sub._id}
-                              href={categoryPath(sub)}
-                            >
-                              {sub.name}
-                            </CategorySubLink>
-                          ))}
-                        </CategoryGroup>
-                      );
-                    })}
-                  </MotionCategoriesDropdownMenu>
-                )}
-              </MotionCategoriesDropdown>
-              <MotionCategoriesDropdown
-                onHoverStart={() => {
-                  if (categoriesHoverTimeout.current) {
-                    clearTimeout(categoriesHoverTimeout.current);
-                    categoriesHoverTimeout.current = null;
-                  }
-                  setIsCategoriesHover(true);
-                }}
-                onHoverEnd={() => {
-                  if (categoriesHoverTimeout.current) {
-                    clearTimeout(categoriesHoverTimeout.current);
-                  }
-                  categoriesHoverTimeout.current = setTimeout(() => {
-                    setIsCategoriesHover(false);
-                    categoriesHoverTimeout.current = null;
-                  }, 180);
-                }}
-              >
-                <NavLink href={'/categories'}>
-                  <span style={{display: 'inline-flex', alignItems: 'center', gap: '8px'}}>
-                    Категории
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        transition: 'transform 0.2s ease',
-                        transform: isCategoriesHover ? 'rotate(180deg)' : 'rotate(0deg)',
-                        fontSize: '26px',
-                        lineHeight: 1,
-                      }}
-                    >
-                      ▾
-                    </span>
-                  </span>
-                </NavLink>
-                {categories.length > 0 && (
-                  <MotionCategoriesDropdownMenu
-                    initial="hidden"
-                    animate={isCategoriesHover ? 'visible' : 'hidden'}
-                    variants={desktopSubMenuVariants}
-                  >
-                    <CategoryGroup>
-                      <CategoryGroupTitle href="/perfumes">
-                        Всички парфюми
-                      </CategoryGroupTitle>
-                    </CategoryGroup>
-                    {mainCategories.map(cat => {
-                      const children = getChildren(cat._id);
-                      return (
-                        <CategoryGroup key={cat._id}>
-                          <CategoryGroupTitle href={categoryPath(cat)}>
-                            {cat.name}
-                          </CategoryGroupTitle>
-                          {children.map(sub => (
-                            <CategorySubLink
-                              key={sub._id}
-                              href={categoryPath(sub)}
-                            >
-                              {sub.name}
-                            </CategorySubLink>
-                          ))}
-                        </CategoryGroup>
-                      );
-                    })}
-                  </MotionCategoriesDropdownMenu>
-                )}
-              </MotionCategoriesDropdown>
+                    <NavLink href={categoryPath(dept)}>
+                      <span style={{display: 'inline-flex', alignItems: 'center', gap: '8px'}}>
+                        {dept.name}
+                        {children.length > 0 && (
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              transition: 'transform 0.2s ease',
+                              transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                              fontSize: '26px',
+                              lineHeight: 1,
+                            }}
+                          >
+                            ▾
+                          </span>
+                        )}
+                      </span>
+                    </NavLink>
+                    {children.length > 0 && (
+                      <MotionCategoriesDropdownMenu
+                        initial="hidden"
+                        animate={isOpen ? 'visible' : 'hidden'}
+                        variants={desktopSubMenuVariants}
+                      >
+                        {children.map(sub => (
+                          <CategorySubLink
+                            key={sub._id}
+                            href={categoryPath(sub)}
+                          >
+                            {sub.name}
+                          </CategorySubLink>
+                        ))}
+                      </MotionCategoriesDropdownMenu>
+                    )}
+                  </MotionCategoriesDropdown>
+                );
+              })}
               <NavLink href={'/about'}>За нас</NavLink>
               <NavLink href={'/account'}>Акаунт</NavLink>
               <NavLink href={'/cart'}>
@@ -679,158 +648,64 @@ export default function Header() {
             >
               Начало
             </NavLink>
-            <div style={{width: '100%', marginTop: '4px', marginBottom: '4px'}}>
-              <MobileMenuButton
-                type="button"
-                onClick={() => {
-                  setMobileBouquetsOpen(prev => {
-                    const next = !prev;
-                    if (next) {
-                      setMobileCategoriesOpen(false);
-                    }
-                    return next;
-                  });
-                }}
-              >
-                <span>Парфюми</span>
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    transition: 'transform 0.2s ease',
-                    transform: mobileBouquetsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                    fontSize: '26px',
-                  }}
-                >
-                  ▾
-                </span>
-              </MobileMenuButton>
-              {mobileBouquetsOpen && (
-                <div style={{marginTop: '4px', marginBottom: '8px'}}>
-                  <NavLink
-                    href={'/perfumes'}
-                    onClick={() => { setMobileNavActive(false); setMobileBouquetsOpen(false); }}
-                    style={{
-                      width: '100%',
-                      textAlign: 'left',
-                      padding: '6px 0',
-                      fontSize: '16px',
-                    }}
-                  >
-                    Всички парфюми
-                  </NavLink>
-                  {mainCategories.map(cat => {
-                    const children = getChildren(cat._id);
-                    return (
-                      <div key={cat._id} style={{marginTop: '2px', marginBottom: '2px'}}>
+            {departments.map(dept => {
+              const children = getChildren(dept._id);
+              const isOpen = mobileOpenDeptId === dept._id;
+              return (
+                <div key={dept._id} style={{width: '100%', marginTop: '4px', marginBottom: '4px'}}>
+                  <MobileDeptRow>
+                    <NavLink
+                      href={categoryPath(dept)}
+                      onClick={() => setMobileNavActive(false)}
+                      style={{
+                        flex: 1,
+                        textAlign: 'left',
+                        padding: '12px 0',
+                        fontSize: '18px',
+                      }}
+                    >
+                      {dept.name}
+                    </NavLink>
+                    {children.length > 0 && (
+                      <MobileChevronButton
+                        type="button"
+                        aria-label={`Подкатегории ${dept.name}`}
+                        onClick={() => setMobileOpenDeptId(prev => prev === dept._id ? null : dept._id)}
+                      >
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            transition: 'transform 0.2s ease',
+                            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                          }}
+                        >
+                          ▾
+                        </span>
+                      </MobileChevronButton>
+                    )}
+                  </MobileDeptRow>
+                  {isOpen && children.length > 0 && (
+                    <div style={{marginTop: '4px', marginBottom: '8px'}}>
+                      {children.map(sub => (
                         <NavLink
-                          href={categoryPath(cat)}
-                          onClick={() => { setMobileNavActive(false); setMobileBouquetsOpen(false); }}
+                          key={sub._id}
+                          href={categoryPath(sub)}
+                          onClick={() => { setMobileNavActive(false); setMobileOpenDeptId(null); }}
                           style={{
                             width: '100%',
                             textAlign: 'left',
-                            padding: '6px 0',
-                            fontSize: '16px',
+                            padding: '4px 0 4px 22px',
+                            fontSize: '15px',
                           }}
                         >
-                          {cat.name}
+                          └ {sub.name}
                         </NavLink>
-                        {children.map(sub => (
-                          <NavLink
-                            key={sub._id}
-                            href={categoryPath(sub)}
-                            onClick={() => { setMobileNavActive(false); setMobileBouquetsOpen(false); }}
-                            style={{
-                              width: '100%',
-                              textAlign: 'left',
-                              padding: '4px 0 4px 22px',
-                              fontSize: '15px',
-                            }}
-                          >
-                            └ {sub.name}
-                          </NavLink>
-                        ))}
-                      </div>
-                    );
-                  })}
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <div style={{width: '100%', marginTop: '4px', marginBottom: '4px'}}>
-              <MobileMenuButton
-                type="button"
-                onClick={() => {
-                  setMobileCategoriesOpen(prev => {
-                    const next = !prev;
-                    if (next) {
-                      setMobileBouquetsOpen(false);
-                    }
-                    return next;
-                  });
-                }}
-              >
-                <span>Категории</span>
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    transition: 'transform 0.2s ease',
-                    transform: mobileCategoriesOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                    fontSize: '26px',
-                  }}
-                >
-                  ▾
-                </span>
-              </MobileMenuButton>
-              {mobileCategoriesOpen && (
-                <div style={{marginTop: '4px', marginBottom: '8px'}}>
-                  <NavLink
-                    href={'/perfumes'}
-                    onClick={() => { setMobileNavActive(false); setMobileCategoriesOpen(false); }}
-                    style={{
-                      width: '100%',
-                      textAlign: 'left',
-                      padding: '6px 0',
-                      fontSize: '16px',
-                    }}
-                  >
-                    Всички парфюми
-                  </NavLink>
-                  {mainCategories.map(cat => {
-                    const children = getChildren(cat._id);
-                    return (
-                      <div key={cat._id} style={{marginTop: '2px', marginBottom: '2px'}}>
-                        <NavLink
-                          href={categoryPath(cat)}
-                          onClick={() => { setMobileNavActive(false); setMobileCategoriesOpen(false); }}
-                          style={{
-                            width: '100%',
-                            textAlign: 'left',
-                            padding: '6px 0',
-                            fontSize: '16px',
-                          }}
-                        >
-                          {cat.name}
-                        </NavLink>
-                        {children.map(sub => (
-                          <NavLink
-                            key={sub._id}
-                            href={categoryPath(sub)}
-                            onClick={() => { setMobileNavActive(false); setMobileCategoriesOpen(false); }}
-                            style={{
-                              width: '100%',
-                              textAlign: 'left',
-                              padding: '4px 0 4px 22px',
-                              fontSize: '15px',
-                            }}
-                          >
-                            └ {sub.name}
-                          </NavLink>
-                        ))}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+              );
+            })}
             <NavLink
               href={'/about'}
               onClick={() => setMobileNavActive(false)}
@@ -888,6 +763,17 @@ export default function Header() {
                     color: '#aaa',
                     fontSize: '14px',
                     cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#d4af37';
+                    e.currentTarget.style.borderColor = '#d4af37';
+                    e.currentTarget.style.color = '#1a1a1a';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.borderColor = '#aaa';
+                    e.currentTarget.style.color = '#aaa';
                   }}
                 >
                   Изход

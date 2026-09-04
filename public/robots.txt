@@ -2,9 +2,8 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://www.friendlytravel.eu/sitemap.xml
+Sitemap: /sitemap.xml
 
 # Disallow admin pages
 Disallow: /api/
 Disallow: /account
-

@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import {useEffect, useState} from "react";
 import Image from "next/image";
-import BookPlaceholderIcon from "@/components/BookPlaceholderIcon";
+import ProductPlaceholderIcon from "@/components/ProductPlaceholderIcon";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
@@ -16,7 +16,7 @@ const ImageButtons = styled.div`
 const ImageButton = styled.div`
   border: 2px solid #ccc;
   ${props => props.active ? `
-    border-color: #ccc;
+    border-color: #c9a227;
   ` : `
     border-color: transparent;
   `}
@@ -66,7 +66,7 @@ export default function ProductImages({images = []}) {
     return (
       <PlaceholderWrapper>
         <InnerPlaceholder>
-          <BookPlaceholderIcon size={64} />
+          <ProductPlaceholderIcon size={64} />
         </InnerPlaceholder>
       </PlaceholderWrapper>
     );

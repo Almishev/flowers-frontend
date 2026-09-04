@@ -82,13 +82,13 @@ const PaymentMethodLabel = styled.label`
   margin-bottom: 10px;
   cursor: pointer;
   border-radius: 8px;
-  border: 2px solid ${props => props.selected ? '#222' : '#ddd'};
-  background-color: ${props => props.selected ? '#f0f0f0' : '#fff'};
+  border: 2px solid ${props => props.selected ? '#c9a227' : '#ddd'};
+  background-color: ${props => props.selected ? '#f5edd0' : '#fff'};
   transition: all 0.3s ease;
   
   &:hover {
-    border-color: #222;
-    background-color: #f9f9f9;
+    border-color: #c9a227;
+    background-color: #faf6e8;
   }
   
   input[type="radio"] {

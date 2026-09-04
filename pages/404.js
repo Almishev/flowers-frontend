@@ -29,7 +29,7 @@ const Content = styled.div`
     right: -80px;
     width: 220px;
     height: 220px;
-    background: radial-gradient(circle, rgba(59,130,246,0.18), transparent 65%);
+    background: radial-gradient(circle, rgba(201,162,39,0.22), transparent 65%);
     z-index: 0;
   }
 
@@ -40,7 +40,7 @@ const Content = styled.div`
     left: -60px;
     width: 260px;
     height: 260px;
-    background: radial-gradient(circle, rgba(16,185,129,0.18), transparent 60%);
+    background: radial-gradient(circle, rgba(212,175,55,0.18), transparent 60%);
     z-index: 0;
   }
 `;
@@ -48,7 +48,7 @@ const Content = styled.div`
 const Status = styled.div`
   font-size: 6rem;
   font-weight: 700;
-  color: #1d4ed8;
+  color: #c9a227;
   margin-bottom: 16px;
   position: relative;
   z-index: 1;
@@ -87,16 +87,17 @@ const Actions = styled.div`
 const PrimaryButton = styled(Link)`
   padding: 14px 28px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  color: #fff;
+  background: linear-gradient(135deg, #c9a227, #d4af37);
+  color: #1a1a1a;
   font-weight: 600;
   text-decoration: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 15px 30px rgba(37, 99, 235, 0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 15px 30px rgba(201, 162, 39, 0.28);
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 18px 40px rgba(37, 99, 235, 0.28);
+    background: #d4af37;
+    box-shadow: 0 18px 40px rgba(201, 162, 39, 0.4);
   }
 `;
 
@@ -110,9 +111,9 @@ const SecondaryButton = styled(Link)`
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 
   &:hover {
-    background: #111827;
-    color: #fff;
-    border-color: #111827;
+    background: #d4af37;
+    color: #1a1a1a;
+    border-color: #d4af37;
   }
 `;
 

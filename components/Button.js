@@ -1,5 +1,14 @@
 import styled, {css} from "styled-components";
-import {primary} from "@/lib/colors";
+import {primary, primaryHover} from "@/lib/colors";
+
+const goldHoverFill = css`
+  background-color: ${primaryHover};
+  border-color: ${primaryHover};
+  color: #1a1a1a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(201, 162, 39, 0.4);
+  filter: none;
+`;
 
 export const ButtonStyle = css`
   border:0;
@@ -7,7 +16,7 @@ export const ButtonStyle = css`
   border-radius: 5px;
   cursor: pointer;
   display: inline-flex;
-  align-items: center;
+    align-items: center;
   text-decoration: none;
   font-family: 'Poppins', sans-serif;
   font-weight:500;
@@ -40,7 +49,7 @@ export const ButtonStyle = css`
   ${props => props.primary && !props.outline && css`
     background-color: ${primary};
     border: 1px solid ${primary};
-    color:#000;
+    color:#1a1a1a;
   `}
   ${props => props.primary && props.outline && css`
     background-color: transparent;
@@ -61,37 +70,7 @@ const StyledButton = styled.button`
   transition: all 0.3s ease;
   
   &:hover:not(:disabled) {
-    ${props => props.white && !props.outline && css`
-      background-color: #f5f5f5;
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    `}
-    ${props => props.white && props.outline && css`
-      background-color: rgba(255, 255, 255, 0.1);
-      border-color: #fff;
-    `}
-    ${props => props.black && !props.outline && css`
-      background-color: #1f2937;
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    `}
-    ${props => props.black && props.outline && css`
-      background-color: rgba(17, 24, 39, 0.05);
-      border-color: #1f2937;
-    `}
-    ${props => props.primary && !props.outline && css`
-      background-color: ${primary};
-      filter: brightness(1.1);
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      color: #fff;
-    `}
-    ${props => props.primary && props.outline && css`
-      background-color: ${primary};
-      color: #fff;
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    `}
+    ${goldHoverFill}
   }
   
   &:active:not(:disabled) {
