@@ -11,12 +11,6 @@ import {CartContext} from "@/components/CartContext";
 import {categoryPath} from "@/lib/slugify";
 import {primary, primaryHover, primaryDark} from "@/lib/colors";
 
-const HeaderWrap = styled.div`
-  position: sticky;
-  top: 0;
-  z-index: 10002;
-`;
-
 const TopBar = styled.div`
   background-color: ${primary};
   color: #1a1a1a;
@@ -574,7 +568,6 @@ export default function Header() {
         onClick={() => setMobileNavActive(false)}
         aria-hidden={!mobileNavActive}
       />
-      <HeaderWrap>
       <TopBar>
         <TopBarInner>
           <HeaderSearch />
@@ -821,7 +814,6 @@ export default function Header() {
         </Wrapper>
         </HeaderInner>
       </StyledHeader>
-      </HeaderWrap>
     </>
   );
 }

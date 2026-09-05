@@ -17,7 +17,7 @@ export default async function handler(req,res) {
   
   await mongooseConnect();
   
-  const productsIds = cartProducts || [];
+  const productsIds = (cartProducts || []).map(id => String(id));
   const uniqueIds = [...new Set(productsIds)];
   
   const mongoose = require('mongoose');
@@ -30,23 +30,14 @@ export default async function handler(req,res) {
   });
   
   const productsInfos = await Product.find({_id: {$in: objectIds}});
+  const qtyOf = (productId) => productsIds.filter(id => String(id) === String(productId)).length;
 
-  // Валидация на наличността преди създаване на поръчка
+  const validIds = [];
   for (const productId of uniqueIds) {
-    const productInfo = productsInfos.find(p => {
-      const productIdStr = p._id.toString();
-      const searchIdStr = productId.toString();
-      return productIdStr === searchIdStr;
-    });
-    
-    if (!productInfo) {
-      return res.status(400).json({
-        success: false,
-        error: `Продукт с ID ${productId} не е намерен`,
-      });
-    }
-    
-    const quantity = productsIds.filter(id => id === productId)?.length || 0;
+    const productInfo = productsInfos.find(p => p._id.toString() === String(productId));
+    if (!productInfo) continue;
+
+    const quantity = qtyOf(productId);
     const availableStock = productInfo.stock || 0;
     
     if (availableStock && quantity > availableStock) {
@@ -55,16 +46,20 @@ export default async function handler(req,res) {
         error: `Няма достатъчна наличност за "${productInfo.title}". Налични: ${availableStock}, Искани: ${quantity}`,
       });
     }
+    validIds.push(productId);
+  }
+
+  if (validIds.length === 0) {
+    return res.status(400).json({
+      success: false,
+      error: 'В кошницата няма налични продукти. Обновете страницата и опитайте отново.',
+    });
   }
 
   let line_items = [];
-  for (const productId of uniqueIds) {
-    const productInfo = productsInfos.find(p => {
-      const productIdStr = p._id.toString();
-      const searchIdStr = productId.toString();
-      return productIdStr === searchIdStr;
-    });
-    const quantity = productsIds.filter(id => id.toString() === productId.toString())?.length || 0;
+  for (const productId of validIds) {
+    const productInfo = productsInfos.find(p => p._id.toString() === String(productId));
+    const quantity = qtyOf(productId);
     if (quantity > 0 && productInfo) {
       line_items.push({
         quantity,
@@ -113,8 +108,8 @@ export default async function handler(req,res) {
 
     // Актуализиране на наличностите и завършване на поръчка с наложен платеж
     try {
-      for (const productId of uniqueIds) {
-        const qty = productsIds.filter(id => id === productId)?.length || 0;
+      for (const productId of validIds) {
+        const qty = qtyOf(productId);
         if (!qty) continue;
         const prod = await Product.findById(productId);
         if (!prod) continue;

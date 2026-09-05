@@ -3,44 +3,53 @@ import toast from "react-hot-toast";
 
 export const CartContext = createContext({});
 
+function normalizeIds(ids) {
+  if (!Array.isArray(ids)) return [];
+  return ids.map(id => String(id)).filter(Boolean);
+}
+
 export function CartContextProvider({children}) {
-  const ls = typeof window !== "undefined" ? window.localStorage : null;
   const [cartProducts,setCartProducts] = useState([]);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (cartProducts?.length > 0) {
-      ls?.setItem('cart', JSON.stringify(cartProducts));
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = window.localStorage.getItem('cart');
+      if (raw) {
+        setCartProducts(normalizeIds(JSON.parse(raw)));
+      }
+    } catch (e) {
+      window.localStorage.removeItem('cart');
     }
-  }, [cartProducts, ls]);
+    setReady(true);
+  }, []);
 
   useEffect(() => {
-    if (ls && ls.getItem('cart')) {
-      setCartProducts(JSON.parse(ls.getItem('cart')));
+    if (!ready || typeof window === 'undefined') return;
+    if (cartProducts.length > 0) {
+      window.localStorage.setItem('cart', JSON.stringify(cartProducts));
+    } else {
+      window.localStorage.removeItem('cart');
     }
-  }, [ls]);
+  }, [cartProducts, ready]);
 
   function addProduct(productId) {
-    setCartProducts(prev => {
-      const next = [...prev, productId];
-      // Леко потвърждение, че продукт е добавен
-      try {
-        toast.success('Продуктът е добавен в кошницата 🛒', {
-          duration: 2200,
-        });
-      } catch (e) {
-        // ignore toast errors (напр. по време на SSR)
-      }
-      return next;
-    });
+    const id = String(productId);
+    setCartProducts(prev => [...prev, id]);
+    try {
+      toast.success('Продуктът е добавен в кошницата 🛒', {
+        duration: 2200,
+      });
+    } catch (e) {}
   }
 
   function removeProduct(productId) {
+    const id = String(productId);
     setCartProducts(prev => {
-      const pos = prev.indexOf(productId);
-      if (pos !== -1) {
-        return prev.filter((value,index) => index !== pos);
-      }
-      return prev;
+      const pos = prev.findIndex(value => String(value) === id);
+      if (pos === -1) return prev;
+      return prev.filter((_, index) => index !== pos);
     });
   }
 
@@ -54,4 +63,3 @@ export function CartContextProvider({children}) {
     </CartContext.Provider>
   );
 }
-

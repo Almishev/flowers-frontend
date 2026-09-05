@@ -113,7 +113,7 @@ const PaymentMethodLabel = styled.label`
 `;
 
 export default function CartPage() {
-  const {cartProducts,addProduct,removeProduct,clearCart} = useContext(CartContext);
+  const {cartProducts,setCartProducts,addProduct,removeProduct,clearCart} = useContext(CartContext);
   const [products,setProducts] = useState([]);
   const [name,setName] = useState('');
   const [email,setEmail] = useState('');
@@ -126,15 +126,22 @@ export default function CartPage() {
   const [shippingPrice,setShippingPrice] = useState(5);
 
   useEffect(() => {
-    if (cartProducts.length > 0) {
-      axios.post('/api/cart', {ids:cartProducts})
-        .then(response => {
-          setProducts(response.data);
-        });
-    } else {
+    if (cartProducts.length === 0) {
       setProducts([]);
+      return;
     }
-  }, [cartProducts]);
+    axios.post('/api/cart', {ids: cartProducts})
+      .then(response => {
+        const found = response.data || [];
+        setProducts(found);
+        const foundIds = new Set(found.map(p => String(p._id)));
+        const cleaned = cartProducts.filter(id => foundIds.has(String(id)));
+        if (cleaned.length !== cartProducts.length) {
+          setCartProducts(cleaned);
+        }
+      })
+      .catch(() => {});
+  }, [cartProducts, setCartProducts]);
 
   useEffect(() => {
     axios.get('/api/settings')
@@ -158,6 +165,9 @@ export default function CartPage() {
 
   useEffect(() => {
     if (!isSuccess) return;
+    window.scrollTo({top: 0, left: 0, behavior: 'auto'});
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
     let cancelled = false;
     (async () => {
       try {
@@ -200,7 +210,7 @@ export default function CartPage() {
     const product = products.find(p => p._id === id);
     if (!product) return;
     
-    const currentQuantity = cartProducts.filter(pid => pid === id).length;
+    const currentQuantity = cartProducts.filter(pid => String(pid) === String(id)).length;
     const availableStock = product.stock || 0;
     
     if (availableStock && currentQuantity >= availableStock) {
@@ -257,7 +267,7 @@ export default function CartPage() {
 
   let subtotal = 0;
   for (const productId of cartProducts) {
-    const price = products.find(p => p._id === productId)?.price || 0;
+    const price = products.find(p => String(p._id) === String(productId))?.price || 0;
     subtotal += price;
   }
   const total = subtotal + Number(shippingPrice || 0);
@@ -314,7 +324,7 @@ export default function CartPage() {
                       <td>
                         <Button onClick={() => lessOfThisProduct(product._id)}>-</Button>
                         <QuantityLabel>
-                          {cartProducts.filter(id => id === product._id).length}
+                          {cartProducts.filter(id => String(id) === String(product._id)).length}
                           {product.stock !== undefined && (
                             <span style={{fontSize: '0.85em', color: '#666', marginLeft: '8px'}}>
                               / {product.stock} налични
@@ -323,13 +333,13 @@ export default function CartPage() {
                         </QuantityLabel>
                         <Button
                           onClick={() => moreOfThisProduct(product._id)}
-                          disabled={product.stock !== undefined && product.stock > 0 && cartProducts.filter(id => id === product._id).length >= (product.stock || 0)}
+                          disabled={product.stock !== undefined && product.stock > 0 && cartProducts.filter(id => String(id) === String(product._id)).length >= (product.stock || 0)}
                         >
                           +
                         </Button>
                       </td>
                       <td>
-                        {formatMoney(cartProducts.filter(id => id === product._id).length * product.price)} EUR
+                        {formatMoney(cartProducts.filter(id => String(id) === String(product._id)).length * product.price)} EUR
                       </td>
                     </tr>
                   ))}
