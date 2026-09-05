@@ -19,6 +19,10 @@ const GlobalStyles = createGlobalStyle`
       overflow: hidden;
     }
   }
+
+  .grecaptcha-badge {
+    visibility: hidden !important;
+  }
 `;
 
 export default function App({ Component, pageProps }) {
