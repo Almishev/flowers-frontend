@@ -5,7 +5,6 @@ import Center from "@/components/Center";
 import Title from "@/components/Title";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
-import FoundersSection from "@/components/FoundersSection";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const ContentWrapper = styled.div`
@@ -87,12 +86,10 @@ const AnimatedSection = styled.div`
 export default function AboutPage() {
   const introAnimation = useScrollAnimation({ animation: 'fadeIn', delay: 0 });
   const mottoAnimation = useScrollAnimation({ animation: 'fadeIn', delay: 200 });
-  const teamAnimation = useScrollAnimation({ animation: 'slideUp', delay: 400 });
-  const missionAnimation = useScrollAnimation({ animation: 'slideUp', delay: 600 });
-  const deliveryAnimation = useScrollAnimation({ animation: 'slideUp', delay: 800 });
-  const servicesAnimation = useScrollAnimation({ animation: 'slideUp', delay: 1000 });
-  const foundersAnimation = useScrollAnimation({ animation: 'fadeIn', delay: 1200 });
-  const contactAnimation = useScrollAnimation({ animation: 'fadeIn', delay: 1400 });
+  const missionAnimation = useScrollAnimation({ animation: 'slideUp', delay: 400 });
+  const deliveryAnimation = useScrollAnimation({ animation: 'slideUp', delay: 600 });
+  const servicesAnimation = useScrollAnimation({ animation: 'slideUp', delay: 800 });
+  const contactAnimation = useScrollAnimation({ animation: 'fadeIn', delay: 1000 });
 
   return (
     <>
@@ -117,18 +114,6 @@ export default function AboutPage() {
 
           <AnimatedSection ref={mottoAnimation.ref} style={mottoAnimation.style}>
             <Motto>&quot;Всеки аромат е спомен&quot;</Motto>
-          </AnimatedSection>
-
-          <AnimatedSection ref={teamAnimation.ref} style={teamAnimation.style}>
-            <SectionTitle>Собственик и визия</SectionTitle>
-            <Paragraph>
-              Зад DÉLIE стои <strong>Даниела Делиева</strong> – която вярва, че детайлите правят всеки жест специален. 
-              Нейният усет към стила се превръща в внимателно подбрана колекция от класически и нишови аромати.
-            </Paragraph>
-            <Paragraph>
-              Всяка поръчка се подготвя с лично отношение – от избора на парфюм до опаковката. 
-              Целта ни е клиентът да получи не просто продукт, а <strong>преживяване</strong> – за подарък, повод или ежедневие.
-            </Paragraph>
           </AnimatedSection>
 
           <AnimatedSection ref={missionAnimation.ref} style={missionAnimation.style}>
@@ -170,13 +155,10 @@ export default function AboutPage() {
             <ContactInfo>
               <SectionTitle>Контакти</SectionTitle>
               <Paragraph>
-                <strong>Собственик:</strong> Даниела Делиева
-              </Paragraph>
-              <Paragraph>
                 <strong>Телефон за поръчки:</strong> 0897455021
               </Paragraph>
               <Paragraph>
-                <strong>Email:</strong> danieladelieva1985@gmail.com
+                <strong>Email:</strong> delieparfums@gmail.com
               </Paragraph>
               <Paragraph>
                 <strong>Доставка:</strong> Изпращаме поръчки в <strong>цялата страна</strong> чрез доверени куриерски партньори.

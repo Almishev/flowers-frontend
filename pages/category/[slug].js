@@ -14,6 +14,7 @@ import CategoryFilters from "@/components/CategoryFilters";
 import { slugify, categorySlug, categoryPath } from "@/lib/slugify";
 import { isPerfumeDepartment, productNoun } from "@/lib/categories";
 import { paginateGroupedProducts } from "@/lib/productVariants";
+import { buildCollectionStructuredData, categorySeo } from "@/lib/seo";
 
 const PAGE_SIZE = 20;
 
@@ -148,21 +149,33 @@ export default function CategoryPage({
   const queryString = params.toString();
   const basePath = queryString ? `${path}?${queryString}` : path;
   const hasFilters = !!(filters.search || filters.brand || filters.minPrice || filters.maxPrice || filters.sort);
+  const seo = categorySeo(category, { perfume, isRoot, totalCount });
+  const canonicalPath = page > 1 ? `${path}?page=${page}` : path;
+  const breadcrumbs = [
+    { name: 'Начало', url: '/' },
+    { name: 'Отдели', url: '/categories' },
+    ...(parentCategory ? [{ name: parentCategory.name, url: categoryPath(parentCategory) }] : []),
+    { name: category.name, url: path },
+  ];
 
   return (
     <>
       <SEO 
-        title={perfume
-          ? `${category.name} – оригинални парфюми | DÉLIE`
-          : `${category.name} – ${isRoot ? 'отдел' : 'категория'} | DÉLIE`}
-        description={perfume
-          ? `Оригинални парфюми в „${category.name}“. ${totalCount} налични аромата с доставка в цяла България.`
-          : `${itemWord.charAt(0).toUpperCase() + itemWord.slice(1)} в „${category.name}“. ${totalCount} налични.`}
-        keywords={perfume
-          ? `${category.name}, оригинални парфюми, купи оригинален парфюм, ${itemWord}, DÉLIE`
-          : `${category.name}, ${itemWord}, DÉLIE`}
-        url={path}
+        title={seo.title}
+        description={seo.description}
+        keywords={seo.keywords}
+        url={canonicalPath}
         image="/parfumes_sell.png"
+        breadcrumbs={breadcrumbs}
+        structuredData={buildCollectionStructuredData({
+          title: seo.title,
+          description: seo.description,
+          path: canonicalPath,
+          products,
+          page,
+          pageSize: PAGE_SIZE,
+          totalCount,
+        })}
       />
       <Header />
       <Center>

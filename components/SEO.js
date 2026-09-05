@@ -54,8 +54,8 @@ export default function SEO({
         postalCode: '2900',
       },
       url: siteUrl,
-      telephone: '+359 877 382 224',
-      email: 'danieladelieva1985@gmail.com',
+      telephone: '+359 897 455 021',
+      email: 'delieparfums@gmail.com',
       priceRange: '$$',
     },
   ];
@@ -120,7 +120,10 @@ export default function SEO({
       <link rel="canonical" href={fullUrl} />
 
       {/* Structured Data */}
-      {(structuredData || defaultStructuredData).map((data, index) => (
+      {[
+        ...defaultStructuredData,
+        ...(Array.isArray(structuredData) ? structuredData : structuredData ? [structuredData] : []),
+      ].map((data, index) => (
         <script
           key={index}
           type="application/ld+json"

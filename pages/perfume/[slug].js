@@ -14,7 +14,8 @@ import SEO from "@/components/SEO";
 import {CartContext} from "@/components/CartContext";
 import {getRecaptchaToken} from "@/lib/recaptcha";
 import {useRouter} from "next/router";
-import {findSiblingVariants} from "@/lib/productVariants";
+import {canonicalVariant, findSiblingVariants, productPath} from "@/lib/productVariants";
+import {buildProductStructuredData, perfumeSeoDescription, perfumeSeoTitle} from "@/lib/seo";
 
 const ColWrapper = styled.div`
   display: grid;
@@ -166,30 +167,31 @@ export default function PerfumePage({product, variants = []}) {
     } finally { setSubmitting(false); }
   }
   
-  const productDescription = product.description
-    ? `Оригинален парфюм ${product.brand ? `${product.brand} ` : ''}${product.title}. ${product.description.substring(0, 140)}`
-    : `Оригинален парфюм ${product.brand ? `${product.brand} ` : ''}"${product.title}" от DÉLIE. Купете онлайн с доставка в цяла България.`;
+  const productDescription = perfumeSeoDescription(product);
   
   let productImage = '/parfumes_sell.png';
   if (product.images?.[0]) {
     productImage = product.images[0];
   }
-  const slugOrId = product.slug || product._id;
+  const canonical = canonicalVariant(variants, product);
+  const canonicalPath = productPath(canonical);
   const breadcrumbs = [
     { name: 'Начало', url: '/' },
-    { name: 'Всички парфюми', url: '/perfumes' },
-    { name: product.title, url: `/perfume/${slugOrId}` },
+    { name: 'Оригинални парфюми', url: '/category/parfyumi' },
+    { name: product.title, url: canonicalPath },
   ];
 
   return (
     <>
       <SEO 
-        title={`${product.title}${product.brand ? ` ${product.brand}` : ''} – оригинален парфюм | DÉLIE`}
+        title={perfumeSeoTitle(product)}
         description={productDescription}
-        keywords={[product.title, product.brand, product.volume, 'оригинален парфюм', 'оригинални парфюми', 'DÉLIE'].filter(Boolean).join(', ')}
+        keywords={[product.title, product.brand, 'оригинален парфюм', 'оригинални парфюми', 'DÉLIE'].filter(Boolean).join(', ')}
         image={productImage}
-        url={`/perfume/${slugOrId}`}
+        url={canonicalPath}
+        type="product"
         breadcrumbs={breadcrumbs}
+        structuredData={buildProductStructuredData(product, variants)}
       />
       <Header />
       <Center>

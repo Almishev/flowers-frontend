@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import Center from "@/components/Center";
 import ButtonLink from "@/components/ButtonLink";
-import FoundersSection from "@/components/FoundersSection";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const Section = styled.section`
@@ -73,7 +72,6 @@ export default function AboutSection() {
             Колекцията ни е от оригинални тестери в оригинални опаковки – класики и по-редки композиции за подарък или за всеки ден. Доставяме в цяла България.
           </AnimatedParagraph>
         </Content>
-        <FoundersSection />
         <ButtonWrapper>
           <ButtonLink href="/about" black size="l">
             Научете повече за нас

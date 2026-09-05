@@ -245,7 +245,7 @@ export default function PrivacyPolicyPage() {
               ул. Серес 12, Гоце Делчев, България, 2900
             </Paragraph>
             <Paragraph>
-              <strong>Имейл:</strong> <a href="mailto:danieladelieva1985@gmail.com">danieladelieva1985@gmail.com</a>
+              <strong>Имейл:</strong> <a href="mailto:delieparfums@gmail.com">delieparfums@gmail.com</a>
             </Paragraph>
             <Paragraph>
               <strong>Телефон:</strong> <a href="tel:+359877382224">0897455021</a>

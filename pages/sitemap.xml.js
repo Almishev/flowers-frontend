@@ -2,6 +2,7 @@ import {mongooseConnect} from "@/lib/mongoose";
 import {Product} from "@/models/Product";
 import {Category} from "@/models/Category";
 import {categorySlug} from "@/lib/slugify";
+import {canonicalVariant, groupProductVariants, productPath} from "@/lib/productVariants";
 
 function generateSiteMap(products, categories) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
@@ -40,7 +41,7 @@ function generateSiteMap(products, categories) {
      }).join('')}
     ${products.map((product) => `
        <url>
-           <loc>${siteUrl}/perfume/${product.slug || product._id}</loc>
+           <loc>${siteUrl}${productPath(canonicalVariant(product.variants, product))}</loc>
            <changefreq>monthly</changefreq>
            <priority>0.6</priority>
        </url>
@@ -57,10 +58,11 @@ export async function getServerSideProps({ res }) {
   try {
     await mongooseConnect();
     
-    const [products, categories] = await Promise.all([
-      Product.find({}).select('_id slug').lean(),
+    const [rawProducts, categories] = await Promise.all([
+      Product.find({}).select('_id slug title brand volume').lean(),
       Category.find({}).select('_id slug name').lean(),
     ]);
+    const products = groupProductVariants(rawProducts);
 
     const sitemap = generateSiteMap(products, categories);
 

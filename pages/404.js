@@ -149,7 +149,7 @@ export default function NotFoundPage() {
             <SecondaryButton href="/perfumes">Разгледай парфюмите</SecondaryButton>
           </Actions>
           <Tip>
-            Ако смятате, че това е грешка, свържете се с нас: danieladelieva1985@gmail.com
+            Ако смятате, че това е грешка, свържете се с нас: delieparfums@gmail.com
           </Tip>
         </Content>
       </Wrapper>
