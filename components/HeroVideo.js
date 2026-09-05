@@ -40,8 +40,8 @@ const ImageWrapper = styled.div`
   height: 77vh;
   
   @media (max-width: 768px) {
-    min-height: 350px;
-    height: 55vh;
+    min-height: calc(100svh - 104px);
+    height: calc(100dvh - 104px);
 
     body.menu-open & {
       height: calc(100dvh - 130px);
