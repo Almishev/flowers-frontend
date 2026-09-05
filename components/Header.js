@@ -185,7 +185,7 @@ const MobileNav = styled.nav`
     left: 0;
     width: min(72vw, 340px);
     max-width: 78vw;
-    padding: 88px 20px 28px;
+    padding: 148px 22px 32px;
     background-color: #222;
     z-index: 9998;
     overflow-y: auto;
