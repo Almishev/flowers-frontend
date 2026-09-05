@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import ProductBox from "@/components/ProductBox";
+import { groupProductVariants } from "@/lib/productVariants";
 
 const StyledProductsGrid = styled.div`
   display: grid;
@@ -11,9 +12,12 @@ const StyledProductsGrid = styled.div`
 `;
 
 export default function ProductsGrid({products}) {
+  const alreadyGrouped = products?.length > 0 && products.every(product => Array.isArray(product.variants));
+  const items = alreadyGrouped ? products : groupProductVariants(products);
+
   return (
     <StyledProductsGrid>
-      {products?.length > 0 && products.map(product => (
+      {items?.length > 0 && items.map(product => (
         <ProductBox key={product._id} {...product} />
       ))}
     </StyledProductsGrid>

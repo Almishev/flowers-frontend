@@ -70,7 +70,7 @@ export default function AboutSection() {
             ref={secondParagraphAnimation.ref}
             style={{...secondParagraphAnimation.style, marginTop: '20px'}}
           >
-            Открийте класики и редки композиции, подходящи за подарък или за ежедневие. Доставяме в цяла България и се стремим всяка поръчка да пристигне бързо и сигурно опакована.
+            Колекцията ни е от оригинални тестери в оригинални опаковки – класики и по-редки композиции за подарък или за всеки ден. Доставяме в цяла България.
           </AnimatedParagraph>
         </Content>
         <FoundersSection />

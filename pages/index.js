@@ -10,6 +10,7 @@ import BrandMarquee from "@/components/BrandMarquee";
 import SEO from "@/components/SEO";
 import LazySection from "@/components/LazySection";
 import {Settings} from "@/models/Settings";
+import { groupProductVariants, hydrateVariantSiblings } from "@/lib/productVariants";
 
 const NewProducts = lazy(() => import("@/components/NewProducts"));
 const PopularCategoriesHome = lazy(() => import("@/components/PopularCategoriesHome"));
@@ -24,9 +25,9 @@ export default function HomePage({featuredProduct,newProducts,popularCategories,
   return (
     <>
       <SEO 
-        title="Онлайн магазин за парфюми | DÉLIE"
-        description="DÉLIE е бутик за дамски, мъжки, унисекс, арабски и нишови парфюми. Подбрани аромати с доставка в цяла България."
-        keywords="парфюми, дамски парфюми, мъжки парфюми, унисекс, арабски парфюми, нишови парфюми, онлайн магазин за парфюми, DÉLIE"
+        title="Оригинални парфюми онлайн | DÉLIE"
+        description="Купете оригинални парфюми онлайн в DÉLIE. Дамски, мъжки, унисекс, арабски и нишови аромати с доставка в цяла България."
+        keywords="оригинални парфюми, купи оригинален парфюм, дамски парфюми, мъжки парфюми, унисекс парфюми, арабски парфюми, нишови парфюми, онлайн магазин за парфюми, DÉLIE"
         url="/"
         image="/parfumes_sell.png"
       />
@@ -130,10 +131,15 @@ export async function getServerSideProps() {
       featuredProduct = await Product.findById(featuredProductId).select(PRODUCT_FIELDS);
     }
 
-    const newProducts = await Product.find({})
+    const newestRaw = await Product.find({})
       .select(PRODUCT_FIELDS)
       .sort({ _id: -1 })
-      .limit(12);
+      .limit(36)
+      .lean();
+    const newProducts = await hydrateVariantSiblings(
+      Product,
+      groupProductVariants(newestRaw).slice(0, 8)
+    );
 
     const allCategories = await Category.find().lean();
     const childIdsByParent = {};
@@ -191,7 +197,7 @@ export async function getServerSideProps() {
           heroVideoMobile: settingsMap.heroVideoMobile || '',
           heroImage: settingsMap.heroImage || '',
           heroTitle: settingsMap.heroTitle || 'DÉLIE',
-          heroSubtitle: settingsMap.heroSubtitle || 'Дамски, мъжки, унисекс, арабски и нишови парфюми.',
+          heroSubtitle: settingsMap.heroSubtitle || 'Оригинални тестери в оригинални опаковки.',
         },
       },
     };

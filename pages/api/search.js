@@ -1,5 +1,6 @@
 import {mongooseConnect} from "@/lib/mongoose";
 import {Product} from "@/models/Product";
+import { groupProductVariants, hydrateVariantSiblings } from "@/lib/productVariants";
 
 function escapeRegex(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -25,12 +26,17 @@ export default async function handle(req, res) {
         {description: regex},
       ],
     })
-      .select('slug title brand price images')
+      .select('slug title brand volume price images')
       .sort({_id: -1})
-      .limit(8)
+      .limit(24)
       .lean();
 
-    res.json({products: JSON.parse(JSON.stringify(products))});
+    const grouped = await hydrateVariantSiblings(
+      Product,
+      groupProductVariants(products).slice(0, 8)
+    );
+
+    res.json({products: JSON.parse(JSON.stringify(grouped))});
   } catch (error) {
     console.error('Error in search API:', error);
     res.status(500).json({products: [], message: 'Internal server error'});

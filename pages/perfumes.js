@@ -74,12 +74,12 @@ export default function PerfumesPage({
     !!searchTerm || !!sort || categoryFilterIds.length > 0;
 
   const seoTitle = initialSearch
-    ? `Търсене на парфюми: "${initialSearch}"`
-    : 'Всички парфюми';
+    ? `Търсене на оригинални парфюми: "${initialSearch}" | DÉLIE`
+    : 'Оригинални парфюми | DÉLIE';
 
   const seoDescription = initialSearch
-    ? `Резултати за търсене на парфюми по "${initialSearch}". Намерени ${totalCount}.`
-    : `Всички парфюми в DÉLIE. Общо ${totalCount}.`;
+    ? `Резултати за търсене на оригинални парфюми по "${initialSearch}". Намерени ${totalCount}.`
+    : `Всички оригинални парфюми в DÉLIE. Общо ${totalCount}. Купете онлайн с доставка в цяла България.`;
 
   return (
     <>

@@ -71,8 +71,8 @@ export default function CategoriesPage({departments, allCategories}) {
     <>
       <SEO 
         title="Категории"
-        description="Разгледайте отделите на DÉLIE – парфюми, козметика и бижута."
-        keywords="категории, парфюми, козметика, бижута, DÉLIE"
+        description="Разгледайте отделите на DÉLIE – оригинални парфюми, козметика и бижута."
+        keywords="оригинални парфюми, категории, козметика, бижута, DÉLIE"
         url="/categories"
         image="/parfumes_sell.png"
       />

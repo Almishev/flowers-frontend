@@ -13,6 +13,8 @@ import Button from "@/components/Button";
 import SEO from "@/components/SEO";
 import {CartContext} from "@/components/CartContext";
 import {getRecaptchaToken} from "@/lib/recaptcha";
+import {useRouter} from "next/router";
+import {findSiblingVariants} from "@/lib/productVariants";
 
 const ColWrapper = styled.div`
   display: grid;
@@ -30,6 +32,17 @@ const PriceRow = styled.div`
 `;
 const Price = styled.span`
   font-size: 1.4rem;
+`;
+
+const Specs = styled.div`
+  margin-top: 12px;
+  font-size: 1rem;
+  color: #444;
+  font-weight: 500;
+
+  div + div {
+    margin-top: 8px;
+  }
 `;
 
 const ReviewsSection = styled.section`
@@ -98,7 +111,22 @@ const SmallMuted = styled.div`
   color: #9ca3af;
 `;
 
-export default function PerfumePage({product}) {
+const VolumeSelect = styled.select`
+  margin-left: 8px;
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fff;
+  cursor: pointer;
+  &:focus {
+    outline: none;
+    border-color: #c9a227;
+  }
+`;
+
+export default function PerfumePage({product, variants = []}) {
+  const router = useRouter();
   const [reviews,setReviews] = useState([]);
   const [rating,setRating] = useState(5);
   const [titleText,setTitleText] = useState('');
@@ -138,9 +166,9 @@ export default function PerfumePage({product}) {
     } finally { setSubmitting(false); }
   }
   
-  const productDescription = product.description 
-    ? `${product.description.substring(0, 150)}...` 
-    : `Парфюм "${product.title}" от DÉLIE.`;
+  const productDescription = product.description
+    ? `Оригинален парфюм ${product.brand ? `${product.brand} ` : ''}${product.title}. ${product.description.substring(0, 140)}`
+    : `Оригинален парфюм ${product.brand ? `${product.brand} ` : ''}"${product.title}" от DÉLIE. Купете онлайн с доставка в цяла България.`;
   
   let productImage = '/parfumes_sell.png';
   if (product.images?.[0]) {
@@ -156,8 +184,9 @@ export default function PerfumePage({product}) {
   return (
     <>
       <SEO 
-        title={product.title}
+        title={`${product.title}${product.brand ? ` ${product.brand}` : ''} – оригинален парфюм | DÉLIE`}
         description={productDescription}
+        keywords={[product.title, product.brand, product.volume, 'оригинален парфюм', 'оригинални парфюми', 'DÉLIE'].filter(Boolean).join(', ')}
         image={productImage}
         url={`/perfume/${slugOrId}`}
         breadcrumbs={breadcrumbs}
@@ -170,16 +199,49 @@ export default function PerfumePage({product}) {
           </WhiteBox>
           <div>
             <Title>{product.title}</Title>
-            <div style={{marginTop: '12px', fontSize: '1rem', color: '#444', fontWeight: 500}}>
+            <Specs>
+              {product.brand && (
+                <div><strong>Марка:</strong> {product.brand}</div>
+              )}
+              {(variants.filter(item => item.volume).length > 1 || product.volume) && (
+                <div>
+                  <strong>Обем:</strong>
+                  {variants.filter(item => item.volume).length > 1 ? (
+                    <VolumeSelect
+                      value={String(product._id)}
+                      onChange={(e) => {
+                        const next = variants.find(item => String(item._id) === e.target.value);
+                        if (!next) return;
+                        router.push(`/perfume/${next.slug || next._id}`);
+                      }}
+                    >
+                      {variants.map(item => (
+                        <option key={item._id} value={String(item._id)}>
+                          {item.volume}
+                          {typeof item.price === 'number' ? ` — ${item.price.toFixed(2)} EUR` : ''}
+                        </option>
+                      ))}
+                    </VolumeSelect>
+                  ) : (
+                    <> {product.volume}</>
+                  )}
+                </div>
+              )}
+              {product.concentration && (
+                <div><strong>Концентрация:</strong> {product.concentration}</div>
+              )}
+              {product.gender && (
+                <div><strong>За кого е:</strong> {product.gender}</div>
+              )}
               {typeof product.price === 'number' && (
                 <div><strong>Цена:</strong> {product.price.toFixed(2)} EUR</div>
               )}
               {typeof product.stock === 'number' && (
-                <div style={{marginTop: '8px', color: product.stock > 0 ? '#c9a227' : '#dc2626'}}>
+                <div style={{color: product.stock > 0 ? '#c9a227' : '#dc2626'}}>
                   {product.stock > 0 ? `Наличност: ${product.stock} бр.` : 'Изчерпан продукт'}
                 </div>
               )}
-            </div>
+            </Specs>
             {product.description && (
               <p style={{marginTop: '16px'}}>{product.description}</p>
             )}
@@ -261,10 +323,13 @@ export async function getServerSideProps(context) {
       notFound: true,
     };
   }
+
+  const variants = await findSiblingVariants(Product, product);
   
   return {
     props: {
       product: JSON.parse(JSON.stringify(product)),
+      variants: JSON.parse(JSON.stringify(variants)),
     }
   }
 }

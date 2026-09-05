@@ -8,6 +8,7 @@ import Title from "@/components/Title";
 import Footer from "@/components/Footer";
 import Pagination from "@/components/Pagination";
 import SEO from "@/components/SEO";
+import { paginateGroupedProducts } from "@/lib/productVariants";
 
 const PAGE_SIZE = 20;
 
@@ -37,10 +38,13 @@ export default function SearchPage({query, brand, products, page, totalPages, to
   return (
     <>
       <SEO 
-        title={isBrand ? `Продукти от ${brand}` : `Търсене: "${query}"`}
+        title={isBrand ? `Оригинални парфюми ${brand} | DÉLIE` : `Търсене: "${query}" | DÉLIE`}
         description={isBrand
-          ? `Всички продукти от ${brand} в DÉLIE. Намерени ${totalCount}.`
-          : `Търсене на продукти по "${query}". Намерени ${totalCount}.`}
+          ? `Оригинални парфюми от ${brand} в DÉLIE. Намерени ${totalCount}.`
+          : `Търсене на оригинални парфюми по "${query}". Намерени ${totalCount}.`}
+        keywords={isBrand
+          ? `${brand}, оригинални парфюми, купи оригинален парфюм, DÉLIE`
+          : `${query}, оригинални парфюми, DÉLIE`}
         url={basePath}
         image="/parfumes_sell.png"
       />
@@ -102,25 +106,20 @@ export async function getServerSideProps({query}) {
           ]
         };
 
-    const totalCount = await Product.countDocuments(mongoQuery);
-    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-    const currentPage = Math.min(page, totalPages);
-    const currentSkip = (currentPage - 1) * PAGE_SIZE;
-
-    const products = await Product.find(mongoQuery, null, {
-      sort: {'_id': -1},
-      skip: currentSkip,
-      limit: PAGE_SIZE,
-    }).select('slug title description images price currency brand volume concentration gender stock category').lean();
+    const allProducts = await Product.find(mongoQuery)
+      .select('slug title description images price currency brand volume concentration gender stock category')
+      .sort({_id: -1})
+      .lean();
+    const paged = paginateGroupedProducts(allProducts, { page, pageSize: PAGE_SIZE });
 
     return {
       props: {
         query: searchQuery,
         brand: brandQuery,
-        products: JSON.parse(JSON.stringify(products)),
-        page: currentPage,
-        totalPages,
-        totalCount,
+        products: JSON.parse(JSON.stringify(paged.products)),
+        page: paged.page,
+        totalPages: paged.totalPages,
+        totalCount: paged.totalCount,
       }
     };
   } catch (error) {

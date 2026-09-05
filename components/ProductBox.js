@@ -125,6 +125,28 @@ const Price = styled.div`
   color: #111827;
 `;
 
+const Volume = styled.div`
+  font-size: 0.85rem;
+  color: #6b7280;
+`;
+
+const VolumeSelect = styled.select`
+  width: 100%;
+  margin-top: 2px;
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #374151;
+  background: #fff;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: #c9a227;
+  }
+`;
+
 const ZoomLens = styled.div`
   position: absolute;
   border-radius: 999px;
@@ -142,25 +164,42 @@ export default function ProductBox({
   price,
   currency,
   images,
+  volume,
+  stock,
+  variants,
 }) {
+  const allVariants = (variants?.length
+    ? variants
+    : [{ _id, slug, volume, price, stock, images }]
+  ).filter(Boolean);
+  const hasVolumeOptions = allVariants.filter(item => item.volume).length > 1;
+
+  const [selectedId, setSelectedId] = useState(String(_id));
+  const selected = allVariants.find(item => String(item._id) === selectedId) || allVariants[0] || {
+    _id, slug, volume, price, stock, images,
+  };
+
+  useEffect(() => {
+    setSelectedId(String(_id));
+  }, [_id]);
+
   const {addProduct} = useContext(CartContext);
   const {addToWishlist, removeFromWishlist, isInWishlist} = useWishlist();
-  // Винаги използваме slug, ако съществува, иначе fallback към _id
-  const url = '/perfume/'+(slug || _id);
-  const inWishlist = isInWishlist(_id);
+  const url = '/perfume/'+(selected.slug || selected._id);
+  const inWishlist = isInWishlist(selected._id);
 
   const handleWishlistClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     
     if (inWishlist) {
-      removeFromWishlist(_id);
+      removeFromWishlist(selected._id);
       toast.success(`${title} е премахнат от желаните!`, {
         icon: '💔',
         duration: 3000,
       });
     } else {
-      addToWishlist(_id);
+      addToWishlist(selected._id);
       toast.success(`${title} е добавен в желаните!`, {
         icon: '❤️',
         duration: 3000,
@@ -187,12 +226,13 @@ export default function ProductBox({
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  const mainImage = images?.[currentIndex] || images?.[0] || null;
+  const selectedImages = selected.images?.length ? selected.images : images;
+  const mainImage = selectedImages?.[currentIndex] || selectedImages?.[0] || null;
 
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    addProduct(_id);
+    addProduct(selected._id);
   };
 
   function handleMouseMove(e) {
@@ -269,22 +309,19 @@ export default function ProductBox({
   }
 
   function handleTouchEnd(e) {
-    if (isDesktop || !images) return;
-    if (touchStartXRef.current !== null && images.length >= 2) {
+    if (isDesktop || !selectedImages) return;
+    if (touchStartXRef.current !== null && selectedImages.length >= 2) {
       const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
       const threshold = 40;
       if (Math.abs(deltaX) >= threshold) {
-        // Спираме навигацията, ако е реален свайп
         e.preventDefault();
         e.stopPropagation();
 
         setCurrentIndex((prev) => {
           if (deltaX < 0) {
-            // swipe наляво -> следваща снимка
-            return (prev + 1) % images.length;
+            return (prev + 1) % selectedImages.length;
           }
-          // swipe надясно -> предишна снимка
-          return (prev - 1 + images.length) % images.length;
+          return (prev - 1 + selectedImages.length) % selectedImages.length;
         });
       }
     }
@@ -315,7 +352,7 @@ export default function ProductBox({
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          {images?.[0] ? (
+          {selectedImages?.[0] ? (
             <Image 
               src={mainImage} 
               alt={title}
@@ -356,14 +393,38 @@ export default function ProductBox({
       </WhiteBox>
       <ProductInfoBox>
         <Title href={url}>{title}</Title>
+        {hasVolumeOptions ? (
+          <VolumeSelect
+            value={String(selected._id)}
+            onChange={(e) => {
+              setSelectedId(e.target.value);
+              setCurrentIndex(0);
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {allVariants.map(item => (
+              <option key={item._id} value={String(item._id)}>
+                {item.volume || 'Обем'}
+                {typeof item.price === 'number' ? ` — ${item.price.toFixed(2)} EUR` : ''}
+              </option>
+            ))}
+          </VolumeSelect>
+        ) : (
+          (selected.volume || volume) && <Volume>{selected.volume || volume}</Volume>
+        )}
         <PriceRow>
-          {typeof price === 'number' && (
+          {typeof selected.price === 'number' && (
             <Price>
-              {price.toFixed(2)} EUR
+              {selected.price.toFixed(2)} EUR
             </Price>
           )}
-          <Button black size="s" onClick={handleAddToCart}>
-            Добави в кошницата
+          <Button
+            black
+            size="s"
+            onClick={handleAddToCart}
+            disabled={selected.stock !== undefined && selected.stock <= 0}
+          >
+            {selected.stock !== undefined && selected.stock <= 0 ? 'Изчерпан' : 'Добави в кошницата'}
           </Button>
         </PriceRow>
       </ProductInfoBox>

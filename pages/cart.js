@@ -113,7 +113,7 @@ const PaymentMethodLabel = styled.label`
 `;
 
 export default function CartPage() {
-  const {cartProducts,setCartProducts,addProduct,removeProduct,clearCart} = useContext(CartContext);
+  const {cartProducts,setCartProducts,addProduct,removeProduct,clearCart,replaceProduct} = useContext(CartContext);
   const [products,setProducts] = useState([]);
   const [name,setName] = useState('');
   const [email,setEmail] = useState('');
@@ -225,6 +225,22 @@ export default function CartPage() {
     removeProduct(id);
   }
 
+  function changeCartVolume(product, nextId) {
+    if (!nextId || String(nextId) === String(product._id)) return;
+    const next = (product.variants || []).find(item => String(item._id) === String(nextId));
+    if (!next) return;
+    const qty = cartProducts.filter(id => String(id) === String(product._id)).length;
+    const already = cartProducts.filter(id => String(id) === String(nextId)).length;
+    const total = qty + already;
+    if (typeof next.stock === 'number' && next.stock >= 0 && total > next.stock) {
+      alert(`Налични само ${next.stock} бр. за ${next.volume || 'този обем'}.`);
+      const rest = cartProducts.filter(id => String(id) !== String(product._id) && String(id) !== String(nextId));
+      setCartProducts([...rest, ...Array(next.stock).fill(String(nextId))]);
+      return;
+    }
+    replaceProduct(product._id, nextId);
+  }
+
   async function goToPayment() {
     if (!name || !email || !phone || !city || !postalCode || !streetAddress || !country) {
       alert('Моля, попълнете всички полета');
@@ -319,7 +335,35 @@ export default function CartPage() {
                         <ProductImageBox>
                           <img src={product.images[0]} alt=""/>
                         </ProductImageBox>
-                        {product.title}
+                        <div>
+                          {product.title}
+                          {product.variants?.filter(item => item.volume).length > 1 ? (
+                            <select
+                              value={String(product._id)}
+                              onChange={(e) => changeCartVolume(product, e.target.value)}
+                              style={{
+                                display: 'block',
+                                marginTop: 8,
+                                padding: '6px 8px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: 8,
+                                fontSize: '0.85em',
+                                background: '#fff',
+                              }}
+                            >
+                              {product.variants.map(item => (
+                                <option key={item._id} value={String(item._id)}>
+                                  {item.volume}
+                                  {typeof item.price === 'number' ? ` — ${item.price.toFixed(2)} EUR` : ''}
+                                </option>
+                              ))}
+                            </select>
+                          ) : product.volume ? (
+                            <div style={{fontSize: '0.85em', color: '#666', marginTop: 4}}>
+                              Обем: {product.volume}
+                            </div>
+                          ) : null}
+                        </div>
                       </ProductInfoCell>
                       <td>
                         <Button onClick={() => lessOfThisProduct(product._id)}>-</Button>

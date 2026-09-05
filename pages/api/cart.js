@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import {mongooseConnect} from "@/lib/mongoose";
 import {Product} from "@/models/Product";
+import { hydrateVariantSiblings } from "@/lib/productVariants";
 
 export default async function handle(req,res) {
   await mongooseConnect();
@@ -8,6 +9,8 @@ export default async function handle(req,res) {
   if (!ids.length) {
     return res.json([]);
   }
-  res.json(await Product.find({_id: {$in: ids}}));
+  const products = await Product.find({_id: {$in: ids}}).lean();
+  const withVariants = await hydrateVariantSiblings(Product, products);
+  res.json(JSON.parse(JSON.stringify(withVariants)));
 }
 

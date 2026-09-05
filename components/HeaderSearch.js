@@ -253,7 +253,13 @@ export default function HeaderSearch() {
               <Meta>
                 <strong>{product.title}</strong>
                 <span>
-                  {[product.brand, typeof product.price === 'number' ? `${product.price.toFixed(2)} EUR` : '']
+                  {[
+                    product.brand,
+                    product.variants?.filter(item => item.volume).length > 1
+                      ? product.variants.map(item => item.volume).filter(Boolean).join(' / ')
+                      : product.volume,
+                    typeof product.price === 'number' ? `${product.price.toFixed(2)} EUR` : '',
+                  ]
                     .filter(Boolean)
                     .join(' · ')}
                 </span>

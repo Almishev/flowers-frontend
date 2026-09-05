@@ -202,7 +202,7 @@ const defaultSettings = {
   heroVideoMobile: '',
   heroImage: '',
   heroTitle: 'DÉLIE',
-  heroSubtitle: 'Дамски, мъжки, унисекс, арабски и нишови парфюми.',
+  heroSubtitle: 'Оригинални тестери в оригинални опаковки.',
 };
 
 export default function HeroVideo({ heroSettings }) {

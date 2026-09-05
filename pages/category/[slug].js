@@ -13,6 +13,7 @@ import Pagination from "@/components/Pagination";
 import CategoryFilters from "@/components/CategoryFilters";
 import { slugify, categorySlug, categoryPath } from "@/lib/slugify";
 import { isPerfumeDepartment, productNoun } from "@/lib/categories";
+import { paginateGroupedProducts } from "@/lib/productVariants";
 
 const PAGE_SIZE = 20;
 
@@ -151,9 +152,15 @@ export default function CategoryPage({
   return (
     <>
       <SEO 
-        title={`${category.name} – ${isRoot ? 'отдел' : 'категория'}`}
-        description={`${itemWord.charAt(0).toUpperCase() + itemWord.slice(1)} в „${category.name}“. ${totalCount} налични.`}
-        keywords={`${category.name}, ${itemWord}, DÉLIE`}
+        title={perfume
+          ? `${category.name} – оригинални парфюми | DÉLIE`
+          : `${category.name} – ${isRoot ? 'отдел' : 'категория'} | DÉLIE`}
+        description={perfume
+          ? `Оригинални парфюми в „${category.name}“. ${totalCount} налични аромата с доставка в цяла България.`
+          : `${itemWord.charAt(0).toUpperCase() + itemWord.slice(1)} в „${category.name}“. ${totalCount} налични.`}
+        keywords={perfume
+          ? `${category.name}, оригинални парфюми, купи оригинален парфюм, ${itemWord}, DÉLIE`
+          : `${category.name}, ${itemWord}, DÉLIE`}
         url={path}
         image="/parfumes_sell.png"
       />
@@ -311,34 +318,29 @@ export async function getServerSideProps(context) {
     const pageParam = parseInt(context.query.page, 10);
     const page = Math.max(1, isNaN(pageParam) ? 1 : pageParam);
 
-    const [totalCount, rawBrands] = await Promise.all([
-      Product.countDocuments(mongoQuery),
+    const [allProducts, rawBrands] = await Promise.all([
+      Product.find(mongoQuery)
+        .select(PRODUCT_FIELDS)
+        .sort(sortQuery)
+        .lean(),
       Product.distinct('brand', {
         category: { $in: queryIds },
         brand: { $nin: ['', null] },
       }),
     ]);
-    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-    const currentPage = Math.min(page, totalPages);
-    const skip = (currentPage - 1) * PAGE_SIZE;
-
-    const products = await Product.find(mongoQuery)
-      .select(PRODUCT_FIELDS)
-      .sort(sortQuery)
-      .skip(skip)
-      .limit(PAGE_SIZE);
+    const paged = paginateGroupedProducts(allProducts, { page, pageSize: PAGE_SIZE });
     
     return {
       props: {
         category: JSON.parse(JSON.stringify(category)),
-        products: JSON.parse(JSON.stringify(products)),
+        products: JSON.parse(JSON.stringify(paged.products)),
         parentCategory: category.parent ? JSON.parse(JSON.stringify(category.parent)) : null,
         childCategories: JSON.parse(JSON.stringify(childDocs)),
         isRoot,
         brands: uniqueBrands(rawBrands),
-        totalCount,
-        page: currentPage,
-        totalPages,
+        totalCount: paged.totalCount,
+        page: paged.page,
+        totalPages: paged.totalPages,
         filters: {
           search,
           brand,

@@ -65,7 +65,11 @@ export default async function handler(req,res) {
         quantity,
         price_data: {
           currency: 'EUR',
-          product_data: {name:productInfo.title},
+          product_data: {
+            name: productInfo.volume
+              ? `${productInfo.title} — ${productInfo.volume}`
+              : productInfo.title,
+          },
           unit_amount: Math.round(productInfo.price * 100),
         },
       });

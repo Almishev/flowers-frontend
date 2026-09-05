@@ -57,8 +57,20 @@ export function CartContextProvider({children}) {
     setCartProducts([]);
   }
 
+  function replaceProduct(oldId, newId) {
+    const from = String(oldId);
+    const to = String(newId);
+    if (!from || !to || from === to) return;
+    setCartProducts(prev => {
+      const qtyFrom = prev.filter(id => String(id) === from).length;
+      const qtyTo = prev.filter(id => String(id) === to).length;
+      const rest = prev.filter(id => String(id) !== from && String(id) !== to);
+      return [...rest, ...Array(qtyFrom + qtyTo).fill(to)];
+    });
+  }
+
   return (
-    <CartContext.Provider value={{cartProducts,setCartProducts,addProduct,removeProduct,clearCart}}>
+    <CartContext.Provider value={{cartProducts,setCartProducts,addProduct,removeProduct,clearCart,replaceProduct}}>
       {children}
     </CartContext.Provider>
   );
