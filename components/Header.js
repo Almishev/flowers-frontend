@@ -541,7 +541,7 @@ export default function Header() {
     <>
       <TopBar>
         <TopBarInner>
-          <PhoneLink href="tel:+359877382224">
+          <PhoneLink href="tel:+359897455021">
             <PhoneIcon />
             <span>0897455021</span>
           </PhoneLink>

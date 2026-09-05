@@ -125,12 +125,6 @@ const Price = styled.div`
   color: #111827;
 `;
 
-const Subtitle = styled.div`
-  font-size: 0.85rem;
-  color: #6b7280;
-  margin-top: 2px;
-`;
-
 const ZoomLens = styled.div`
   position: absolute;
   border-radius: 999px;
@@ -368,7 +362,6 @@ export default function ProductBox({
               {price.toFixed(2)} EUR
             </Price>
           )}
-          <Subtitle>Подбран аромат от колекцията DÉLIE.</Subtitle>
           <Button black size="s" onClick={handleAddToCart}>
             Добави в кошницата
           </Button>

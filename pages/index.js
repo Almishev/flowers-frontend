@@ -13,6 +13,7 @@ import {Settings} from "@/models/Settings";
 
 const NewProducts = lazy(() => import("@/components/NewProducts"));
 const PopularCategoriesHome = lazy(() => import("@/components/PopularCategoriesHome"));
+const BrandsSection = lazy(() => import("@/components/BrandsSection"));
 const PopularCollections = lazy(() => import("@/components/PopularCollections"));
 const AboutSection = lazy(() => import("@/components/AboutSection"));
 const FAQSection = lazy(() => import("@/components/FAQSection"));
@@ -58,6 +59,14 @@ export default function HomePage({featuredProduct,newProducts,popularCategories,
           <LazySection>
             <Suspense fallback={null}>
               <PopularCategoriesHome categories={popularCategories} />
+            </Suspense>
+          </LazySection>
+        )}
+
+        {brands && brands.length > 0 && (
+          <LazySection>
+            <Suspense fallback={null}>
+              <BrandsSection brands={brands} />
             </Suspense>
           </LazySection>
         )}
