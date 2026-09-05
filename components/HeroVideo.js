@@ -14,7 +14,7 @@ const VideoWrapper = styled.div`
   
   @media (max-width: 768px) {
     body.menu-open & {
-      display: none;
+      min-height: calc(100dvh - 130px);
     }
   }
 `;
@@ -42,6 +42,11 @@ const ImageWrapper = styled.div`
   @media (max-width: 768px) {
     min-height: 350px;
     height: 55vh;
+
+    body.menu-open & {
+      height: calc(100dvh - 130px);
+      min-height: calc(100dvh - 130px);
+    }
   }
   
   img {

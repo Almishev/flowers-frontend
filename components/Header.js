@@ -6,15 +6,23 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import BarsIcon from "@/components/icons/Bars";
 import CartIcon from "@/components/icons/CartIcon";
+import HeaderSearch from "@/components/HeaderSearch";
 import {CartContext} from "@/components/CartContext";
 import {categoryPath} from "@/lib/slugify";
 import {primary, primaryHover, primaryDark} from "@/lib/colors";
+
+const HeaderWrap = styled.div`
+  position: sticky;
+  top: 0;
+  z-index: 10002;
+`;
 
 const TopBar = styled.div`
   background-color: ${primary};
   color: #1a1a1a;
   padding: 6px 0;
   font-size: 14px;
+  position: relative;
 `;
 
 const TopBarInner = styled.div`
@@ -22,8 +30,9 @@ const TopBarInner = styled.div`
   margin: 0 auto;
   padding: 0 32px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
+  gap: 12px;
   
   @media screen and (max-width: 400px) {
     padding: 0 16px;
@@ -153,11 +162,26 @@ const NavArea = styled.div`
   }
 `;
 
+const MobileScrim = styled.div`
+  display: none;
+
+  @media screen and (max-width: 768px) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 9997;
+    opacity: ${props => props.$active ? 1 : 0};
+    pointer-events: ${props => props.$active ? 'auto' : 'none'};
+    transition: opacity 0.3s ease;
+  }
+`;
+
 const MobileNav = styled.nav`
   display: none;
   
   @media screen and (max-width: 768px) {
-    display: ${props => props.mobileNavActive ? 'flex' : 'none'};
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
@@ -165,11 +189,17 @@ const MobileNav = styled.nav`
     top: 0;
     bottom: 0;
     left: 0;
-    right: 0;
-    padding: 100px 24px 24px;
+    width: min(72vw, 340px);
+    max-width: 78vw;
+    padding: 88px 20px 28px;
     background-color: #222;
     z-index: 9998;
     overflow-y: auto;
+    box-shadow: 12px 0 32px rgba(0, 0, 0, 0.35);
+    transform: translateX(${props => props.mobileNavActive ? '0' : '-105%'});
+    visibility: ${props => props.mobileNavActive ? 'visible' : 'hidden'};
+    pointer-events: ${props => props.mobileNavActive ? 'auto' : 'none'};
+    transition: transform 0.32s ease, visibility 0.32s ease;
   }
 `;
 
@@ -539,11 +569,18 @@ export default function Header() {
   };
   return (
     <>
+      <MobileScrim
+        $active={mobileNavActive}
+        onClick={() => setMobileNavActive(false)}
+        aria-hidden={!mobileNavActive}
+      />
+      <HeaderWrap>
       <TopBar>
         <TopBarInner>
+          <HeaderSearch />
           <PhoneLink href="tel:+359897455021">
             <PhoneIcon />
-            <span>0897455021</span>
+            <span>+359 897 455 021</span>
           </PhoneLink>
         </TopBarInner>
       </TopBar>
@@ -635,7 +672,7 @@ export default function Header() {
               </UserArea>
             )}
           </NavArea>
-          <MobileNav mobileNavActive={mobileNavActive}>
+          <MobileNav mobileNavActive={mobileNavActive} aria-hidden={!mobileNavActive}>
             <NavLink
               href={'/'}
               onClick={() => setMobileNavActive(false)}
@@ -784,6 +821,7 @@ export default function Header() {
         </Wrapper>
         </HeaderInner>
       </StyledHeader>
+      </HeaderWrap>
     </>
   );
 }

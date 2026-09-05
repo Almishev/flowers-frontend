@@ -9,8 +9,30 @@ import Title from "@/components/Title";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
+import Pagination from "@/components/Pagination";
+import CategoryFilters from "@/components/CategoryFilters";
 import { slugify, categorySlug, categoryPath } from "@/lib/slugify";
 import { isPerfumeDepartment, productNoun } from "@/lib/categories";
+
+const PAGE_SIZE = 20;
+
+function escapeRegex(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function uniqueBrands(list) {
+  const seen = new Set();
+  const result = [];
+  for (const raw of list || []) {
+    const name = String(raw || '').trim();
+    if (!name) continue;
+    const key = name.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(name);
+  }
+  return result.sort((a, b) => a.localeCompare(b, 'bg'));
+}
 
 const Breadcrumb = styled.div`
   margin-bottom: 20px;
@@ -85,7 +107,18 @@ const NoProducts = styled.div`
   font-size: 1.1rem;
 `;
 
-export default function CategoryPage({category, products, parentCategory, childCategories, isRoot}) {
+export default function CategoryPage({
+  category,
+  products,
+  parentCategory,
+  childCategories,
+  isRoot,
+  brands = [],
+  totalCount = 0,
+  page = 1,
+  totalPages = 1,
+  filters = {},
+}) {
   if (!category) {
     return (
       <>
@@ -102,16 +135,26 @@ export default function CategoryPage({category, products, parentCategory, childC
 
   const department = isRoot ? category : parentCategory;
   const perfume = isPerfumeDepartment(department);
-  const noun = productNoun(products.length, {perfume});
+  const noun = productNoun(totalCount, {perfume});
   const itemWord = perfume ? 'парфюми' : 'продукти';
+  const path = categoryPath(category);
+  const params = new URLSearchParams();
+  if (filters.search) params.set('search', filters.search);
+  if (filters.brand) params.set('brand', filters.brand);
+  if (filters.minPrice) params.set('min', filters.minPrice);
+  if (filters.maxPrice) params.set('max', filters.maxPrice);
+  if (filters.sort) params.set('sort', filters.sort);
+  const queryString = params.toString();
+  const basePath = queryString ? `${path}?${queryString}` : path;
+  const hasFilters = !!(filters.search || filters.brand || filters.minPrice || filters.maxPrice || filters.sort);
 
   return (
     <>
       <SEO 
         title={`${category.name} – ${isRoot ? 'отдел' : 'категория'}`}
-        description={`${itemWord.charAt(0).toUpperCase() + itemWord.slice(1)} в „${category.name}“. ${products.length} налични.`}
+        description={`${itemWord.charAt(0).toUpperCase() + itemWord.slice(1)} в „${category.name}“. ${totalCount} налични.`}
         keywords={`${category.name}, ${itemWord}, DÉLIE`}
-        url={categoryPath(category)}
+        url={path}
         image="/parfumes_sell.png"
       />
       <Header />
@@ -138,7 +181,7 @@ export default function CategoryPage({category, products, parentCategory, childC
             </CategoryDescription>
           )}
           <ProductCount>
-            {products.length} {noun} в {isRoot ? 'този отдел' : 'тази категория'}
+            {totalCount} {noun} в {isRoot ? 'този отдел' : 'тази категория'}
           </ProductCount>
           {isRoot && childCategories?.length > 0 && (
             <Chips>
@@ -151,12 +194,27 @@ export default function CategoryPage({category, products, parentCategory, childC
           )}
         </CategoryInfo>
 
+        <CategoryFilters
+          basePath={path}
+          brands={brands}
+          search={filters.search || ''}
+          brand={filters.brand || ''}
+          minPrice={filters.minPrice || ''}
+          maxPrice={filters.maxPrice || ''}
+          sort={filters.sort || ''}
+        />
+
         {products.length === 0 ? (
           <NoProducts>
-            Няма намерени {itemWord} в тази категория.
+            {hasFilters
+              ? `Няма намерени ${itemWord} по избраните филтри.`
+              : `Няма намерени ${itemWord} в тази категория.`}
           </NoProducts>
         ) : (
-          <ProductsGrid products={products} />
+          <>
+            <ProductsGrid products={products} />
+            <Pagination page={page} totalPages={totalPages} basePath={basePath} />
+          </>
         )}
       </Center>
       <Footer />
@@ -167,6 +225,19 @@ export default function CategoryPage({category, products, parentCategory, childC
 const PRODUCT_FIELDS = 'slug title description images price currency brand volume concentration gender stock category';
 
 export async function getServerSideProps(context) {
+  const empty = {
+    category: null,
+    products: [],
+    parentCategory: null,
+    childCategories: [],
+    isRoot: false,
+    brands: [],
+    totalCount: 0,
+    page: 1,
+    totalPages: 1,
+    filters: {search: '', brand: '', minPrice: '', maxPrice: '', sort: ''},
+  };
+
   try {
     await mongooseConnect();
     const {slug} = context.query;
@@ -183,22 +254,17 @@ export async function getServerSideProps(context) {
     }
     
     if (!category) {
-      return {
-        props: {
-          category: null,
-          products: [],
-          parentCategory: null,
-          childCategories: [],
-          isRoot: false,
-        }
-      };
+      return { props: empty };
     }
 
     const canonicalSlug = categorySlug(category);
     if (canonicalSlug && slug !== canonicalSlug) {
+      const qs = (context.resolvedUrl || '').includes('?')
+        ? (context.resolvedUrl || '').slice((context.resolvedUrl || '').indexOf('?'))
+        : '';
       return {
         redirect: {
-          destination: `/category/${canonicalSlug}`,
+          destination: `/category/${canonicalSlug}${qs}`,
           permanent: true,
         },
       };
@@ -212,7 +278,55 @@ export async function getServerSideProps(context) {
       ? [category._id, ...childDocs.map(child => child._id)]
       : [category._id];
 
-    const products = await Product.find({category: {$in: queryIds}}).select(PRODUCT_FIELDS);
+    const search = context.query.search?.trim() || '';
+    const brand = context.query.brand?.trim() || '';
+    const minRaw = context.query.min?.toString().trim() || '';
+    const maxRaw = context.query.max?.toString().trim() || '';
+    const sortParam = context.query.sort || '';
+    const minPrice = minRaw !== '' && !Number.isNaN(Number(minRaw)) ? Number(minRaw) : null;
+    const maxPrice = maxRaw !== '' && !Number.isNaN(Number(maxRaw)) ? Number(maxRaw) : null;
+
+    const mongoQuery = { category: { $in: queryIds } };
+    const extra = [];
+    if (search) {
+      extra.push({ title: new RegExp(escapeRegex(search), 'i') });
+    }
+    if (brand) {
+      extra.push({ brand: new RegExp(`^${escapeRegex(brand)}$`, 'i') });
+    }
+    if (extra.length === 1) Object.assign(mongoQuery, extra[0]);
+    if (extra.length > 1) mongoQuery.$and = extra;
+    if (minPrice !== null || maxPrice !== null) {
+      mongoQuery.price = {};
+      if (minPrice !== null) mongoQuery.price.$gte = minPrice;
+      if (maxPrice !== null) mongoQuery.price.$lte = maxPrice;
+    }
+
+    let sortQuery = { _id: -1 };
+    if (sortParam === 'price_asc') sortQuery = { price: 1 };
+    else if (sortParam === 'price_desc') sortQuery = { price: -1 };
+    else if (sortParam === 'name_asc') sortQuery = { title: 1 };
+    else if (sortParam === 'name_desc') sortQuery = { title: -1 };
+
+    const pageParam = parseInt(context.query.page, 10);
+    const page = Math.max(1, isNaN(pageParam) ? 1 : pageParam);
+
+    const [totalCount, rawBrands] = await Promise.all([
+      Product.countDocuments(mongoQuery),
+      Product.distinct('brand', {
+        category: { $in: queryIds },
+        brand: { $nin: ['', null] },
+      }),
+    ]);
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+    const currentPage = Math.min(page, totalPages);
+    const skip = (currentPage - 1) * PAGE_SIZE;
+
+    const products = await Product.find(mongoQuery)
+      .select(PRODUCT_FIELDS)
+      .sort(sortQuery)
+      .skip(skip)
+      .limit(PAGE_SIZE);
     
     return {
       props: {
@@ -221,18 +335,21 @@ export async function getServerSideProps(context) {
         parentCategory: category.parent ? JSON.parse(JSON.stringify(category.parent)) : null,
         childCategories: JSON.parse(JSON.stringify(childDocs)),
         isRoot,
+        brands: uniqueBrands(rawBrands),
+        totalCount,
+        page: currentPage,
+        totalPages,
+        filters: {
+          search,
+          brand,
+          minPrice: minRaw,
+          maxPrice: maxRaw,
+          sort: sortParam,
+        },
       }
     };
   } catch (error) {
     console.error('Error fetching category:', error);
-    return {
-      props: {
-        category: null,
-        products: [],
-        parentCategory: null,
-        childCategories: [],
-        isRoot: false,
-      }
-    };
+    return { props: empty };
   }
 }
