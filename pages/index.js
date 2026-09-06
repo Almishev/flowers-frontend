@@ -1,4 +1,5 @@
 import { Suspense, lazy } from "react";
+import Head from "next/head";
 import Header from "@/components/Header";
 import Featured from "@/components/Featured";
 import {Product} from "@/models/Product";
@@ -31,6 +32,11 @@ export default function HomePage({featuredProduct,newProducts,popularCategories,
         url="/"
         image="/parfumes_sell.png"
       />
+      {heroSettings?.heroMediaType === 'image' && heroSettings.heroImage && (
+        <Head>
+          <link rel="preload" as="image" href={heroSettings.heroImage} fetchPriority="high" />
+        </Head>
+      )}
       <div>
         <Header />
         <HeroVideo heroSettings={heroSettings} />

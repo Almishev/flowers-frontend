@@ -13,9 +13,10 @@ import Button from "@/components/Button";
 import SEO from "@/components/SEO";
 import {CartContext} from "@/components/CartContext";
 import {getRecaptchaToken} from "@/lib/recaptcha";
+import RecaptchaScript from "@/components/RecaptchaScript";
 import {useRouter} from "next/router";
 import {canonicalVariant, findSiblingVariants, productPath} from "@/lib/productVariants";
-import {buildProductStructuredData, perfumeSeoDescription, perfumeSeoTitle} from "@/lib/seo";
+import {buildProductStructuredData, perfumePageIntro, perfumeSeoDescription, perfumeSeoKeywords, perfumeSeoTitle} from "@/lib/seo";
 
 const ColWrapper = styled.div`
   display: grid;
@@ -112,6 +113,19 @@ const SmallMuted = styled.div`
   color: #9ca3af;
 `;
 
+const BrandLine = styled.p`
+  margin: 4px 0 0;
+  color: #6b6254;
+  font-size: 1.05rem;
+`;
+
+const Intro = styled.p`
+  margin: 18px 0 0;
+  color: #374151;
+  line-height: 1.7;
+  font-size: 1rem;
+`;
+
 const VolumeSelect = styled.select`
   margin-left: 8px;
   padding: 6px 10px;
@@ -123,6 +137,63 @@ const VolumeSelect = styled.select`
   &:focus {
     outline: none;
     border-color: #c9a227;
+  }
+`;
+
+const StorySection = styled.section`
+  margin: 10px 0 50px;
+`;
+
+const StoryTitle = styled.h2`
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin: 0 0 14px;
+`;
+
+const StoryBlock = styled.div`
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-bottom: 16px;
+  line-height: 1.7;
+  color: #374151;
+`;
+
+const NotesGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  @media screen and (min-width: 700px) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+`;
+
+const NoteCard = styled.div`
+  background: #faf8f2;
+  border-radius: 10px;
+  padding: 14px 16px;
+  h3 {
+    margin: 0 0 6px;
+    font-size: 0.92rem;
+    color: #c9a227;
+    font-weight: 600;
+  }
+  p {
+    margin: 0;
+    color: #374151;
+  }
+`;
+
+const FaqItem = styled.div`
+  & + & {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #eee;
+  }
+  strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #111;
   }
 `;
 
@@ -167,7 +238,7 @@ export default function PerfumePage({product, variants = []}) {
     } finally { setSubmitting(false); }
   }
   
-  const productDescription = perfumeSeoDescription(product);
+  const productDescription = perfumeSeoDescription(product, variants);
   
   let productImage = '/parfumes_sell.png';
   if (product.images?.[0]) {
@@ -183,10 +254,11 @@ export default function PerfumePage({product, variants = []}) {
 
   return (
     <>
+      <RecaptchaScript />
       <SEO 
         title={perfumeSeoTitle(product)}
         description={productDescription}
-        keywords={[product.title, product.brand, 'оригинален парфюм', 'оригинални парфюми', 'DÉLIE'].filter(Boolean).join(', ')}
+        keywords={perfumeSeoKeywords(product)}
         image={productImage}
         url={canonicalPath}
         type="product"
@@ -201,6 +273,9 @@ export default function PerfumePage({product, variants = []}) {
           </WhiteBox>
           <div>
             <Title>{product.title}</Title>
+            {product.brand && (
+              <BrandLine>Оригинален парфюм {product.brand}</BrandLine>
+            )}
             <Specs>
               {product.brand && (
                 <div><strong>Марка:</strong> {product.brand}</div>
@@ -244,9 +319,7 @@ export default function PerfumePage({product, variants = []}) {
                 </div>
               )}
             </Specs>
-            {product.description && (
-              <p style={{marginTop: '16px'}}>{product.description}</p>
-            )}
+            <Intro>{perfumePageIntro(product, variants)}</Intro>
             <PriceRow style={{marginTop: '24px'}}>
               <Button 
                 black 
@@ -258,6 +331,61 @@ export default function PerfumePage({product, variants = []}) {
             </PriceRow>
           </div>
         </ColWrapper>
+        <StorySection>
+          {(product.topNotes || product.heartNotes || product.baseNotes) && (
+            <StoryBlock>
+              <StoryTitle>Ароматна композиция</StoryTitle>
+              <NotesGrid>
+                {product.topNotes && (
+                  <NoteCard>
+                    <h3>Връхни нотки</h3>
+                    <p>{product.topNotes}</p>
+                  </NoteCard>
+                )}
+                {product.heartNotes && (
+                  <NoteCard>
+                    <h3>Сърдечни нотки</h3>
+                    <p>{product.heartNotes}</p>
+                  </NoteCard>
+                )}
+                {product.baseNotes && (
+                  <NoteCard>
+                    <h3>Базови нотки</h3>
+                    <p>{product.baseNotes}</p>
+                  </NoteCard>
+                )}
+              </NotesGrid>
+            </StoryBlock>
+          )}
+          {(product.scentFamily || product.concentration || product.gender) && (
+            <StoryBlock>
+              <StoryTitle>Характеристики</StoryTitle>
+              {product.scentFamily && <p>Ароматно семейство: {product.scentFamily}.</p>}
+              {product.concentration && <p>Концентрация: {product.concentration}.</p>}
+              {product.gender && <p>Подходящ като {product.gender.toLowerCase()} аромат.</p>}
+              {product.volume && <p>Наличен обем: {product.volume}.</p>}
+            </StoryBlock>
+          )}
+          <StoryBlock>
+            <StoryTitle>Често задавани въпроси</StoryTitle>
+            <FaqItem>
+              <strong>Оригинален ли е този парфюм?</strong>
+              Да. {product.title}{product.brand ? ` от ${product.brand}` : ''} се предлага като оригинален тестер в оригинална опаковка.
+            </FaqItem>
+            <FaqItem>
+              <strong>Подходящ ли е за подарък?</strong>
+              Да. Оригиналният парфюм в оригинална кутия е сигурен избор за подарък.
+            </FaqItem>
+            <FaqItem>
+              <strong>Как да го съхранявам?</strong>
+              На хладно и тъмно място, далеч от пряко слънце и радиатор, най-добре в кутията.
+            </FaqItem>
+            <FaqItem>
+              <strong>Доставяте ли в цяла България?</strong>
+              Да. Поръчвате онлайн и изпращаме с куриер до посочения адрес.
+            </FaqItem>
+          </StoryBlock>
+        </StorySection>
         <ReviewsSection>
           <ReviewsTitle>Ревюта</ReviewsTitle>
           <ReviewsGrid>

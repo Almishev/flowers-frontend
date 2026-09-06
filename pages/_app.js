@@ -2,7 +2,6 @@ import {createGlobalStyle} from "styled-components";
 import {WishlistProvider} from "@/components/WishlistContext";
 import {CartContextProvider} from "@/components/CartContext";
 import {Toaster} from "react-hot-toast";
-import Script from "next/script";
 import ViberChatButton from "@/components/ViberChatButton";
 import LoadingScreen from "@/components/LoadingScreen";
 
@@ -26,16 +25,8 @@ const GlobalStyles = createGlobalStyle`
 `;
 
 export default function App({ Component, pageProps }) {
-  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-
   return (
     <>
-      {recaptchaSiteKey && (
-        <Script
-          src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`}
-          strategy="afterInteractive"
-        />
-      )}
       <GlobalStyles />
       <LoadingScreen />
       <WishlistProvider>

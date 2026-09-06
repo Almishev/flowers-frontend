@@ -2,6 +2,7 @@ import styled from "styled-components";
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { signalHeroReady } from "@/lib/heroReady";
 
 const VideoWrapper = styled.div`
   position: relative;
@@ -219,6 +220,7 @@ export default function HeroVideo({ heroSettings }) {
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   const videoRef = useRef(null);
   const videoWrapperRef = useRef(null);
+  const heroImgRef = useRef(null);
 
   const updateVideoSource = useCallback(() => {
     if (typeof window === 'undefined') return;
@@ -291,6 +293,21 @@ export default function HeroVideo({ heroSettings }) {
     }
   }, [currentVideo, shouldLoadVideo]);
 
+  useEffect(() => {
+    const placeholderImage = settings.heroMediaType === 'image' && !settings.heroImage;
+    const placeholderVideo = settings.heroMediaType !== 'image' && !currentVideo;
+    if (placeholderImage || placeholderVideo) {
+      signalHeroReady();
+    }
+  }, [settings.heroMediaType, settings.heroImage, currentVideo]);
+
+  useEffect(() => {
+    const img = heroImgRef.current;
+    if (img?.complete && img.naturalWidth > 0) {
+      signalHeroReady();
+    }
+  }, [settings.heroImage]);
+
   // Ако е избран тип 'image' но няма снимка, показваме placeholder
   if (settings.heroMediaType === 'image' && !settings.heroImage) {
     return (
@@ -324,8 +341,12 @@ export default function HeroVideo({ heroSettings }) {
         <VideoWrapper ref={videoWrapperRef}>
           <ImageWrapper>
             <img
+              ref={heroImgRef}
               src={settings.heroImage}
               alt={settings.heroTitle}
+              fetchPriority="high"
+              decoding="async"
+              sizes="100vw"
               style={{
                 width: '100%',
                 height: '100%',
@@ -334,10 +355,9 @@ export default function HeroVideo({ heroSettings }) {
               onError={(e) => {
                 console.error('Error loading hero image:', settings.heroImage);
                 e.target.style.display = 'none';
+                signalHeroReady();
               }}
-              onLoad={() => {
-                console.log('Hero image loaded successfully:', settings.heroImage);
-              }}
+              onLoad={signalHeroReady}
             />
           </ImageWrapper>
           <TextOverlay>
@@ -365,6 +385,8 @@ export default function HeroVideo({ heroSettings }) {
             width={1920}
             height={1080}
             priority
+            fetchPriority="high"
+            sizes="100vw"
             style={{
               width: '100%',
               height: '100%',
@@ -373,10 +395,9 @@ export default function HeroVideo({ heroSettings }) {
             onError={(e) => {
               console.error('Error loading hero image:', settings.heroImage);
               e.target.style.display = 'none';
+              signalHeroReady();
             }}
-            onLoad={() => {
-              console.log('Hero image loaded successfully:', settings.heroImage);
-            }}
+            onLoadingComplete={signalHeroReady}
           />
         </ImageWrapper>
         <TextOverlay>
@@ -428,7 +449,10 @@ export default function HeroVideo({ heroSettings }) {
           playsInline
           preload="none"
           key={currentVideo} // Force re-render when video changes
-          onCanPlay={() => setVideoReady(true)}
+          onCanPlay={() => {
+            setVideoReady(true);
+            signalHeroReady();
+          }}
         >
           <source src={currentVideo} type="video/mp4" />
         </Video>

@@ -4,6 +4,7 @@ import Center from "@/components/Center";
 import {useState, useEffect} from "react";
 import axios from "axios";
 import {getRecaptchaToken} from "@/lib/recaptcha";
+import RecaptchaScript from "@/components/RecaptchaScript";
 import {useWishlist} from "@/components/WishlistContext";
 import ProductBox from "@/components/ProductBox";
 import ProductsGrid from "@/components/ProductsGrid";
@@ -236,6 +237,7 @@ export default function AccountPage() {
 
   return (
     <>
+      <RecaptchaScript />
       <Header />
       <Center>
         {!isAuthenticated && (
