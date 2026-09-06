@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import {categoryPath} from "@/lib/slugify";
 import {childrenOf, parentIdOf, productNoun, sortDepartments, isPerfumeDepartment} from "@/lib/categories";
+import {isS3ImageUrl} from "@/lib/isS3Image";
 
 const DepartmentList = styled.div`
   display: flex;
@@ -95,7 +96,7 @@ export default function CategoriesPage({departments, allCategories}) {
                         width={120}
                         height={90}
                         style={{objectFit: 'cover', borderRadius: 8, background: '#f3f3f3'}}
-                        unoptimized={department.image?.includes('s3.amazonaws.com')}
+                        unoptimized={isS3ImageUrl(department.image)}
                       />
                     )}
                     <div>

@@ -4,6 +4,7 @@ import Image from "next/image";
 import ButtonLink from "@/components/ButtonLink";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import {productPath} from "@/lib/productVariants";
+import {isS3ImageUrl} from "@/lib/isS3Image";
 
 const Bg = styled.div`
   background-color: #222;
@@ -98,7 +99,7 @@ export default function Featured({product}) {
                   objectFit: 'contain',
                 }}
                 loading="lazy"
-                unoptimized={product.images[0]?.includes('s3.amazonaws.com')}
+                unoptimized={isS3ImageUrl(product.images[0])}
               />
             ) : (
               <div style={{

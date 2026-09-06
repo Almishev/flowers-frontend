@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { signalHeroReady } from "@/lib/heroReady";
+import { isS3ImageUrl } from "@/lib/isS3Image";
 
 const VideoWrapper = styled.div`
   position: relative;
@@ -331,9 +332,7 @@ export default function HeroVideo({ heroSettings }) {
 
   // Показваме снимка ако е избран тип 'image' и има снимка
   if (settings.heroMediaType === 'image' && settings.heroImage) {
-    const isS3Image = settings.heroImage?.includes('s3.amazonaws.com') || 
-                      settings.heroImage?.includes('s3.eu-central-1.amazonaws.com') ||
-                      settings.heroImage?.includes('amazonaws.com');
+    const isS3Image = isS3ImageUrl(settings.heroImage);
     
     // За S3 снимки използваме стандартен <img> tag, защото Next.js Image има проблеми в production
     if (isS3Image) {

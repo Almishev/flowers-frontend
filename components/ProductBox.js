@@ -9,6 +9,7 @@ import Button from "@/components/Button";
 import {useContext, useEffect, useRef, useState} from "react";
 import {CartContext} from "@/components/CartContext";
 import {productPath} from "@/lib/productVariants";
+import {isS3ImageUrl} from "@/lib/isS3Image";
 import { motion } from "framer-motion";
 
 const ProductWrapper = styled(motion.div)`
@@ -371,7 +372,7 @@ export default function ProductBox({
                 objectFit: 'cover',
               }}
               loading="lazy"
-              unoptimized={mainImage?.includes('s3.amazonaws.com')}
+              unoptimized={isS3ImageUrl(mainImage)}
             />
           ) : (
             <PlaceholderThumb>

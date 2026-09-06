@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import {useEffect, useState} from "react";
 import Image from "next/image";
+import {isS3ImageUrl} from "@/lib/isS3Image";
 import ProductPlaceholderIcon from "@/components/ProductPlaceholderIcon";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
@@ -87,7 +88,7 @@ export default function ProductImages({images = []}) {
             objectFit: 'contain',
           }}
           loading="lazy"
-          unoptimized={activeImage?.includes('s3.amazonaws.com')}
+          unoptimized={isS3ImageUrl(activeImage)}
         />
       </BigImageWrapper>
       <ImageButtons>
@@ -107,7 +108,7 @@ export default function ProductImages({images = []}) {
                 objectFit: 'cover',
               }}
               loading="lazy"
-              unoptimized={image?.includes('s3.amazonaws.com')}
+              unoptimized={isS3ImageUrl(image)}
             />
           </ImageButton>
         ))}
