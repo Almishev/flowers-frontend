@@ -9,6 +9,8 @@ import Footer from "@/components/Footer";
 import Pagination from "@/components/Pagination";
 import SEO from "@/components/SEO";
 import { paginateGroupedProducts } from "@/lib/productVariants";
+import { attachProductPaths } from "@/lib/categories";
+import { Category } from "@/models/Category";
 
 const PAGE_SIZE = 20;
 
@@ -111,12 +113,14 @@ export async function getServerSideProps({query}) {
       .sort({_id: -1})
       .lean();
     const paged = paginateGroupedProducts(allProducts, { page, pageSize: PAGE_SIZE });
+    const categories = await Category.find().select('_id slug name parent').lean();
+    const products = attachProductPaths(paged.products, categories);
 
     return {
       props: {
         query: searchQuery,
         brand: brandQuery,
-        products: JSON.parse(JSON.stringify(paged.products)),
+        products: JSON.parse(JSON.stringify(products)),
         page: paged.page,
         totalPages: paged.totalPages,
         totalCount: paged.totalCount,

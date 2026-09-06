@@ -12,7 +12,7 @@ import SEO from "@/components/SEO";
 import Pagination from "@/components/Pagination";
 import CategoryFilters from "@/components/CategoryFilters";
 import { slugify, categorySlug, categoryPath } from "@/lib/slugify";
-import { isPerfumeDepartment, productNoun } from "@/lib/categories";
+import { attachProductPaths, isPerfumeDepartment, productNoun } from "@/lib/categories";
 import { paginateGroupedProducts } from "@/lib/productVariants";
 import { buildCollectionStructuredData, categorySeo } from "@/lib/seo";
 
@@ -342,11 +342,13 @@ export async function getServerSideProps(context) {
       }),
     ]);
     const paged = paginateGroupedProducts(allProducts, { page, pageSize: PAGE_SIZE });
+    const allCategoryDocs = await Category.find().select('_id slug name parent').lean();
+    const products = attachProductPaths(paged.products, allCategoryDocs);
     
     return {
       props: {
         category: JSON.parse(JSON.stringify(category)),
-        products: JSON.parse(JSON.stringify(paged.products)),
+        products: JSON.parse(JSON.stringify(products)),
         parentCategory: category.parent ? JSON.parse(JSON.stringify(category.parent)) : null,
         childCategories: JSON.parse(JSON.stringify(childDocs)),
         isRoot,

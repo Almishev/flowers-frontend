@@ -2,9 +2,6 @@ import Center from "@/components/Center";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Title from "@/components/Title";
-import {mongooseConnect} from "@/lib/mongoose";
-import {Product} from "@/models/Product";
-import {Category} from "@/models/Category";
 import styled from "styled-components";
 import WhiteBox from "@/components/WhiteBox";
 import ProductImages from "@/components/ProductImages";
@@ -15,8 +12,10 @@ import {CartContext} from "@/components/CartContext";
 import {getRecaptchaToken} from "@/lib/recaptcha";
 import RecaptchaScript from "@/components/RecaptchaScript";
 import {useRouter} from "next/router";
-import {canonicalVariant, findSiblingVariants, productPath} from "@/lib/productVariants";
-import {buildProductStructuredData, perfumePageIntro, perfumeSeoDescription, perfumeSeoKeywords, perfumeSeoTitle} from "@/lib/seo";
+import {canonicalVariant, productPath} from "@/lib/productVariants";
+import {buildProductStructuredData, perfumePageIntro, perfumeSeoDescription, perfumeSeoKeywords, perfumeSeoTitle, productPageIntro, productSeoDescription, productSeoKeywords, productSeoTitle} from "@/lib/seo";
+import RecommendedProducts from "@/components/RecommendedProducts";
+import {getProductPageProps} from "@/lib/loadProductPage";
 
 const ColWrapper = styled.div`
   display: grid;
@@ -197,7 +196,14 @@ const FaqItem = styled.div`
   }
 `;
 
-export default function PerfumePage({product, variants = []}) {
+export default function PerfumePage({
+  product,
+  variants = [],
+  recommendedProducts = [],
+  isPerfume = true,
+  pathPrefix = '/perfume',
+  breadcrumbs: crumbItems,
+}) {
   const router = useRouter();
   const [reviews,setReviews] = useState([]);
   const [rating,setRating] = useState(5);
@@ -238,32 +244,36 @@ export default function PerfumePage({product, variants = []}) {
     } finally { setSubmitting(false); }
   }
   
-  const productDescription = perfumeSeoDescription(product, variants);
+  const productDescription = isPerfume
+    ? perfumeSeoDescription(product, variants)
+    : productSeoDescription(product);
   
   let productImage = '/parfumes_sell.png';
   if (product.images?.[0]) {
     productImage = product.images[0];
   }
   const canonical = canonicalVariant(variants, product);
-  const canonicalPath = productPath(canonical);
-  const breadcrumbs = [
-    { name: 'Начало', url: '/' },
-    { name: 'Оригинални парфюми', url: '/category/parfyumi' },
-    { name: product.title, url: canonicalPath },
-  ];
+  const canonicalPath = productPath({ ...canonical, pathPrefix });
+  const breadcrumbs = crumbItems?.length
+    ? crumbItems
+    : [
+        { name: 'Начало', url: '/' },
+        { name: isPerfume ? 'Оригинални парфюми' : 'Категории', url: isPerfume ? '/category/parfyumi' : '/categories' },
+        { name: product.title, url: canonicalPath },
+      ];
 
   return (
     <>
       <RecaptchaScript />
       <SEO 
-        title={perfumeSeoTitle(product)}
+        title={isPerfume ? perfumeSeoTitle(product) : productSeoTitle(product)}
         description={productDescription}
-        keywords={perfumeSeoKeywords(product)}
+        keywords={isPerfume ? perfumeSeoKeywords(product) : productSeoKeywords(product)}
         image={productImage}
         url={canonicalPath}
         type="product"
         breadcrumbs={breadcrumbs}
-        structuredData={buildProductStructuredData(product, variants)}
+        structuredData={buildProductStructuredData(product, variants, { perfume: isPerfume })}
       />
       <Header />
       <Center>
@@ -274,7 +284,7 @@ export default function PerfumePage({product, variants = []}) {
           <div>
             <Title>{product.title}</Title>
             {product.brand && (
-              <BrandLine>Оригинален парфюм {product.brand}</BrandLine>
+              <BrandLine>{isPerfume ? `Оригинален парфюм ${product.brand}` : product.brand}</BrandLine>
             )}
             <Specs>
               {product.brand && (
@@ -289,7 +299,7 @@ export default function PerfumePage({product, variants = []}) {
                       onChange={(e) => {
                         const next = variants.find(item => String(item._id) === e.target.value);
                         if (!next) return;
-                        router.push(`/perfume/${next.slug || next._id}`);
+                        router.push(productPath({ ...next, pathPrefix }));
                       }}
                     >
                       {variants.map(item => (
@@ -319,7 +329,7 @@ export default function PerfumePage({product, variants = []}) {
                 </div>
               )}
             </Specs>
-            <Intro>{perfumePageIntro(product, variants)}</Intro>
+            <Intro>{isPerfume ? perfumePageIntro(product, variants) : productPageIntro(product)}</Intro>
             <PriceRow style={{marginTop: '24px'}}>
               <Button 
                 black 
@@ -332,7 +342,7 @@ export default function PerfumePage({product, variants = []}) {
           </div>
         </ColWrapper>
         <StorySection>
-          {(product.topNotes || product.heartNotes || product.baseNotes) && (
+          {isPerfume && (product.topNotes || product.heartNotes || product.baseNotes) && (
             <StoryBlock>
               <StoryTitle>Ароматна композиция</StoryTitle>
               <NotesGrid>
@@ -357,7 +367,7 @@ export default function PerfumePage({product, variants = []}) {
               </NotesGrid>
             </StoryBlock>
           )}
-          {(product.scentFamily || product.concentration || product.gender) && (
+          {isPerfume && (product.scentFamily || product.concentration || product.gender) && (
             <StoryBlock>
               <StoryTitle>Характеристики</StoryTitle>
               {product.scentFamily && <p>Ароматно семейство: {product.scentFamily}.</p>}
@@ -368,18 +378,33 @@ export default function PerfumePage({product, variants = []}) {
           )}
           <StoryBlock>
             <StoryTitle>Често задавани въпроси</StoryTitle>
-            <FaqItem>
-              <strong>Оригинален ли е този парфюм?</strong>
-              Да. {product.title}{product.brand ? ` от ${product.brand}` : ''} се предлага като оригинален тестер в оригинална опаковка.
-            </FaqItem>
-            <FaqItem>
-              <strong>Подходящ ли е за подарък?</strong>
-              Да. Оригиналният парфюм в оригинална кутия е сигурен избор за подарък.
-            </FaqItem>
-            <FaqItem>
-              <strong>Как да го съхранявам?</strong>
-              На хладно и тъмно място, далеч от пряко слънце и радиатор, най-добре в кутията.
-            </FaqItem>
+            {isPerfume ? (
+              <>
+                <FaqItem>
+                  <strong>Оригинален ли е този парфюм?</strong>
+                  Да. {product.title}{product.brand ? ` от ${product.brand}` : ''} се предлага като оригинален тестер в оригинална опаковка.
+                </FaqItem>
+                <FaqItem>
+                  <strong>Подходящ ли е за подарък?</strong>
+                  Да. Оригиналният парфюм в оригинална кутия е сигурен избор за подарък.
+                </FaqItem>
+                <FaqItem>
+                  <strong>Как да го съхранявам?</strong>
+                  На хладно и тъмно място, далеч от пряко слънце и радиатор, най-добре в кутията.
+                </FaqItem>
+              </>
+            ) : (
+              <>
+                <FaqItem>
+                  <strong>Оригинален ли е този продукт?</strong>
+                  Да. {product.title}{product.brand ? ` от ${product.brand}` : ''} е оригинален продукт.
+                </FaqItem>
+                <FaqItem>
+                  <strong>Подходящ ли е за подарък?</strong>
+                  Да. Подходящ е за подарък.
+                </FaqItem>
+              </>
+            )}
             <FaqItem>
               <strong>Доставяте ли в цяла България?</strong>
               Да. Поръчвате онлайн и изпращаме с куриер до посочения адрес.
@@ -426,6 +451,7 @@ export default function PerfumePage({product, variants = []}) {
             </Card>
           </ReviewsGrid>
         </ReviewsSection>
+        <RecommendedProducts products={recommendedProducts} />
       </Center>
       <Footer />
     </>
@@ -433,33 +459,5 @@ export default function PerfumePage({product, variants = []}) {
 }
 
 export async function getServerSideProps(context) {
-  await mongooseConnect();
-  const {slug} = context.query;
-  
-  let product = await Product.findOne({ slug }).populate({
-    path: 'category',
-    model: Category,
-  });
-  
-  if (!product && slug && /^[0-9a-fA-F]{24}$/.test(slug)) {
-    product = await Product.findById(slug).populate({
-      path: 'category',
-      model: Category,
-    });
-  }
-  
-  if (!product) {
-    return {
-      notFound: true,
-    };
-  }
-
-  const variants = await findSiblingVariants(Product, product);
-  
-  return {
-    props: {
-      product: JSON.parse(JSON.stringify(product)),
-      variants: JSON.parse(JSON.stringify(variants)),
-    }
-  }
+  return getProductPageProps(context, 'perfume');
 }

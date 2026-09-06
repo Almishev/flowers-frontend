@@ -4,6 +4,7 @@ import Link from "next/link";
 import styled from "styled-components";
 import SearchIcon from "@/components/icons/Search";
 import {primary, primaryHover, primaryDark} from "@/lib/colors";
+import {productPath} from "@/lib/productVariants";
 
 const Wrap = styled.div`
   position: relative;
@@ -241,7 +242,7 @@ export default function HeaderSearch() {
           {!loading && results.map((product) => (
             <ResultLink
               key={product._id}
-              href={`/perfume/${product.slug || product._id}`}
+              href={productPath(product)}
               onClick={() => setOpen(false)}
             >
               <Thumb>

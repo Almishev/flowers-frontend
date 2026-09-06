@@ -1,6 +1,8 @@
 import {mongooseConnect} from "@/lib/mongoose";
 import {Product} from "@/models/Product";
 import { groupProductVariants, hydrateVariantSiblings } from "@/lib/productVariants";
+import { attachProductPaths } from "@/lib/categories";
+import { Category } from "@/models/Category";
 
 function escapeRegex(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -26,7 +28,7 @@ export default async function handle(req, res) {
         {description: regex},
       ],
     })
-      .select('slug title brand volume price images')
+      .select('slug title brand volume price images category')
       .sort({_id: -1})
       .limit(24)
       .lean();
@@ -35,8 +37,10 @@ export default async function handle(req, res) {
       Product,
       groupProductVariants(products).slice(0, 8)
     );
+    const categories = await Category.find().select('_id slug name parent').lean();
+    const withPaths = attachProductPaths(grouped, categories);
 
-    res.json({products: JSON.parse(JSON.stringify(grouped))});
+    res.json({products: JSON.parse(JSON.stringify(withPaths))});
   } catch (error) {
     console.error('Error in search API:', error);
     res.status(500).json({products: [], message: 'Internal server error'});

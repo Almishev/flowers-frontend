@@ -8,6 +8,7 @@ import ProductPlaceholderIcon from "@/components/ProductPlaceholderIcon";
 import Button from "@/components/Button";
 import {useContext, useEffect, useRef, useState} from "react";
 import {CartContext} from "@/components/CartContext";
+import {productPath} from "@/lib/productVariants";
 import { motion } from "framer-motion";
 
 const ProductWrapper = styled(motion.div)`
@@ -167,6 +168,8 @@ export default function ProductBox({
   volume,
   stock,
   variants,
+  pathPrefix,
+  category,
 }) {
   const allVariants = (variants?.length
     ? variants
@@ -185,7 +188,11 @@ export default function ProductBox({
 
   const {addProduct} = useContext(CartContext);
   const {addToWishlist, removeFromWishlist, isInWishlist} = useWishlist();
-  const url = '/perfume/'+(selected.slug || selected._id);
+  const url = productPath({
+    ...selected,
+    pathPrefix: selected.pathPrefix || pathPrefix,
+    category: selected.category || category,
+  });
   const inWishlist = isInWishlist(selected._id);
 
   const handleWishlistClick = (e) => {

@@ -3,6 +3,7 @@ import {Product} from "@/models/Product";
 import {Category} from "@/models/Category";
 import {categorySlug} from "@/lib/slugify";
 import {canonicalVariant, groupProductVariants, productPath} from "@/lib/productVariants";
+import {attachProductPaths} from "@/lib/categories";
 
 function generateSiteMap(products, categories) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
@@ -59,10 +60,10 @@ export async function getServerSideProps({ res }) {
     await mongooseConnect();
     
     const [rawProducts, categories] = await Promise.all([
-      Product.find({}).select('_id slug title brand volume').lean(),
-      Category.find({}).select('_id slug name').lean(),
+      Product.find({}).select('_id slug title brand volume category').lean(),
+      Category.find({}).select('_id slug name parent').lean(),
     ]);
-    const products = groupProductVariants(rawProducts);
+    const products = attachProductPaths(groupProductVariants(rawProducts), categories);
 
     const sitemap = generateSiteMap(products, categories);
 

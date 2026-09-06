@@ -2,6 +2,8 @@ import {mongooseConnect} from "@/lib/mongoose";
 import {Wishlist} from "@/models/Wishlist";
 import {Product} from "@/models/Product";
 import { hydrateVariantSiblings } from "@/lib/productVariants";
+import { attachProductPaths } from "@/lib/categories";
+import { Category } from "@/models/Category";
 
 export default async function handle(req, res) {
   console.log('Wishlist API called with method:', req.method);
@@ -22,7 +24,8 @@ export default async function handle(req, res) {
       
       const products = wishlistItems.map(item => item.productId).filter(Boolean);
       const withVariants = await hydrateVariantSiblings(Product, products);
-      res.json(JSON.parse(JSON.stringify(withVariants)));
+      const categories = await Category.find().select('_id slug name parent').lean();
+      res.json(JSON.parse(JSON.stringify(attachProductPaths(withVariants, categories))));
     } catch (error) {
       console.error('Error fetching wishlist:', error);
       res.status(500).json({message: 'Error fetching wishlist'});

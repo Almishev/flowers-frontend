@@ -12,6 +12,7 @@ import SEO from "@/components/SEO";
 import LazySection from "@/components/LazySection";
 import {Settings} from "@/models/Settings";
 import { groupProductVariants, hydrateVariantSiblings } from "@/lib/productVariants";
+import { attachProductPaths } from "@/lib/categories";
 
 const NewProducts = lazy(() => import("@/components/NewProducts"));
 const PopularCategoriesHome = lazy(() => import("@/components/PopularCategoriesHome"));
@@ -142,12 +143,18 @@ export async function getServerSideProps() {
       .sort({ _id: -1 })
       .limit(36)
       .lean();
-    const newProducts = await hydrateVariantSiblings(
+    const newProductsRaw = await hydrateVariantSiblings(
       Product,
       groupProductVariants(newestRaw).slice(0, 8)
     );
 
     const allCategories = await Category.find().lean();
+    const newProducts = attachProductPaths(newProductsRaw, allCategories);
+    if (featuredProduct) {
+      featuredProduct = attachProductPaths([
+        typeof featuredProduct.toObject === 'function' ? featuredProduct.toObject() : featuredProduct,
+      ], allCategories)[0];
+    }
     const childIdsByParent = {};
     allCategories.forEach((cat) => {
       const parentId = cat.parent ? String(cat.parent) : '';

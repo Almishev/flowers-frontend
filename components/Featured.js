@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Image from "next/image";
 import ButtonLink from "@/components/ButtonLink";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import {productPath} from "@/lib/productVariants";
 
 const Bg = styled.div`
   background-color: #222;
@@ -78,7 +79,7 @@ export default function Featured({product}) {
               <Title>{product.title}</Title>
               <Desc>{product.description}</Desc>
               <ButtonsWrapper ref={buttonAnimation.ref} style={buttonAnimation.style}>
-                <ButtonLink href={'/perfume/'+(product.slug || product._id)} outline={1} white={1}>Прочети повече</ButtonLink>
+                <ButtonLink href={productPath(product)} outline={1} white={1}>Прочети повече</ButtonLink>
               </ButtonsWrapper>
             </div>
           </Column>
