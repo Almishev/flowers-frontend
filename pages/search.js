@@ -109,7 +109,7 @@ export async function getServerSideProps({query}) {
         };
 
     const allProducts = await Product.find(mongoQuery)
-      .select('slug title description images price currency brand volume concentration gender stock category')
+      .select('slug title description images price compareAtPrice currency brand volume concentration gender stock category')
       .sort({_id: -1})
       .lean();
     const paged = paginateGroupedProducts(allProducts, { page, pageSize: PAGE_SIZE });

@@ -8,6 +8,7 @@ import axios from "axios";
 import Table from "@/components/Table";
 import Input from "@/components/Input";
 import Footer from "@/components/Footer";
+import SalePrice from "@/components/SalePrice";
 
 const ColumnsWrapper = styled.div`
   display: grid;
@@ -383,7 +384,17 @@ export default function CartPage() {
                         </Button>
                       </td>
                       <td>
-                        {formatMoney(cartProducts.filter(id => String(id) === String(product._id)).length * product.price)} EUR
+                        <SalePrice
+                          price={product.price}
+                          compareAtPrice={product.compareAtPrice}
+                          currency={product.currency || 'EUR'}
+                          compact
+                        />
+                        {cartProducts.filter(id => String(id) === String(product._id)).length > 1 && (
+                          <div style={{marginTop: 6, fontWeight: 600}}>
+                            {formatMoney(cartProducts.filter(id => String(id) === String(product._id)).length * product.price)} EUR
+                          </div>
+                        )}
                       </td>
                     </tr>
                   ))}

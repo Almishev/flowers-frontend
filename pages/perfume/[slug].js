@@ -16,6 +16,7 @@ import {canonicalVariant, productPath} from "@/lib/productVariants";
 import {buildProductStructuredData, perfumePageIntro, perfumeSeoDescription, perfumeSeoKeywords, perfumeSeoTitle, productPageIntro, productSeoDescription, productSeoKeywords, productSeoTitle} from "@/lib/seo";
 import RecommendedProducts from "@/components/RecommendedProducts";
 import {getProductPageProps} from "@/lib/loadProductPage";
+import SalePrice from "@/components/SalePrice";
 
 const ColWrapper = styled.div`
   display: grid;
@@ -321,7 +322,16 @@ export default function PerfumePage({
                 <div><strong>За кого е:</strong> {product.gender}</div>
               )}
               {typeof product.price === 'number' && (
-                <div><strong>Цена:</strong> {product.price.toFixed(2)} EUR</div>
+                <div>
+                  <strong>Цена:</strong>
+                  <div style={{marginTop: 6}}>
+                    <SalePrice
+                      price={product.price}
+                      compareAtPrice={product.compareAtPrice}
+                      currency={product.currency || 'EUR'}
+                    />
+                  </div>
+                </div>
               )}
               {typeof product.stock === 'number' && (
                 <div style={{color: product.stock > 0 ? '#c9a227' : '#dc2626'}}>

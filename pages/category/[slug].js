@@ -242,7 +242,7 @@ export default function CategoryPage({
   );
 }
 
-const PRODUCT_FIELDS = 'slug title description images price currency brand volume concentration gender stock category';
+const PRODUCT_FIELDS = 'slug title description images price compareAtPrice currency brand volume concentration gender stock category';
 
 export async function getServerSideProps(context) {
   const empty = {

@@ -21,7 +21,7 @@ const PopularCollections = lazy(() => import("@/components/PopularCollections"))
 const AboutSection = lazy(() => import("@/components/AboutSection"));
 const FAQSection = lazy(() => import("@/components/FAQSection"));
 
-const PRODUCT_FIELDS = 'slug title description images price currency brand volume concentration gender stock category';
+const PRODUCT_FIELDS = 'slug title description images price compareAtPrice currency brand volume concentration gender stock category';
 
 export default function HomePage({featuredProduct,newProducts,popularCategories, departments, brands, heroSettings}) {
   return (

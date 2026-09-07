@@ -91,6 +91,13 @@ const Page = styled.div`
 
 const CardSlot = styled.div`
   min-width: 0;
+  height: 100%;
+  display: flex;
+
+  > * {
+    flex: 1;
+    width: 100%;
+  }
 `;
 
 const Dots = styled.div`

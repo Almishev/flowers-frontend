@@ -10,10 +10,14 @@ import {useContext, useEffect, useRef, useState} from "react";
 import {CartContext} from "@/components/CartContext";
 import {productPath} from "@/lib/productVariants";
 import {isS3ImageUrl} from "@/lib/isS3Image";
+import SalePrice from "@/components/SalePrice";
 import { motion } from "framer-motion";
 
 const ProductWrapper = styled(motion.div)`
   position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 const WishlistButton = styled.button`
@@ -95,12 +99,14 @@ const Title = styled(Link)`
   color: inherit;
   text-decoration: none;
   margin: 6px 0 0;
-  display: block;
   /* Фиксирана височина за до 2 реда заглавие,
      за да са подравнени картите независимо от дължината */
   min-height: 2.6em;
   line-height: 1.3;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   transition: color 0.2s ease;
 
   &:hover {
@@ -110,21 +116,30 @@ const Title = styled(Link)`
 
 const ProductInfoBox = styled.div`
   margin-top: 5px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+`;
+
+const VolumeSlot = styled.div`
+  min-height: 38px;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
 `;
 
 const PriceRow = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 6px;
-  margin-top: 6px;
+  align-items: stretch;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
 `;
 
-const Price = styled.div`
-  font-size: 1rem;
-  font-weight:600;
-  color: #111827;
+const PriceSlot = styled.div`
+  min-height: 44px;
 `;
 
 const Volume = styled.div`
@@ -134,7 +149,7 @@ const Volume = styled.div`
 
 const VolumeSelect = styled.select`
   width: 100%;
-  margin-top: 2px;
+  margin-top: 0;
   padding: 6px 8px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
@@ -164,6 +179,7 @@ export default function ProductBox({
   slug,
   title,
   price,
+  compareAtPrice,
   currency,
   images,
   volume,
@@ -174,13 +190,13 @@ export default function ProductBox({
 }) {
   const allVariants = (variants?.length
     ? variants
-    : [{ _id, slug, volume, price, stock, images }]
+    : [{ _id, slug, volume, price, compareAtPrice, stock, images }]
   ).filter(Boolean);
   const hasVolumeOptions = allVariants.filter(item => item.volume).length > 1;
 
   const [selectedId, setSelectedId] = useState(String(_id));
   const selected = allVariants.find(item => String(item._id) === selectedId) || allVariants[0] || {
-    _id, slug, volume, price, stock, images,
+    _id, slug, volume, price, compareAtPrice, stock, images,
   };
 
   useEffect(() => {
@@ -401,31 +417,38 @@ export default function ProductBox({
       </WhiteBox>
       <ProductInfoBox>
         <Title href={url}>{title}</Title>
-        {hasVolumeOptions ? (
-          <VolumeSelect
-            value={String(selected._id)}
-            onChange={(e) => {
-              setSelectedId(e.target.value);
-              setCurrentIndex(0);
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {allVariants.map(item => (
-              <option key={item._id} value={String(item._id)}>
-                {item.volume || 'Обем'}
-                {typeof item.price === 'number' ? ` — ${item.price.toFixed(2)} EUR` : ''}
-              </option>
-            ))}
-          </VolumeSelect>
-        ) : (
-          (selected.volume || volume) && <Volume>{selected.volume || volume}</Volume>
-        )}
-        <PriceRow>
-          {typeof selected.price === 'number' && (
-            <Price>
-              {selected.price.toFixed(2)} EUR
-            </Price>
+        <VolumeSlot>
+          {hasVolumeOptions ? (
+            <VolumeSelect
+              value={String(selected._id)}
+              onChange={(e) => {
+                setSelectedId(e.target.value);
+                setCurrentIndex(0);
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {allVariants.map(item => (
+                <option key={item._id} value={String(item._id)}>
+                  {item.volume || 'Обем'}
+                  {typeof item.price === 'number' ? ` — ${item.price.toFixed(2)} EUR` : ''}
+                </option>
+              ))}
+            </VolumeSelect>
+          ) : (
+            (selected.volume || volume) && <Volume>{selected.volume || volume}</Volume>
           )}
+        </VolumeSlot>
+        <PriceRow>
+          <PriceSlot>
+            {typeof selected.price === 'number' && (
+              <SalePrice
+                price={selected.price}
+                compareAtPrice={selected.compareAtPrice}
+                currency={currency || 'EUR'}
+                compact
+              />
+            )}
+          </PriceSlot>
           <Button
             black
             size="s"

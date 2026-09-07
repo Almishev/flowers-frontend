@@ -20,7 +20,7 @@ const SORT_OPTIONS = [
   { value: 'price_desc', label: 'Цена – низходяща' },
 ];
 
-const PRODUCT_FIELDS = 'slug title price currency images category description brand volume concentration gender stock';
+const PRODUCT_FIELDS = 'slug title price compareAtPrice currency images category description brand volume concentration gender stock';
 
 export default function PerfumesPage({
   products,

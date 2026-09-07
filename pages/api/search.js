@@ -28,7 +28,7 @@ export default async function handle(req, res) {
         {description: regex},
       ],
     })
-      .select('slug title brand volume price images category')
+      .select('slug title brand volume price compareAtPrice images category')
       .sort({_id: -1})
       .limit(24)
       .lean();
