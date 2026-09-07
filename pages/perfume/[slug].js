@@ -7,6 +7,7 @@ import WhiteBox from "@/components/WhiteBox";
 import ProductImages from "@/components/ProductImages";
 import {useContext, useEffect, useState} from "react";
 import Button from "@/components/Button";
+import OrderButton from "@/components/OrderButton";
 import SEO from "@/components/SEO";
 import {CartContext} from "@/components/CartContext";
 import {getRecaptchaToken} from "@/lib/recaptcha";
@@ -341,13 +342,11 @@ export default function PerfumePage({
             </Specs>
             <Intro>{isPerfume ? perfumePageIntro(product, variants) : productPageIntro(product)}</Intro>
             <PriceRow style={{marginTop: '24px'}}>
-              <Button 
-                black 
+              <OrderButton
+                size="l"
                 onClick={() => addProduct(product._id)}
-                disabled={product.stock !== undefined && product.stock <= 0}
-              >
-                Добави в кошницата
-              </Button>
+                outOfStock={product.stock !== undefined && product.stock <= 0}
+              />
             </PriceRow>
           </div>
         </ColWrapper>

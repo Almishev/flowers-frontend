@@ -21,6 +21,11 @@ function generateSiteMap(products, categories) {
        <priority>0.9</priority>
      </url>
      <url>
+       <loc>${siteUrl}/offers</loc>
+       <changefreq>daily</changefreq>
+       <priority>0.9</priority>
+     </url>
+     <url>
        <loc>${siteUrl}/categories</loc>
        <changefreq>weekly</changefreq>
        <priority>0.8</priority>

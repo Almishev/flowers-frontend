@@ -5,7 +5,7 @@ import Image from "next/image";
 import {useWishlist} from "@/components/WishlistContext";
 import toast from "react-hot-toast";
 import ProductPlaceholderIcon from "@/components/ProductPlaceholderIcon";
-import Button from "@/components/Button";
+import OrderButton from "@/components/OrderButton";
 import {useContext, useEffect, useRef, useState} from "react";
 import {CartContext} from "@/components/CartContext";
 import {productPath} from "@/lib/productVariants";
@@ -449,14 +449,11 @@ export default function ProductBox({
               />
             )}
           </PriceSlot>
-          <Button
-            black
-            size="s"
+          <OrderButton
+            block
             onClick={handleAddToCart}
-            disabled={selected.stock !== undefined && selected.stock <= 0}
-          >
-            {selected.stock !== undefined && selected.stock <= 0 ? 'Изчерпан' : 'Добави в кошницата'}
-          </Button>
+            outOfStock={selected.stock !== undefined && selected.stock <= 0}
+          />
         </PriceRow>
       </ProductInfoBox>
     </ProductWrapper>

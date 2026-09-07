@@ -241,6 +241,15 @@ const NavLink = styled(Link)`
   }
 `;
 
+const SaleNavLink = styled(NavLink)`
+  color: ${primary};
+  font-weight: 600;
+
+  &:hover {
+    color: ${primaryHover};
+  }
+`;
+
 const MobileMenuButton = styled.button`
   width: 100%;
   background: transparent;
@@ -589,6 +598,7 @@ export default function Header() {
           <NavArea>
             <StyledNav>
               <NavLink href={'/'}>Начало</NavLink>
+              <SaleNavLink href={'/offers'}>Оферти</SaleNavLink>
               {departments.map(dept => {
                 const children = getChildren(dept._id);
                 const isOpen = openDeptId === dept._id;
@@ -678,6 +688,18 @@ export default function Header() {
             >
               Начало
             </NavLink>
+            <SaleNavLink
+              href={'/offers'}
+              onClick={() => setMobileNavActive(false)}
+              style={{
+                width: '100%',
+                textAlign: 'left',
+                padding: '12px 0',
+                fontSize: '18px',
+              }}
+            >
+              Оферти
+            </SaleNavLink>
             {departments.map(dept => {
               const children = getChildren(dept._id);
               const isOpen = mobileOpenDeptId === dept._id;
